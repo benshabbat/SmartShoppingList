@@ -31,7 +31,7 @@ export const AddItemForm = ({
   
   const [newItemCategory, setNewItemCategory] = useState<Category>('פירות וירקות')
   const [showCategorySuggestion, setShowCategorySuggestion] = useState(false)
-  const [suggestedCategory, setSuggestedCategory] = useState<Category | null>(null)
+  const [suggestedCategory] = useState<Category | null>(null)
   const [autoChangedCategory, setAutoChangedCategory] = useState(false)
 
   // יצירת רשימת הצעות חכמות
@@ -86,13 +86,6 @@ export const AddItemForm = ({
     }
   }
 
-  const acceptCategorySuggestion = () => {
-    if (suggestedCategory) {
-      setNewItemCategory(suggestedCategory)
-      setShowCategorySuggestion(false)
-    }
-  }
-
   return (
     <div className={containerStyles.section}>
       <NotificationBanner
@@ -108,7 +101,12 @@ export const AddItemForm = ({
         message=""
         category={suggestedCategory || undefined}
         productName={itemName.value}
-        onAccept={acceptCategorySuggestion}
+        onAccept={() => {
+          if (suggestedCategory) {
+            setNewItemCategory(suggestedCategory)
+            setShowCategorySuggestion(false)
+          }
+        }}
         onDismiss={() => setShowCategorySuggestion(false)}
         isVisible={showCategorySuggestion && !!suggestedCategory}
       />

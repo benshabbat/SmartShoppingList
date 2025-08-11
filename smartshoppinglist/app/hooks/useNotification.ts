@@ -21,7 +21,7 @@ export const useNotification = () => {
     // Auto remove after duration
     if (notification.duration !== 0) {
       setTimeout(() => {
-        removeNotification(id)
+        setNotifications(prev => prev.filter(n => n.id !== id))
       }, notification.duration || 3000)
     }
     

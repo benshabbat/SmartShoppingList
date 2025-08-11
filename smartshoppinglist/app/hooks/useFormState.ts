@@ -37,7 +37,7 @@ export const useFormField = <T>({ initialValue, validator }: UseFormStateOptions
   }
 }
 
-export const useFormState = <T extends Record<string, any>>(initialState: T) => {
+export const useFormState = <T extends Record<string, unknown>>(initialState: T) => {
   const [formData, setFormData] = useState<T>(initialState)
   
   const updateField = useCallback(<K extends keyof T>(
@@ -54,7 +54,7 @@ export const useFormState = <T extends Record<string, any>>(initialState: T) => 
     setFormData(initialState)
   }, [initialState])
 
-  const isValid = useCallback((validators: Partial<Record<keyof T, (value: any) => boolean>>) => {
+  const isValid = useCallback((validators: Partial<Record<keyof T, (value: T[keyof T]) => boolean>>) => {
     return Object.entries(validators).every(([key, validator]) => {
       const value = formData[key as keyof T]
       return validator!(value)

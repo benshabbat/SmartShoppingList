@@ -223,6 +223,7 @@ export default function ShoppingListApp() {
                     items={inCart}
                     onToggleCart={handleToggleCart}
                     onRemove={handleRemoveItem}
+                    variant="inCart"
                   />
                 </div>
               ) : items.some(item => !item.isPurchased) ? (
@@ -254,6 +255,7 @@ export default function ShoppingListApp() {
                     items={purchased}
                     onToggleCart={handleToggleCart}
                     onRemove={handleRemoveItem}
+                    variant="purchased"
                   />
                 </div>
               )}

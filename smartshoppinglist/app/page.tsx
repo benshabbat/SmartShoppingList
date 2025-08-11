@@ -106,15 +106,7 @@ export default function ShoppingListApp() {
 
   const handleAddToCart = (items: Array<{name: string, category: string}>) => {
     items.forEach(item => {
-      const itemName = item.name
-      const itemCategory = item.category
-      addItem(itemName, itemCategory)
-      // חפש את הפריט החדש ושים אותו בסל
-      setTimeout(() => {
-        const newItems = [...items]
-        const lastItemId = Date.now().toString()
-        toggleItemInCart(lastItemId)
-      }, 100)
+      addItemToCart(item.name, item.category)
     })
     showSuccess('נוסף לסל!', `${items.length} פריטים נוספו ישירות לסל`)
   }

@@ -79,6 +79,22 @@ export default function ShoppingListApp() {
     showInfo('נוקה', 'כל הרכישות הושלמו נמחקו')
   }
 
+  const handleClearCart = () => {
+    const cartItems = items.filter(item => item.isInCart && !item.isPurchased)
+    if (cartItems.length === 0) {
+      showError('הסל ריק', 'אין מוצרים בסל')
+      return
+    }
+    
+    // הסר את כל הפריטים מהסל
+    cartItems.forEach(item => {
+      toggleItemInCart(item.id)
+    })
+    
+    playRemoveFromCart()
+    showInfo('הסל נוקה', `${cartItems.length} מוצרים הוסרו מהסל`)
+  }
+
   const handleCheckout = () => {
     const cartItems = items.filter(item => item.isInCart && !item.isPurchased)
     if (cartItems.length === 0) {
@@ -123,7 +139,7 @@ export default function ShoppingListApp() {
             {/* Quick Stats */}
             <div className="grid grid-cols-3 gap-2 sm:gap-4 mt-4 mb-6">
               <div className="bg-white rounded-lg p-2 sm:p-4 text-center shadow-md">
-                <div className="text-lg sm:text-2xl font-bold text-blue-600">{pending.length}</div>
+                <div className="text-lg sm:text-2xl font-bold text-blue-600">{items.filter(item => !item.isInCart && !item.isPurchased).length}</div>
                 <div className="text-xs sm:text-sm text-gray-600">לקנות</div>
               </div>
               <div className="bg-white rounded-lg p-2 sm:p-4 text-center shadow-md">
@@ -181,15 +197,23 @@ export default function ShoppingListApp() {
               {inCart.length > 0 ? (
                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl shadow-lg p-6 border-2 border-blue-200">
                   <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
-                    <button
-                      onClick={handleCheckout}
-                      className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-2xl hover:from-green-600 hover:to-emerald-600 transition-all font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 flex items-center justify-center gap-3"
-                    >
-                      🛒 סיימתי קניות!
-                      <div className="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm font-bold">
-                        {inCart.length}
-                      </div>
-                    </button>
+                    <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                      <button
+                        onClick={handleCheckout}
+                        className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-2xl hover:from-green-600 hover:to-emerald-600 transition-all font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 flex items-center justify-center gap-3"
+                      >
+                        🛒 סיימתי קניות!
+                        <div className="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm font-bold">
+                          {inCart.length}
+                        </div>
+                      </button>
+                      <button
+                        onClick={handleClearCart}
+                        className="w-full sm:w-auto px-6 py-4 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-2xl hover:from-red-600 hover:to-pink-600 transition-all font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 flex items-center justify-center gap-2"
+                      >
+                        🗑️ נקה סל
+                      </button>
+                    </div>
                     <div className="text-center">
                       <h3 className="font-bold text-xl text-gray-800 mb-2">בסל הקניות</h3>
                       <div className="text-4xl">🛒</div>

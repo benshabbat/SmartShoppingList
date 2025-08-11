@@ -1,4 +1,4 @@
-import { X, Check, Calendar, Plus, ShoppingCart } from 'lucide-react'
+import { X, Check, Calendar, Plus, ShoppingCart, ArrowRight } from 'lucide-react'
 import { ShoppingItem } from '../types'
 import { formatDate } from '../utils/helpers'
 
@@ -15,36 +15,34 @@ export const ShoppingItemComponent = ({
   onRemove, 
   variant = 'pending' 
 }: ShoppingItemComponentProps) => {
-  const getVariantStyles = () => {
-    switch (variant) {
-      case 'pending':
-        return {
-          container: 'bg-gray-50 hover:bg-gray-100 border border-gray-200',
-          button: 'flex items-center gap-2 px-4 py-2 border-2 border-blue-300 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all hover:shadow-md text-blue-600 hover:text-blue-700',
-          buttonText: 'הוסף לסל',
-          icon: 'w-5 h-5',
-          text: 'font-medium text-gray-800'
+      const getVariantStyles = () => {
+        switch (variant) {
+          case 'pending':
+            return {
+              container: 'bg-gray-50 hover:bg-gray-100 border border-gray-200',
+              button: 'flex items-center gap-2 px-4 py-2 border-2 border-blue-300 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all hover:shadow-md text-blue-600 hover:text-blue-700',
+              buttonText: 'הוסף לסל',
+              icon: 'w-5 h-5',
+              text: 'font-medium text-gray-800'
+            }
+          case 'inCart':
+            return {
+              container: 'bg-blue-50 hover:bg-blue-100 border border-blue-200',
+              button: 'flex items-center gap-2 px-4 py-2 border-2 border-orange-500 rounded-xl bg-orange-500 hover:bg-orange-600 shadow-md text-white',
+              buttonText: 'חזרה לרשימה',
+              icon: 'w-5 h-5',
+              text: 'font-medium text-blue-800'
+            }
+          case 'purchased':
+            return {
+              container: 'bg-green-50 hover:bg-green-100 border border-green-200',
+              button: 'flex items-center gap-2 px-4 py-2 border-2 border-green-500 rounded-xl bg-green-500 shadow-md text-white',
+              buttonText: 'נקנה',
+              icon: 'w-5 h-5',
+              text: 'line-through text-gray-600 font-medium'
+            }
         }
-      case 'inCart':
-        return {
-          container: 'bg-blue-50 hover:bg-blue-100 border border-blue-200',
-          button: 'flex items-center gap-2 px-4 py-2 border-2 border-blue-500 rounded-xl bg-blue-500 hover:bg-blue-600 shadow-md text-white',
-          buttonText: 'בסל',
-          icon: 'w-5 h-5',
-          text: 'font-medium text-blue-800'
-        }
-      case 'purchased':
-        return {
-          container: 'bg-green-50 hover:bg-green-100 border border-green-200',
-          button: 'flex items-center gap-2 px-4 py-2 border-2 border-green-500 rounded-xl bg-green-500 shadow-md text-white',
-          buttonText: 'נקנה',
-          icon: 'w-5 h-5',
-          text: 'line-through text-gray-600 font-medium'
-        }
-    }
-  }
-
-  const styles = getVariantStyles()
+      }  const styles = getVariantStyles()
 
   return (
     <div className={`flex items-center gap-4 p-4 rounded-xl transition-all duration-200 ${styles.container}`}>
@@ -59,7 +57,7 @@ export const ShoppingItemComponent = ({
           </>
         ) : variant === 'inCart' ? (
           <>
-            <ShoppingCart className={styles.icon} />
+            <ArrowRight className={styles.icon} />
             <span className="text-sm font-medium">{styles.buttonText}</span>
           </>
         ) : (

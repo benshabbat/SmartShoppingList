@@ -1,5 +1,6 @@
 import { ShoppingItem } from '../types'
 import { COMMON_PRODUCTS } from './constants'
+import { detectCategory } from './categories'
 
 // פונקציה ליצירת הצעות חכמות על בסיס התנהגות המשתמש
 export const generateSmartSuggestions = (
@@ -97,19 +98,26 @@ export const searchWithPopularity = (
 
 // פונקציה לזיהוי הקטגוריה המתאימה למוצר
 export const suggestCategoryForProduct = (productName: string): string => {
-  const lowerProduct = productName.toLowerCase()
+  const detectedCategory = detectCategory(productName)
   
-  for (const [category, products] of Object.entries(COMMON_PRODUCTS)) {
-    const found = products.some(product => 
-      product.toLowerCase().includes(lowerProduct) || 
-      lowerProduct.includes(product.toLowerCase())
-    )
-    if (found) {
-      return category
-    }
+  // מיפוי הקטגוריות החדשות לקטגוריות הישנות בממשק
+  const categoryMapping: Record<string, string> = {
+    'מוצרי חלב': 'מוצרי חלב',
+    'בשר ודגים': 'בשר ודגים', 
+    'ירקות': 'פירות וירקות',
+    'פירות': 'פירות וירקות',
+    'לחם ומאפים': 'לחם ומאפים',
+    'דגנים': 'מזון יבש',
+    'מתוקים': 'חטיפים ומתוקים',
+    'משקאות': 'משקאות',
+    'חטיפים': 'חטיפים ומתוקים',
+    'מוכן': 'שימורים ומוכנים',
+    'קפואים': 'קפואים',
+    'שמנים ותבלינים': 'תבלינים ורטבים',
+    'כללי': 'אחר'
   }
   
-  return 'אחר' // ברירת מחדל
+  return categoryMapping[detectedCategory] || 'אחר'
 }
 
 // פונקציה לקבלת המוצרים הפופולריים ביותר

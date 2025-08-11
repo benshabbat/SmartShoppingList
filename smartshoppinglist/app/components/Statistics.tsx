@@ -152,21 +152,21 @@ export const Statistics = ({
         </div>
       </div>
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-6 gap-4">
         {stats.map((stat, index) => {
           const IconComponent = stat.icon
           return (
             <div 
               key={index} 
-              className={`${stat.bgColor} rounded-xl p-4 text-center border border-gray-100 hover:shadow-lg transition-all duration-300 transform hover:scale-105`}
+              className={`${stat.bgColor} rounded-xl p-3 lg:p-4 text-center border border-gray-100 hover:shadow-lg transition-all duration-300 transform hover:scale-105`}
             >
-              <div className={`inline-flex p-3 rounded-full bg-gradient-to-r ${stat.color} mb-3 shadow-lg`}>
-                <IconComponent className="w-6 h-6 text-white" />
+              <div className={`inline-flex p-2 lg:p-3 rounded-full bg-gradient-to-r ${stat.color} mb-2 lg:mb-3 shadow-lg`}>
+                <IconComponent className="w-4 h-4 lg:w-6 lg:h-6 text-white" />
               </div>
-              <div className={`${stat.isText ? 'text-lg' : 'text-3xl'} font-bold ${stat.textColor} mb-2`}>
+              <div className={`${stat.isText ? 'text-base lg:text-lg' : 'text-2xl lg:text-3xl'} font-bold ${stat.textColor} mb-1 lg:mb-2`}>
                 {stat.value}
               </div>
-              <div className="text-sm text-gray-600 font-medium mb-1">
+              <div className="text-xs lg:text-sm text-gray-600 font-medium mb-1">
                 {stat.label}
               </div>
               {stat.subtext && (
@@ -183,7 +183,7 @@ export const Statistics = ({
       {showDetails && purchaseHistory.length > 0 && (
         <div className="mt-6 pt-6 border-t border-gray-200">
           <h4 className="font-semibold text-gray-700 mb-4 text-right">פרטים נוספים</h4>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 text-sm">
             <div className="bg-gray-50 rounded-lg p-3">
               <div className="text-gray-600 text-right">רכישה אחרונה:</div>
               <div className="font-medium text-gray-800 text-right">
@@ -258,7 +258,7 @@ export const Statistics = ({
           {Object.keys(categoryCount).length > 1 && (
             <div className="mt-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-4">
               <h5 className="font-medium text-gray-700 mb-3 text-right">חלוקה לפי קטגוריות</h5>
-              <div className="space-y-2">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
                 {Object.entries(categoryCount)
                   .sort(([,a], [,b]) => b - a)
                   .slice(0, 5)
@@ -334,7 +334,7 @@ export const Statistics = ({
       {/* כפתורי פעולה */}
       {showDetails && (
         <div className="mt-6 pt-6 border-t border-gray-200">
-          <div className="flex flex-wrap gap-3 justify-center">
+          <div className="flex flex-wrap gap-3 justify-center sm:justify-start lg:justify-center xl:justify-start">
             <button
               onClick={() => {
                 const data = {

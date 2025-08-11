@@ -33,6 +33,12 @@ export const CATEGORY_KEYWORDS: Record<string, CategoryType> = {
   'פטה': CATEGORIES.DAIRY,
   'חלב קוקוס': CATEGORIES.DAIRY,
   'קרם': CATEGORIES.DAIRY,
+  'צ\'דר': CATEGORIES.DAIRY,
+  'אמנטל': CATEGORIES.DAIRY,
+  'גאודה': CATEGORIES.DAIRY,
+  'פרמזן': CATEGORIES.DAIRY,
+  'ריקוטה': CATEGORIES.DAIRY,
+  'קפיר': CATEGORIES.DAIRY,
   
   // בשר ודגים
   'עוף': CATEGORIES.MEAT_FISH,
@@ -50,6 +56,15 @@ export const CATEGORY_KEYWORDS: Record<string, CategoryType> = {
   'פילה': CATEGORIES.MEAT_FISH,
   'קציצות': CATEGORIES.MEAT_FISH,
   'שניצל': CATEGORIES.MEAT_FISH,
+  'המבורגר': CATEGORIES.MEAT_FISH,
+  'פסטרמה': CATEGORIES.MEAT_FISH,
+  'כנפיים': CATEGORIES.MEAT_FISH,
+  'שוקיים': CATEGORIES.MEAT_FISH,
+  'אנטריקוט': CATEGORIES.MEAT_FISH,
+  'סטייק': CATEGORIES.MEAT_FISH,
+  'בקלה': CATEGORIES.MEAT_FISH,
+  'דניס': CATEGORIES.MEAT_FISH,
+  'מוסר': CATEGORIES.MEAT_FISH,
   
   // ירקות
   'עגבני': CATEGORIES.VEGETABLES,
@@ -186,6 +201,11 @@ export const CATEGORY_KEYWORDS: Record<string, CategoryType> = {
   'מוכן': CATEGORIES.READY_MADE,
   'רוטב': CATEGORIES.READY_MADE,
   'פלאפל': CATEGORIES.READY_MADE,
+  'טביט': CATEGORIES.READY_MADE,
+  'טחינה': CATEGORIES.READY_MADE,
+  'חרוסת': CATEGORIES.READY_MADE,
+  'זיתים': CATEGORIES.READY_MADE,
+  'מלפפונים חמוצים': CATEGORIES.READY_MADE,
   
   // קפואים
   'גלידה': CATEGORIES.FROZEN,
@@ -193,7 +213,13 @@ export const CATEGORY_KEYWORDS: Record<string, CategoryType> = {
   'פירות קפואים': CATEGORIES.FROZEN,
   'קפוא': CATEGORIES.FROZEN,
   'בורקס': CATEGORIES.FROZEN,
-  'פיצה קפואה': CATEGORIES.FROZEN
+  'פיצה קפואה': CATEGORIES.FROZEN,
+  'שניצל קפוא': CATEGORIES.FROZEN,
+  'דגים קפואים': CATEGORIES.FROZEN,
+  'עוף קפוא': CATEGORIES.FROZEN,
+  'לזניה קפואה': CATEGORIES.FROZEN,
+  'סורבה': CATEGORIES.FROZEN,
+  'פירות יער קפואים': CATEGORIES.FROZEN
 }
 
 // פונקציה לזיהוי קטגוריה אוטומטית משופרת

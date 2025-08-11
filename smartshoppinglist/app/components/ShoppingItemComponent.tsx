@@ -42,7 +42,9 @@ export const ShoppingItemComponent = ({
               text: 'line-through text-gray-600 font-medium'
             }
         }
-      }  const styles = getVariantStyles()
+      }
+
+      const styles = getVariantStyles()
 
   return (
     <div className={`flex items-center gap-4 p-4 rounded-xl transition-all duration-200 ${styles.container}`}>

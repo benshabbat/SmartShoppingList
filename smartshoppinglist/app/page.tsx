@@ -13,7 +13,6 @@ import { CheckoutModal, ExpiryModal } from './components/Modals'
 import { QuickAddButtons } from './components/QuickAddButtons'
 import { Tutorial, useTutorial } from './components/Tutorial'
 import { ToastContainer, useToasts } from './components/Toast'
-import { MotivationalPopup, useMotivationalPopup } from './components/MotivationalPopup'
 
 // Hooks and Utils
 import { useShoppingList } from './hooks/useShoppingList'
@@ -43,13 +42,11 @@ export default function ShoppingListApp() {
   const { showTutorial, closeTutorial, openTutorial } = useTutorial()
   
   // Toast hook
+  // Toast hook
   const { showSuccess, showError, showInfo } = useToasts()
   
   // Sound hook
   const { playAddToCart, playRemoveFromCart, playPurchase, playDelete } = useSoundManager()
-  
-  // Motivational popup hook
-  const { showPopup, itemCount, showMotivation, hideMotivation } = useMotivationalPopup()
 
   // Modal states
   const [showExpiryModal, setShowExpiryModal] = useState(false)
@@ -77,15 +74,11 @@ export default function ShoppingListApp() {
     if (currentCheckoutIndex < checkoutItems.length - 1) {
       setCurrentCheckoutIndex(prev => prev + 1)
     } else {
-      const purchasedCount = checkoutItems.length
       setShowCheckoutModal(false)
       setCheckoutItems([])
       setCurrentCheckoutIndex(0)
       playPurchase()
       showSuccess('קנייה הושלמה!', 'כל המוצרים נוספו למזווה')
-      
-      // Show motivational popup
-      setTimeout(() => showMotivation(purchasedCount), 1000)
     }
   }
 
@@ -133,13 +126,6 @@ export default function ShoppingListApp() {
         <Tutorial 
           isOpen={showTutorial} 
           onClose={closeTutorial} 
-        />
-
-        {/* Motivational Popup */}
-        <MotivationalPopup
-          isOpen={showPopup}
-          onClose={hideMotivation}
-          itemCount={itemCount}
         />
 
         {/* Modals */}

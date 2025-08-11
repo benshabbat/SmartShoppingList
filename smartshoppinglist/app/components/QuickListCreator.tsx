@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Wand2, Plus, X, Sparkles, ShoppingCart, List } from 'lucide-react'
+import { Wand2, Plus, X, Sparkles, ShoppingCart, List, Eye, Check } from 'lucide-react'
 import { PRESET_LISTS, parseCustomList, getPresetListKeys } from '../utils/presetLists'
+import { CATEGORY_EMOJIS } from '../utils/constants'
 
 interface QuickListCreatorProps {
   onCreateList: (items: Array<{name: string, category: string}>) => void
@@ -16,6 +17,10 @@ export const QuickListCreator: React.FC<QuickListCreatorProps> = ({
   const [isExpanded, setIsExpanded] = useState(false)
   const [customList, setCustomList] = useState('')
   const [actionMode, setActionMode] = useState<'list' | 'cart'>('list')
+  const [showPreview, setShowPreview] = useState(false)
+  
+  // פרוק הרשימה המותאמת אישית לתצוגה מקדימה
+  const parsedItems = customList.trim() ? parseCustomList(customList) : []
 
   const handlePresetList = (listKey: string) => {
     const list = PRESET_LISTS[listKey]
@@ -54,7 +59,7 @@ export const QuickListCreator: React.FC<QuickListCreatorProps> = ({
           </div>
           <div>
             <h3 className="font-bold text-purple-900 text-lg">יצירת רשימה מהירה</h3>
-            <p className="text-sm text-purple-600">צור רשימת קניות במהירות עם רשימות מוכנות</p>
+            <p className="text-sm text-purple-600">צור רשימת קניות במהירות עם זיהוי אוטומטי של קטגוריות</p>
           </div>
         </div>
         <button
@@ -133,13 +138,52 @@ export const QuickListCreator: React.FC<QuickListCreatorProps> = ({
               <textarea
                 value={customList}
                 onChange={(e) => setCustomList(e.target.value)}
-                placeholder="רשום כל פריט בשורה נפרדת...&#10;&#10;לדוגמה:&#10;חלב&#10;לחם&#10;עגבניות&#10;בננה"
+                placeholder="רשום כל פריט בשורה נפרדת...&#10;&#10;לדוגמה:&#10;חלב&#10;לחם&#10;עגבניות&#10;בננה&#10;&#10;💡 הקטגוריות יזוהו אוטומטיט!"
                 className="w-full p-4 border-2 border-purple-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-right"
                 rows={6}
               />
+              
+              {/* תצוגה מקדימה של הפריטים והקטגוריות */}
+              {parsedItems.length > 0 && (
+                <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
+                  <div className="flex items-center justify-between mb-3">
+                    <button
+                      onClick={() => setShowPreview(!showPreview)}
+                      className="flex items-center gap-2 text-purple-600 hover:text-purple-800 text-sm font-medium"
+                    >
+                      <Eye size={16} />
+                      {showPreview ? 'הסתר תצוגה מקדימה' : 'הצג תצוגה מקדימה'}
+                    </button>
+                    <div className="flex items-center gap-2 text-purple-600">
+                      <Check size={16} />
+                      <span className="text-sm">קטגוריות זוהו אוטומטית</span>
+                    </div>
+                  </div>
+                  
+                  {showPreview && (
+                    <div className="space-y-2 max-h-40 overflow-y-auto">
+                      {parsedItems.map((item, index) => (
+                        <div key={index} className="flex items-center justify-between bg-white rounded-lg p-2 text-sm">
+                          <div className="flex items-center gap-2">
+                            <span className="text-lg">{CATEGORY_EMOJIS[item.category as keyof typeof CATEGORY_EMOJIS] || '📦'}</span>
+                            <span className="text-purple-600 font-medium">{item.category}</span>
+                          </div>
+                          <span className="font-medium text-gray-800">{item.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+              
               <div className="flex justify-between items-center">
                 <span className="text-sm text-purple-600">
-                  {customList.split('\n').filter(line => line.trim()).length} מוצרים
+                  {parsedItems.length} מוצרים
+                  {parsedItems.length > 0 && (
+                    <span className="mr-2 text-green-600">
+                      ✓ קטגוריות זוהו
+                    </span>
+                  )}
                 </span>
                 <button
                   onClick={handleCustomList}

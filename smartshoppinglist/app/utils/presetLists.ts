@@ -1,4 +1,5 @@
 import { CATEGORIES, detectCategory, CategoryType } from './categories'
+import { suggestCategoryForProduct } from './smartSuggestions'
 
 // רשימות מוכנות מאורגנות ונקיות
 export interface PresetList {
@@ -118,8 +119,8 @@ export const PRESET_LISTS: Record<string, PresetList> = {
   }
 }
 
-// פונקציה ליצירת רשימה מותאמת אישית
-export const parseCustomList = (text: string): Array<{name: string, category: CategoryType}> => {
+// פונקציה ליצירת רשימה מותאמת אישית עם זיהוי חכם של קטגוריות
+export const parseCustomList = (text: string): Array<{name: string, category: string}> => {
   if (!text.trim()) return []
   
   return text
@@ -128,7 +129,7 @@ export const parseCustomList = (text: string): Array<{name: string, category: Ca
     .filter(item => item.length > 0)
     .map(item => ({
       name: item,
-      category: detectCategory(item)
+      category: suggestCategoryForProduct(item) // שימוש בפונקציה החכמה לזיהוי קטגוריות
     }))
 }
 

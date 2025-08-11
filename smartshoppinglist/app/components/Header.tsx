@@ -1,5 +1,7 @@
-import { ShoppingCart, HelpCircle, Volume2, VolumeX } from 'lucide-react'
+import { ShoppingCart, HelpCircle, Volume2, VolumeX, BarChart3 } from 'lucide-react'
 import { useSoundManager } from '../utils/soundManager'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 interface HeaderProps {
   onOpenTutorial?: () => void
@@ -7,6 +9,8 @@ interface HeaderProps {
 
 export const Header = ({ onOpenTutorial }: HeaderProps) => {
   const { soundEnabled, toggleSound } = useSoundManager()
+  const pathname = usePathname()
+  const isStatisticsPage = pathname === '/statistics'
 
   return (
     <div className="text-center mb-8 relative">
@@ -32,6 +36,27 @@ export const Header = ({ onOpenTutorial }: HeaderProps) => {
             <VolumeX className="w-6 h-6 text-gray-400 group-hover:text-gray-600" />
           )}
         </button>
+      </div>
+
+      {/* Statistics Link - positioned on the right */}
+      <div className="absolute top-0 right-0">
+        {!isStatisticsPage ? (
+          <Link 
+            href="/statistics"
+            className="p-2 hover:bg-blue-100 rounded-full transition-colors group"
+            title="סטטיסטיקות מתקדמות"
+          >
+            <BarChart3 className="w-6 h-6 text-blue-600 group-hover:text-blue-700" />
+          </Link>
+        ) : (
+          <Link 
+            href="/"
+            className="p-2 hover:bg-green-100 rounded-full transition-colors group"
+            title="חזרה לדף הבית"
+          >
+            <ShoppingCart className="w-6 h-6 text-green-600 group-hover:text-green-700" />
+          </Link>
+        )}
       </div>
 
       <div className="flex items-center justify-center gap-3 mb-3">

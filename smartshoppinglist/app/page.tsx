@@ -5,7 +5,6 @@ import { Header } from './components/Header'
 import { AddItemForm } from './components/AddItemForm'
 import { SmartSuggestions } from './components/SmartSuggestions'
 import { CategorySection } from './components/CategorySection'
-import { EnhancedStatistics } from './components/EnhancedStatistics'
 import { QuickAddButtons } from './components/QuickAddButtons'
 import { Tutorial, useTutorial } from './components/Tutorial'
 import { ToastContainer, useToasts } from './components/Toast'
@@ -273,12 +272,23 @@ export default function ShoppingListApp() {
               />
             </div>
 
-            {/* Enhanced Statistics */}
-            <EnhancedStatistics 
-              purchaseHistory={purchaseHistory}
-              suggestions={suggestions}
-              pantryItems={pantryItems}
-            />
+            {/* Quick Actions Card */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                🚀 פעולות מהירות
+              </h3>
+              <div className="space-y-3">
+                <div className="text-sm text-gray-600">
+                  💡 <strong>טיפ:</strong> השתמש בהצעות החכמות כדי לחסוך זמן
+                </div>
+                <div className="text-sm text-gray-600">
+                  📊 <strong>סטטיסטיקות:</strong> לחץ על סמל הגרף בכותרת לצפייה בנתונים מפורטים
+                </div>
+                <div className="text-sm text-gray-600">
+                  🛒 <strong>רשימות מהירות:</strong> צור רשימות מוכנות מראש לחגים ואירועים
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 

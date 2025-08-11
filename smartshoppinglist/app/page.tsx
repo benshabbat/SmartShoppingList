@@ -82,7 +82,7 @@ export default function ShoppingListApp() {
 
         <ExpiryModal
           isOpen={showExpiryModal}
-          items={expiringItems}
+          expiringItems={expiringItems}
           onAddToList={addExpiringItemToList}
           onRemoveFromPantry={removeFromPantry}
           onClose={() => setShowExpiryModal(false)}
@@ -185,9 +185,9 @@ export default function ShoppingListApp() {
 
         {/* Statistics */}
         <Statistics
-          purchaseHistoryCount={purchaseHistory.length}
-          suggestionsCount={suggestions.length}
-          pantryItemsCount={pantryItems.length}
+          purchaseHistory={purchaseHistory}
+          suggestions={suggestions}
+          pantryItems={pantryItems}
         />
 
       </div>

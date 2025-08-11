@@ -65,7 +65,7 @@ export const useShoppingList = () => {
     if (!itemName.trim()) return
     
     const newItem: ShoppingItem = {
-      id: Date.now().toString(),
+      id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
       name: itemName.trim(),
       category,
       isInCart: false,
@@ -74,6 +74,23 @@ export const useShoppingList = () => {
     }
     
     setItems(prev => [...prev, newItem])
+    return newItem.id
+  }
+
+  const addItemToCart = (itemName: string, category: string) => {
+    if (!itemName.trim()) return
+    
+    const newItem: ShoppingItem = {
+      id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+      name: itemName.trim(),
+      category,
+      isInCart: true,
+      isPurchased: false,
+      addedAt: new Date()
+    }
+    
+    setItems(prev => [...prev, newItem])
+    return newItem.id
   }
 
   const toggleItemInCart = (id: string) => {
@@ -176,6 +193,7 @@ export const useShoppingList = () => {
     purchaseHistory,
     pantryItems,
     addItem,
+    addItemToCart,
     toggleItemInCart,
     removeItem,
     markAsPurchased,

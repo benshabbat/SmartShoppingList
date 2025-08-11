@@ -5,7 +5,7 @@ import { Header } from './components/Header'
 import { AddItemForm } from './components/AddItemForm'
 import { SmartSuggestions } from './components/SmartSuggestions'
 import { CategorySection } from './components/CategorySection'
-import { Statistics } from './components/Statistics'
+import { EnhancedStatistics } from './components/EnhancedStatistics'
 import { QuickAddButtons } from './components/QuickAddButtons'
 import { Tutorial, useTutorial } from './components/Tutorial'
 import { ToastContainer, useToasts } from './components/Toast'
@@ -24,6 +24,7 @@ export default function ShoppingListApp() {
     purchaseHistory,
     pantryItems,
     addItem,
+    addItemToCart,
     toggleItemInCart,
     removeItem,
     clearPurchased,
@@ -103,6 +104,21 @@ export default function ShoppingListApp() {
     showSuccess('רשימה נוצרה!', `נוספו ${items.length} פריטים`)
   }
 
+  const handleAddToCart = (items: Array<{name: string, category: string}>) => {
+    items.forEach(item => {
+      const itemName = item.name
+      const itemCategory = item.category
+      addItem(itemName, itemCategory)
+      // חפש את הפריט החדש ושים אותו בסל
+      setTimeout(() => {
+        const newItems = [...items]
+        const lastItemId = Date.now().toString()
+        toggleItemInCart(lastItemId)
+      }, 100)
+    })
+    showSuccess('נוסף לסל!', `${items.length} פריטים נוספו ישירות לסל`)
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-100 p-2 sm:p-4">
       <div className="max-w-4xl mx-auto">
@@ -133,7 +149,10 @@ export default function ShoppingListApp() {
           <div className="lg:col-span-8 space-y-4">
             
             {/* Quick List Creator */}
-            <QuickListCreator onCreateList={handleCreateQuickList} />
+            <QuickListCreator 
+              onCreateList={handleCreateQuickList}
+              onAddToCart={handleAddToCart}
+            />
 
             {/* Add Item Form */}
             <AddItemForm onAddItem={handleAddItem} />
@@ -238,8 +257,8 @@ export default function ShoppingListApp() {
               />
             </div>
 
-            {/* Statistics */}
-            <Statistics 
+            {/* Enhanced Statistics */}
+            <EnhancedStatistics 
               purchaseHistory={purchaseHistory}
               suggestions={suggestions}
               pantryItems={pantryItems}

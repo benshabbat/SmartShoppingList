@@ -2,6 +2,7 @@ import { ShoppingItem } from '../types'
 import { ShoppingItemComponent } from './ShoppingItemComponent'
 import { CATEGORIES, CATEGORY_EMOJIS } from '../utils/constants'
 import { getItemsByCategory } from '../utils/helpers'
+import { FadeIn, SlideUp } from './Animations'
 
 interface CategorySectionProps {
   title: string
@@ -47,33 +48,38 @@ export const CategorySection = ({
         <h3 className="font-bold text-xl text-gray-800 text-right">{title}</h3>
       </div>
 
-      <div className="space-y-6">
-        {Object.entries(itemsByCategory).map(([category, categoryItems]) => 
-          categoryItems.length > 0 && (
-            <div key={category} className="space-y-3">
-              <div className={`flex items-center gap-3 p-3 rounded-xl ${headerColor}`}>
-                <span className="text-2xl">{CATEGORY_EMOJIS[category as keyof typeof CATEGORY_EMOJIS]}</span>
-                <h4 className="font-semibold text-right flex-1 text-lg">{category}</h4>
-                <span className="text-sm bg-white bg-opacity-70 px-3 py-1 rounded-full font-medium">
-                  {categoryItems.length}
-                </span>
-              </div>
-              
-              <div className="space-y-2 mr-6">
-                {categoryItems.map(item => (
-                  <ShoppingItemComponent
-                    key={item.id}
-                    item={item}
-                    onToggleCart={onToggleCart}
-                    onRemove={onRemove}
-                    variant={variant}
-                  />
-                ))}
-              </div>
-            </div>
-          )
-        )}
-      </div>
+      <FadeIn>
+        <div className="space-y-6">
+          {Object.entries(itemsByCategory).map(([category, categoryItems], categoryIndex) => 
+            categoryItems.length > 0 && (
+              <SlideUp key={category} delay={categoryIndex * 100}>
+                <div className="space-y-3">
+                  <div className={`flex items-center gap-3 p-3 rounded-xl ${headerColor} hover:shadow-md transition-shadow duration-200`}>
+                    <span className="text-2xl animate-bounce-gentle">{CATEGORY_EMOJIS[category as keyof typeof CATEGORY_EMOJIS]}</span>
+                    <h4 className="font-semibold text-right flex-1 text-lg">{category}</h4>
+                    <span className="text-sm bg-white bg-opacity-70 px-3 py-1 rounded-full font-medium shadow-sm">
+                      {categoryItems.length}
+                    </span>
+                  </div>
+                  
+                  <div className="space-y-2 mr-6">
+                    {categoryItems.map((item, itemIndex) => (
+                      <FadeIn key={item.id} delay={(categoryIndex * 100) + (itemIndex * 50)}>
+                        <ShoppingItemComponent
+                          item={item}
+                          onToggleCart={onToggleCart}
+                          onRemove={onRemove}
+                          variant={variant}
+                        />
+                      </FadeIn>
+                    ))}
+                  </div>
+                </div>
+              </SlideUp>
+            )
+          )}
+        </div>
+      </FadeIn>
     </div>
   )
 }

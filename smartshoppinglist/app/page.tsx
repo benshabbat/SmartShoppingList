@@ -11,9 +11,13 @@ import { SmartSuggestions } from './components/SmartSuggestions'
 import { CategorySection } from './components/CategorySection'
 import { Statistics } from './components/Statistics'
 import { CheckoutModal, ExpiryModal } from './components/Modals'
+import { QuickAddButtons } from './components/QuickAddButtons'
+import { Tutorial, useTutorial } from './components/Tutorial'
+import { ToastContainer, useToasts } from './components/Toast'
 
 // Hooks and Utils
 import { useShoppingList } from './hooks/useShoppingList'
+import { getPopularItems } from './utils/smartSuggestions'
 import { ShoppingItem } from './types'
 
 export default function ShoppingListApp() {
@@ -35,7 +39,12 @@ export default function ShoppingListApp() {
     updateItemWithExpiry
   } = useShoppingList()
 
-  // Modal states
+  // Tutorial hook
+  const { showTutorial, closeTutorial, openTutorial } = useTutorial()
+  
+  // Toast hook
+  const { showSuccess, showError, showInfo } = useToasts()
+
   // Modal states
   const [showExpiryModal, setShowExpiryModal] = useState(false)
   const [showCheckoutModal, setShowCheckoutModal] = useState(false)
@@ -44,11 +53,15 @@ export default function ShoppingListApp() {
 
   const startCheckout = () => {
     const itemsInCart = items.filter(item => item.isInCart && !item.isPurchased)
-    if (itemsInCart.length === 0) return
+    if (itemsInCart.length === 0) {
+      showInfo('הסל ריק', 'אין מוצרים בסל הקניות')
+      return
+    }
     
     setCheckoutItems(itemsInCart)
     setCurrentCheckoutIndex(0)
     setShowCheckoutModal(true)
+    showInfo('התחלת קנייה', `${itemsInCart.length} מוצרים לרכישה`)
   }
 
   const handleCheckoutNext = (expiryDate?: Date) => {
@@ -61,6 +74,33 @@ export default function ShoppingListApp() {
       setShowCheckoutModal(false)
       setCheckoutItems([])
       setCurrentCheckoutIndex(0)
+      showSuccess('קנייה הושלמה!', 'כל המוצרים נוספו למזווה')
+    }
+  }
+
+  // Wrapper functions with toasts
+  const handleAddItem = (name: string, category: string) => {
+    addItem(name, category)
+    showSuccess('מוצר נוסף', `${name} נוסף לרשימה`)
+  }
+
+  const handleToggleCart = (id: string) => {
+    const item = items.find(i => i.id === id)
+    if (item) {
+      toggleItemInCart(id)
+      if (item.isInCart) {
+        showInfo('הוסר מהסל', item.name)
+      } else {
+        showSuccess('נוסף לסל', item.name)
+      }
+    }
+  }
+
+  const handleRemoveItem = (id: string) => {
+    const item = items.find(i => i.id === id)
+    if (item) {
+      removeItem(id)
+      showError('מוצר הוסר', item.name)
     }
   }
 
@@ -69,7 +109,13 @@ export default function ShoppingListApp() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-100 p-4">
       <div className="max-w-2xl mx-auto">
-        <Header />
+        <Header onOpenTutorial={openTutorial} />
+
+        {/* Tutorial */}
+        <Tutorial 
+          isOpen={showTutorial} 
+          onClose={closeTutorial} 
+        />
 
         {/* Modals */}
         <CheckoutModal
@@ -89,7 +135,20 @@ export default function ShoppingListApp() {
         />
 
         {/* Add new item */}
-        <AddItemForm onAddItem={addItem} />
+        <AddItemForm 
+          onAddItem={handleAddItem} 
+          purchaseHistory={purchaseHistory}
+          currentItems={items}
+        />
+
+        {/* Quick Add Buttons */}
+        <QuickAddButtons 
+          onAddItem={handleAddItem}
+          popularItems={getPopularItems(purchaseHistory)}
+        />
+
+        {/* Toast Container */}
+        <ToastContainer />
 
         {/* Smart Suggestions */}
         <SmartSuggestions 
@@ -122,8 +181,8 @@ export default function ShoppingListApp() {
         <CategorySection
           title="רשימת קניות 📝"
           items={pending}
-          onToggleCart={toggleItemInCart}
-          onRemove={removeItem}
+          onToggleCart={handleToggleCart}
+          onRemove={handleRemoveItem}
           variant="pending"
           headerColor="bg-gray-100 text-gray-700"
           emptyMessage="הרשימה ריקה. התחל להוסיף מוצרים!"
@@ -144,8 +203,8 @@ export default function ShoppingListApp() {
             <CategorySection 
               title=""
               items={inCart}
-              onToggleCart={toggleItemInCart}
-              onRemove={removeItem}
+              onToggleCart={handleToggleCart}
+              onRemove={handleRemoveItem}
               variant="inCart"
             />
           </div>
@@ -175,8 +234,8 @@ export default function ShoppingListApp() {
               <CategorySection
                 title=""
                 items={purchased}
-                onToggleCart={toggleItemInCart}
-                onRemove={removeItem}
+                onToggleCart={handleToggleCart}
+                onRemove={handleRemoveItem}
                 variant="purchased"
               />
             </div>

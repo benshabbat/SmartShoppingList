@@ -1,0 +1,62 @@
+import { ShoppingBag, Zap, Star } from 'lucide-react'
+import { CATEGORY_EMOJIS } from '../utils/constants'
+import { FadeIn } from './Animations'
+
+interface QuickAddButtonsProps {
+  onAddItem: (name: string, category: string) => void
+  popularItems: Array<{ name: string; category: string; count: number }>
+}
+
+export const QuickAddButtons = ({ onAddItem, popularItems }: QuickAddButtonsProps) => {
+  if (popularItems.length === 0) return null
+
+  const topItems = popularItems.slice(0, 6) // 6 הכי פופולריים
+
+  return (
+    <FadeIn delay={200}>
+      <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl shadow-lg p-4 mb-6 border border-purple-200 hover:shadow-xl transition-shadow duration-300">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="p-1 bg-purple-100 rounded-full animate-bounce-gentle">
+            <Zap className="w-5 h-5 text-purple-600" />
+          </div>
+          <h3 className="font-semibold text-gray-800 text-right">הוספה מהירה</h3>
+          <Star className="w-4 h-4 text-yellow-500 animate-pulse" />
+        </div>
+        
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          {topItems.map((item, index) => (
+            <FadeIn key={index} delay={300 + (index * 100)}>
+              <button
+                onClick={() => onAddItem(item.name, item.category)}
+                className="p-3 bg-white border border-purple-200 rounded-xl hover:bg-purple-50 hover:border-purple-300 transition-all text-right group hover:shadow-md transform hover:scale-105 duration-200"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1">
+                    <span className="text-xs text-purple-500 font-medium bg-purple-100 px-2 py-1 rounded-full">
+                      {item.count}
+                    </span>
+                    <ShoppingBag className="w-3 h-3 text-purple-400 group-hover:text-purple-600 transition-colors" />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-gray-800 text-sm group-hover:text-purple-800 transition-colors">
+                      {item.name}
+                    </span>
+                    <span className="text-sm transform group-hover:scale-110 transition-transform">
+                      {CATEGORY_EMOJIS[item.category as keyof typeof CATEGORY_EMOJIS]}
+                    </span>
+                  </div>
+                </div>
+              </button>
+            </FadeIn>
+          ))}
+        </div>
+        
+        <div className="text-xs text-gray-500 text-center mt-3 flex items-center justify-center gap-1">
+          <Star className="w-3 h-3 text-yellow-400" />
+          <span>המוצרים הפופולריים שלך</span>
+          <Star className="w-3 h-3 text-yellow-400" />
+        </div>
+      </div>
+    </FadeIn>
+  )
+}

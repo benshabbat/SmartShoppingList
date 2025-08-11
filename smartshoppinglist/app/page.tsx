@@ -1,7 +1,5 @@
 'use client'
 
-import { useState } from 'react'
-
 // Components
 import { Header } from './components/Header'
 import { AddItemForm } from './components/AddItemForm'

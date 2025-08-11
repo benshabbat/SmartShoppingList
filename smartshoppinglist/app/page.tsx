@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { Clock, ShoppingCart, X } from 'lucide-react'
 
 // Components
 import { Header } from './components/Header'
@@ -9,7 +8,6 @@ import { AddItemForm } from './components/AddItemForm'
 import { SmartSuggestions } from './components/SmartSuggestions'
 import { CategorySection } from './components/CategorySection'
 import { Statistics } from './components/Statistics'
-import { CheckoutModal, ExpiryModal } from './components/Modals'
 import { QuickAddButtons } from './components/QuickAddButtons'
 import { Tutorial, useTutorial } from './components/Tutorial'
 import { ToastContainer, useToasts } from './components/Toast'
@@ -20,13 +18,11 @@ import { DataExport } from './components/DataExport'
 import { useShoppingList } from './hooks/useShoppingList'
 import { getPopularItems } from './utils/smartSuggestions'
 import { useSoundManager } from './utils/soundManager'
-import { ShoppingItem } from './types'
 
 export default function ShoppingListApp() {
   const {
     items,
     suggestions,
-    expiringItems,
     purchaseHistory,
     pantryItems,
     addItem,
@@ -34,8 +30,6 @@ export default function ShoppingListApp() {
     removeItem,
     clearPurchased,
     addSuggestedItem,
-    addExpiringItemToList,
-    removeFromPantry,
     getItemsByStatus,
     updateItemWithExpiry
   } = useShoppingList()
@@ -49,40 +43,6 @@ export default function ShoppingListApp() {
   
   // Sound hook
   const { playAddToCart, playRemoveFromCart, playPurchase, playDelete } = useSoundManager()
-
-  // Modal states
-  const [showExpiryModal, setShowExpiryModal] = useState(false)
-  const [showCheckoutModal, setShowCheckoutModal] = useState(false)
-  const [checkoutItems, setCheckoutItems] = useState<ShoppingItem[]>([])
-  const [currentCheckoutIndex, setCurrentCheckoutIndex] = useState(0)
-
-  const startCheckout = () => {
-    const itemsInCart = items.filter(item => item.isInCart && !item.isPurchased)
-    if (itemsInCart.length === 0) {
-      showInfo('הסל ריק', 'אין מוצרים בסל הקניות')
-      return
-    }
-    
-    setCheckoutItems(itemsInCart)
-    setCurrentCheckoutIndex(0)
-    setShowCheckoutModal(true)
-    showInfo('התחלת קנייה', `${itemsInCart.length} מוצרים לרכישה`)
-  }
-
-  const handleCheckoutNext = (expiryDate?: Date) => {
-    const currentItem = checkoutItems[currentCheckoutIndex]
-    updateItemWithExpiry(currentItem.id, expiryDate)
-    
-    if (currentCheckoutIndex < checkoutItems.length - 1) {
-      setCurrentCheckoutIndex(prev => prev + 1)
-    } else {
-      setShowCheckoutModal(false)
-      setCheckoutItems([])
-      setCurrentCheckoutIndex(0)
-      playPurchase()
-      showSuccess('קנייה הושלמה!', 'כל המוצרים נוספו למזווה')
-    }
-  }
 
   // Wrapper functions with toasts and sounds
   const handleAddItem = (name: string, category: string) => {
@@ -114,6 +74,28 @@ export default function ShoppingListApp() {
     }
   }
 
+  const handleClearPurchased = () => {
+    clearPurchased()
+    playDelete()
+    showInfo('נוקה', 'כל הרכישות הושלמו נמחקו')
+  }
+
+  const handleCheckout = () => {
+    const cartItems = items.filter(item => item.isInCart && !item.isPurchased)
+    if (cartItems.length === 0) {
+      showError('הסל ריק', 'אין מוצרים בסל לקנייה')
+      return
+    }
+    
+    // סמן את כל הפריטים בסל כנקנו
+    cartItems.forEach(item => {
+      updateItemWithExpiry(item.id, undefined)
+    })
+    
+    playPurchase()
+    showSuccess('קנייה הושלמה!', `${cartItems.length} מוצרים נקנו`)
+  }
+
   const { pending, inCart, purchased } = getItemsByStatus()
 
   const handleCreateQuickList = (items: Array<{name: string, category: string}>) => {
@@ -131,6 +113,22 @@ export default function ShoppingListApp() {
           {/* Header - Full Width */}
           <div className="lg:col-span-12">
             <Header onOpenTutorial={openTutorial} />
+            
+            {/* Quick Stats */}
+            <div className="grid grid-cols-3 gap-4 mt-4 mb-6">
+              <div className="bg-white rounded-lg p-4 text-center shadow-md">
+                <div className="text-2xl font-bold text-blue-600">{pending.length}</div>
+                <div className="text-sm text-gray-600">לקנות</div>
+              </div>
+              <div className="bg-white rounded-lg p-4 text-center shadow-md">
+                <div className="text-2xl font-bold text-orange-600">{inCart.length}</div>
+                <div className="text-sm text-gray-600">בסל</div>
+              </div>
+              <div className="bg-white rounded-lg p-4 text-center shadow-md">
+                <div className="text-2xl font-bold text-green-600">{purchased.length}</div>
+                <div className="text-sm text-gray-600">נקנו</div>
+              </div>
+            </div>
           </div>
 
           {/* Main Content Area */}
@@ -156,31 +154,76 @@ export default function ShoppingListApp() {
 
             {/* Shopping List by Categories */}
             <div className="space-y-4">
-              {pending.length > 0 && (
+              {pending.length > 0 ? (
                 <CategorySection
                   title="רשימת קניות"
                   items={pending}
                   onToggleCart={handleToggleCart}
                   onRemove={handleRemoveItem}
                 />
+              ) : (
+                <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
+                  <div className="text-6xl mb-4">📝</div>
+                  <h3 className="text-xl font-semibold text-gray-800 mb-2">הרשימה ריקה</h3>
+                  <p className="text-gray-600">התחל להוסיף מוצרים או צור רשימה מהירה</p>
+                </div>
               )}
 
-              {inCart.length > 0 && (
-                <CategorySection
-                  title="בעגלה"
-                  items={inCart}
-                  onToggleCart={handleToggleCart}
-                  onRemove={handleRemoveItem}
-                />
-              )}
+              {inCart.length > 0 ? (
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl shadow-lg p-6 border-2 border-blue-200">
+                  <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
+                    <button
+                      onClick={handleCheckout}
+                      className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-2xl hover:from-green-600 hover:to-emerald-600 transition-all font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 flex items-center justify-center gap-3"
+                    >
+                      🛒 סיימתי קניות!
+                      <div className="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm font-bold">
+                        {inCart.length}
+                      </div>
+                    </button>
+                    <div className="text-center">
+                      <h3 className="font-bold text-xl text-gray-800 mb-2">בסל הקניות</h3>
+                      <div className="text-4xl">🛒</div>
+                    </div>
+                  </div>
+                  <CategorySection 
+                    title=""
+                    items={inCart}
+                    onToggleCart={handleToggleCart}
+                    onRemove={handleRemoveItem}
+                  />
+                </div>
+              ) : items.some(item => !item.isPurchased) ? (
+                <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl shadow-lg p-8 text-center border-2 border-gray-200">
+                  <div className="text-6xl mb-4">🛒</div>
+                  <h3 className="text-xl font-semibold text-gray-800 mb-2">הסל ריק</h3>
+                  <p className="text-gray-600">לחץ על ✓ ליד הפריטים כדי להוסיף לסל</p>
+                </div>
+              ) : null}
 
               {purchased.length > 0 && (
-                <CategorySection
-                  title="נקנו"
-                  items={purchased}
-                  onToggleCart={handleToggleCart}
-                  onRemove={handleRemoveItem}
-                />
+                <div className="bg-gradient-to-br from-green-50 to-emerald-100 rounded-2xl shadow-lg p-6 border-2 border-green-200">
+                  <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
+                    <button
+                      onClick={handleClearPurchased}
+                      className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl hover:from-red-600 hover:to-pink-600 transition-all font-medium shadow-lg hover:shadow-xl transform hover:scale-105"
+                    >
+                      🗑️ נקה הכל ({purchased.length})
+                    </button>
+                    <div className="flex items-center gap-3">
+                      <div className="text-center">
+                        <h3 className="font-bold text-xl text-gray-800">רכישות שהושלמו</h3>
+                        <div className="text-3xl">✅</div>
+                      </div>
+                    </div>
+                  </div>
+                  <CategorySection
+                    title=""
+                    items={purchased}
+                    onToggleCart={handleToggleCart}
+                    onRemove={handleRemoveItem}
+                  />
+                </div>
               )}
             </div>
           </div>
@@ -213,23 +256,6 @@ export default function ShoppingListApp() {
         <Tutorial 
           isOpen={showTutorial} 
           onClose={closeTutorial} 
-        />
-
-        {/* Modals */}
-        <CheckoutModal
-          isOpen={showCheckoutModal}
-          items={checkoutItems}
-          currentIndex={currentCheckoutIndex}
-          onNext={handleCheckoutNext}
-          onClose={() => setShowCheckoutModal(false)}
-        />
-
-        <ExpiryModal
-          isOpen={showExpiryModal}
-          expiringItems={expiringItems}
-          onAddToList={addExpiringItemToList}
-          onRemoveFromPantry={removeFromPantry}
-          onClose={() => setShowExpiryModal(false)}
         />
       </div>
     </div>

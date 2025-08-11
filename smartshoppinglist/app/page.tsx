@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Clock } from 'lucide-react'
+import { Clock, ShoppingCart, X } from 'lucide-react'
 
 // Components
 import { Header } from './components/Header'
@@ -191,15 +191,27 @@ export default function ShoppingListApp() {
 
         {/* Shopping Cart */}
         {inCart.length > 0 && (
-          <div className="bg-blue-50 rounded-2xl shadow-lg p-6 border border-blue-200 mb-6">
-            <div className="flex items-center justify-between mb-4">
-              <button
-                onClick={startCheckout}
-                className="px-6 py-3 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-colors font-medium shadow-lg hover:shadow-xl transform hover:scale-105"
-              >
-                סיימתי קניות ({inCart.length})
-              </button>
-              <h3 className="font-semibold text-gray-800 text-right">בסל 🛒</h3>
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl shadow-lg p-6 border-2 border-blue-200 mb-6">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={startCheckout}
+                  className="px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-2xl hover:from-green-600 hover:to-emerald-600 transition-all font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 flex items-center gap-3"
+                >
+                  <ShoppingCart className="w-6 h-6" />
+                  <span>סיימתי קניות!</span>
+                  <div className="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm font-bold">
+                    {inCart.length}
+                  </div>
+                </button>
+                <div className="text-xs text-gray-600 text-center">
+                  לחץ כדי לסמן הכל כנקנה
+                </div>
+              </div>
+              <div className="text-center">
+                <h3 className="font-bold text-xl text-gray-800 text-right mb-2">בסל הקניות</h3>
+                <div className="text-4xl">🛒</div>
+              </div>
             </div>
             <CategorySection 
               title=""
@@ -222,13 +234,14 @@ export default function ShoppingListApp() {
               <div className="flex items-center justify-between mb-6">
                 <button
                   onClick={clearPurchased}
-                  className="text-sm text-red-600 hover:text-red-800 font-medium hover:bg-red-50 px-3 py-1 rounded-lg transition-all"
+                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl hover:from-red-600 hover:to-pink-600 transition-all font-medium shadow-lg hover:shadow-xl transform hover:scale-105"
                 >
-                  נקה הכל
+                  <X className="w-4 h-4" />
+                  <span>נקה הכל ({purchased.length})</span>
                 </button>
                 <div className="flex items-center gap-3">
-                  <h3 className="font-bold text-xl text-gray-800 text-right">נקנה</h3>
-                  <div className="text-2xl">✅</div>
+                  <h3 className="font-bold text-xl text-gray-800 text-right">רכישות שהושלמו</h3>
+                  <div className="text-3xl animate-bounce-gentle">✅</div>
                 </div>
               </div>
 

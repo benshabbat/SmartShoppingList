@@ -7,7 +7,7 @@ import { Plus, Check, X, ShoppingCart, History, Lightbulb, Calendar, AlertTriang
 interface ShoppingItem {
   id: string
   name: string
-  category?: string
+  category: string
   isInCart: boolean
   isPurchased: boolean
   addedAt: Date
@@ -31,6 +31,7 @@ interface ExpiringItem {
 export default function ShoppingListApp() {
   const [items, setItems] = useState<ShoppingItem[]>([])
   const [newItemName, setNewItemName] = useState('')
+  const [newItemCategory, setNewItemCategory] = useState('פירות וירקות')
   const [suggestions, setSuggestions] = useState<ItemSuggestion[]>([])
   const [expiringItems, setExpiringItems] = useState<ExpiringItem[]>([])
   const [showExpiryModal, setShowExpiryModal] = useState(false)
@@ -40,6 +41,36 @@ export default function ShoppingListApp() {
   const [currentExpiryDate, setCurrentExpiryDate] = useState('')
   const [purchaseHistory, setPurchaseHistory] = useState<ShoppingItem[]>([])
   const [pantryItems, setPantryItems] = useState<ShoppingItem[]>([])
+
+  // קטגוריות מוצרים
+  const categories = [
+    'פירות וירקות',
+    'מוצרי חלב',
+    'בשר ודגים',
+    'לחם ומאפים',
+    'משקאות',
+    'חטיפים ומתוקים',
+    'מוצרי ניקיון',
+    'מוצרי היגיינה',
+    'מזון יבש',
+    'קפואים',
+    'אחר'
+  ]
+
+  // אמוג'י לכל קטגוריה
+  const categoryEmojis: Record<string, string> = {
+    'פירות וירקות': '🍎',
+    'מוצרי חלב': '🥛',
+    'בשר ודגים': '🥩',
+    'לחם ומאפים': '🍞',
+    'משקאות': '🥤',
+    'חטיפים ומתוקים': '🍫',
+    'מוצרי ניקיון': '🧽',
+    'מוצרי היגיינה': '🧴',
+    'מזון יבש': '🌾',
+    'קפואים': '❄️',
+    'אחר': '📦'
+  }
 
   // Load data from localStorage on component mount
   useEffect(() => {
@@ -155,12 +186,13 @@ export default function ShoppingListApp() {
     setSuggestions(suggestions)
   }
 
-  const addItem = (itemName: string) => {
+  const addItem = (itemName: string, category?: string) => {
     if (!itemName.trim()) return
     
     const newItem: ShoppingItem = {
       id: Date.now().toString(),
       name: itemName.trim(),
+      category: category || newItemCategory,
       isInCart: false,
       isPurchased: false,
       addedAt: new Date()
@@ -236,12 +268,12 @@ export default function ShoppingListApp() {
   }
 
   const addSuggestedItem = (suggestionName: string) => {
-    addItem(suggestionName)
+    addItem(suggestionName, 'אחר')
     setSuggestions(prev => prev.filter(s => s.name !== suggestionName.toLowerCase()))
   }
 
   const addExpiringItemToList = (itemName: string) => {
-    addItem(itemName)
+    addItem(itemName, 'אחר')
     setExpiringItems(prev => prev.filter(item => item.name !== itemName))
   }
 
@@ -259,6 +291,16 @@ export default function ShoppingListApp() {
     const inCart = items.filter(item => item.isInCart && !item.isPurchased)
     const purchased = items.filter(item => item.isPurchased)
     return { pending, inCart, purchased }
+  }
+
+  const getItemsByCategory = (itemList: ShoppingItem[]) => {
+    const itemsByCategory: Record<string, ShoppingItem[]> = {}
+    
+    categories.forEach(category => {
+      itemsByCategory[category] = itemList.filter(item => item.category === category)
+    })
+    
+    return itemsByCategory
   }
 
   const formatDate = (date: Date) => {
@@ -406,22 +448,37 @@ export default function ShoppingListApp() {
 
         {/* Add new item */}
         <div className="bg-white rounded-lg shadow-md p-4 mb-6">
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={newItemName}
-              onChange={(e) => setNewItemName(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && addItem(newItemName)}
-              placeholder="הוסף מוצר לרשימה..."
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-right"
-              dir="rtl"
-            />
-            <button
-              onClick={() => addItem(newItemName)}
-              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-            >
-              <Plus className="w-5 h-5" />
-            </button>
+          <div className="space-y-3">
+            <div className="flex gap-2">
+              <select
+                value={newItemCategory}
+                onChange={(e) => setNewItemCategory(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+              >
+                {categories.map(category => (
+                  <option key={category} value={category}>
+                    {categoryEmojis[category]} {category}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={newItemName}
+                onChange={(e) => setNewItemName(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && addItem(newItemName)}
+                placeholder="הוסף מוצר לרשימה..."
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-right"
+                dir="rtl"
+              />
+              <button
+                onClick={() => addItem(newItemName)}
+                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+              >
+                <Plus className="w-5 h-5" />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -476,27 +533,40 @@ export default function ShoppingListApp() {
         {pending.length > 0 && (
           <div className="bg-white rounded-lg shadow-md p-4 mb-6">
             <h3 className="font-semibold text-gray-800 mb-3 text-right">רשימת קניות</h3>
-            <div className="space-y-2">
-              {pending.map(item => (
-                <div key={item.id} className="flex items-center gap-3 p-2 bg-gray-50 rounded-lg">
-                  <button
-                    onClick={() => toggleItemInCart(item.id)}
-                    className="w-6 h-6 border-2 border-blue-300 rounded-full hover:border-blue-500 transition-colors flex items-center justify-center"
-                  >
-                    <ShoppingBag className="w-4 h-4 text-blue-500" />
-                  </button>
-                  <div className="flex-1 text-right">
-                    <div className="font-medium">{item.name}</div>
+            {Object.entries(getItemsByCategory(pending)).map(([category, categoryItems]) => 
+              categoryItems.length > 0 && (
+                <div key={category} className="mb-4 last:mb-0">
+                  <div className="flex items-center gap-2 mb-2 bg-gray-100 p-2 rounded-lg">
+                    <span className="text-lg">{categoryEmojis[category]}</span>
+                    <h4 className="font-medium text-gray-700 text-right flex-1">{category}</h4>
+                    <span className="text-sm text-gray-500 bg-gray-200 px-2 py-1 rounded-full">
+                      {categoryItems.length}
+                    </span>
                   </div>
-                  <button
-                    onClick={() => removeItem(item.id)}
-                    className="text-red-500 hover:text-red-700 transition-colors"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
+                  <div className="space-y-2">
+                    {categoryItems.map(item => (
+                      <div key={item.id} className="flex items-center gap-3 p-2 bg-gray-50 rounded-lg mr-4">
+                        <button
+                          onClick={() => toggleItemInCart(item.id)}
+                          className="w-6 h-6 border-2 border-blue-300 rounded-full hover:border-blue-500 transition-colors flex items-center justify-center"
+                        >
+                          <ShoppingBag className="w-4 h-4 text-blue-500" />
+                        </button>
+                        <div className="flex-1 text-right">
+                          <div className="font-medium">{item.name}</div>
+                        </div>
+                        <button
+                          onClick={() => removeItem(item.id)}
+                          className="text-red-500 hover:text-red-700 transition-colors"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              ))}
-            </div>
+              )
+            )}
           </div>
         )}
 
@@ -512,27 +582,40 @@ export default function ShoppingListApp() {
               </button>
               <h3 className="font-semibold text-gray-800 text-right">בסל 🛒</h3>
             </div>
-            <div className="space-y-2">
-              {inCart.map(item => (
-                <div key={item.id} className="flex items-center gap-3 p-2 bg-white rounded-lg">
-                  <button
-                    onClick={() => toggleItemInCart(item.id)}
-                    className="w-6 h-6 border-2 border-blue-500 rounded-full bg-blue-500 flex items-center justify-center"
-                  >
-                    <ShoppingBag className="w-4 h-4 text-white" />
-                  </button>
-                  <div className="flex-1 text-right">
-                    <div className="font-medium text-blue-800">{item.name}</div>
+            {Object.entries(getItemsByCategory(inCart)).map(([category, categoryItems]) => 
+              categoryItems.length > 0 && (
+                <div key={category} className="mb-4 last:mb-0">
+                  <div className="flex items-center gap-2 mb-2 bg-blue-100 p-2 rounded-lg">
+                    <span className="text-lg">{categoryEmojis[category]}</span>
+                    <h4 className="font-medium text-blue-700 text-right flex-1">{category}</h4>
+                    <span className="text-sm text-blue-600 bg-blue-200 px-2 py-1 rounded-full">
+                      {categoryItems.length}
+                    </span>
                   </div>
-                  <button
-                    onClick={() => removeItem(item.id)}
-                    className="text-red-500 hover:text-red-700 transition-colors"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
+                  <div className="space-y-2">
+                    {categoryItems.map(item => (
+                      <div key={item.id} className="flex items-center gap-3 p-2 bg-white rounded-lg mr-4">
+                        <button
+                          onClick={() => toggleItemInCart(item.id)}
+                          className="w-6 h-6 border-2 border-blue-500 rounded-full bg-blue-500 flex items-center justify-center"
+                        >
+                          <ShoppingBag className="w-4 h-4 text-white" />
+                        </button>
+                        <div className="flex-1 text-right">
+                          <div className="font-medium text-blue-800">{item.name}</div>
+                        </div>
+                        <button
+                          onClick={() => removeItem(item.id)}
+                          className="text-red-500 hover:text-red-700 transition-colors"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              ))}
-            </div>
+              )
+            )}
           </div>
         )}
 
@@ -548,30 +631,43 @@ export default function ShoppingListApp() {
               </button>
               <h3 className="font-semibold text-gray-800 text-right">נקנה ✓</h3>
             </div>
-            <div className="space-y-2">
-              {purchased.map(item => (
-                <div key={item.id} className="flex items-center gap-3 p-2 bg-green-50 rounded-lg">
-                  <div className="w-6 h-6 border-2 border-green-500 rounded-full bg-green-500 flex items-center justify-center">
-                    <Check className="w-4 h-4 text-white" />
+            {Object.entries(getItemsByCategory(purchased)).map(([category, categoryItems]) => 
+              categoryItems.length > 0 && (
+                <div key={category} className="mb-4 last:mb-0">
+                  <div className="flex items-center gap-2 mb-2 bg-green-100 p-2 rounded-lg">
+                    <span className="text-lg">{categoryEmojis[category]}</span>
+                    <h4 className="font-medium text-green-700 text-right flex-1">{category}</h4>
+                    <span className="text-sm text-green-600 bg-green-200 px-2 py-1 rounded-full">
+                      {categoryItems.length}
+                    </span>
                   </div>
-                  <div className="flex-1 text-right">
-                    <div className="line-through text-gray-600 font-medium">{item.name}</div>
-                    {item.expiryDate && (
-                      <div className="text-xs text-gray-400 flex items-center gap-1 justify-end">
-                        <span>תוקף עד: {formatDate(item.expiryDate)}</span>
-                        <Calendar className="w-3 h-3" />
+                  <div className="space-y-2">
+                    {categoryItems.map(item => (
+                      <div key={item.id} className="flex items-center gap-3 p-2 bg-green-50 rounded-lg mr-4">
+                        <div className="w-6 h-6 border-2 border-green-500 rounded-full bg-green-500 flex items-center justify-center">
+                          <Check className="w-4 h-4 text-white" />
+                        </div>
+                        <div className="flex-1 text-right">
+                          <div className="line-through text-gray-600 font-medium">{item.name}</div>
+                          {item.expiryDate && (
+                            <div className="text-xs text-gray-400 flex items-center gap-1 justify-end">
+                              <span>תוקף עד: {formatDate(item.expiryDate)}</span>
+                              <Calendar className="w-3 h-3" />
+                            </div>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => removeItem(item.id)}
+                          className="text-red-500 hover:text-red-700 transition-colors"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
                       </div>
-                    )}
+                    ))}
                   </div>
-                  <button
-                    onClick={() => removeItem(item.id)}
-                    className="text-red-500 hover:text-red-700 transition-colors"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
                 </div>
-              ))}
-            </div>
+              )
+            )}
           </div>
         )}
 

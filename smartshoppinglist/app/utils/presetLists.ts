@@ -1,4 +1,4 @@
-import { CATEGORIES, detectCategory, CategoryType } from './categories'
+import { CATEGORIES, CategoryType } from './categories'
 import { suggestCategoryForProduct } from './smartSuggestions'
 
 // רשימות מוכנות מאורגנות ונקיות

@@ -1,12 +1,12 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { Upload, Camera, X, Check, ShoppingBag } from 'lucide-react'
+import { Upload, X, Check, ShoppingBag, FileText } from 'lucide-react'
 import { Card, CardHeader } from './Card'
 import { ActionButton } from './ActionButton'
 import { ReceiptData, ShoppingItem } from '../types'
+import { ReceiptOCR } from '../utils/receiptOCR'
 import { categorizeItem } from '../utils/smartSuggestions'
-import { ReceiptProcessor } from '../utils/receiptProcessor'
 
 interface ReceiptScannerProps {
   onReceiptProcessed: (items: ShoppingItem[], storeName: string) => void
@@ -17,9 +17,9 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
   const [isProcessing, setIsProcessing] = useState(false)
   const [receiptData, setReceiptData] = useState<ReceiptData | null>(null)
   const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set())
-  const [showManualEntry, setShowManualEntry] = useState(false)
-  const [rawOcrText, setRawOcrText] = useState<string>('')
   const [showRawText, setShowRawText] = useState(false)
+  const [rawOcrText, setRawOcrText] = useState<string>('')
+  const [progress, setProgress] = useState(0)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,53 +27,46 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
     if (!file) return
 
     setIsProcessing(true)
+    setProgress(0)
     
     try {
-      // בדיקת גודל קובץ
-      if (file.size > 10 * 1024 * 1024) { // 10MB
-        throw new Error('הקובץ גדול מדי. אנא בחר קובץ קטן מ-10MB.')
-      }
-
-      // בדיקת סוג קובץ
-      if (!file.type.startsWith('image/')) {
-        throw new Error('אנא בחר קובץ תמונה בלבד.')
-      }
-
-      console.log('Processing file:', file.name, 'Size:', file.size, 'Type:', file.type)
+      console.log('📤 מעלה קובץ:', file.name)
       
-      // עיבוד אמיתי עם OCR
-      const receiptData = await ReceiptProcessor.processReceiptImage(file)
+      // סימולציה של התקדמות
+      const progressInterval = setInterval(() => {
+        setProgress(prev => Math.min(prev + 10, 90))
+      }, 500)
       
-      // שמור את הטקסט הגולמי לצרכי דיבוג
+      // עיבוד הקבלה
+      const receiptData = await ReceiptOCR.processReceiptImage(file)
+      
+      // שמירת טקסט גולמי לדיבוג
       try {
-        const rawText = await ReceiptProcessor.extractRawText(file)
+        const rawText = await ReceiptOCR.extractRawText(file)
         setRawOcrText(rawText)
-        console.log('Raw OCR text:', rawText)
       } catch (error) {
-        console.warn('Could not extract raw text:', error)
+        console.warn('⚠️ לא ניתן לחלץ טקסט גולמי:', error)
       }
+      
+      clearInterval(progressInterval)
+      setProgress(100)
       
       if (receiptData.items.length === 0) {
-        const shouldTryManual = confirm('לא נמצאו פריטים בקבלה.\n\nהאם תרצה לנסות הכנסה ידנית של הפריטים?')
-        if (shouldTryManual) {
-          setShowManualEntry(true)
-          return
-        } else {
-          alert('לא נמצאו פריטים בקבלה. אנא נסה:\n• לוודא שהתמונה ברורה וחדה\n• שהתאורה טובה\n• שהקבלה מצולמת ישר\n• להעלות תמונה באיכות גבוהה יותר')
-        }
+        alert('❌ לא נמצאו פריטים בקבלה.\n\n💡 טיפים:\n• וודא שהתמונה ברורה וחדה\n• צלם ישר מול הקבלה\n• השתמש בתאורה טובה\n• נסה לחתוך את התמונה לחלק הרלוונטי')
       } else {
-        console.log('Successfully processed receipt with', receiptData.items.length, 'items')
+        console.log('✅ עיבוד הושלם בהצלחה:', receiptData.items.length, 'פריטים')
       }
       
       setReceiptData(receiptData)
-      // בברירת מחדל, בחר את כל הפריטים
       setSelectedItems(new Set(receiptData.items.map((_, index) => index)))
+      
     } catch (error) {
-      console.error('Error processing receipt:', error)
+      console.error('❌ שגיאה בעיבוד:', error)
       const errorMessage = error instanceof Error ? error.message : 'שגיאה לא צפויה'
-      alert(`שגיאה בעיבוד הקבלה: ${errorMessage}\n\nטיפים:\n• וודא שהתמונה ברורה וחדה\n• נסה תמונה עם תאורה טובה יותר\n• צלם ישר מול הקבלה\n• נסה לחתוך את התמונה לחלק הרלוונטי`)
+      alert(`❌ שגיאה בעיבוד הקבלה:\n${errorMessage}\n\n💡 נסה:\n• תמונה איכותית יותר\n• תאורה טובה יותר\n• צילום ישר מול הקבלה`)
     } finally {
       setIsProcessing(false)
+      setProgress(0)
     }
   }
 
@@ -87,61 +80,23 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
     setSelectedItems(newSelection)
   }
 
-  const handleManualEntry = () => {
-    const manualItems = []
-    let addMore = true
-    
-    while (addMore) {
-      const itemName = prompt('שם הפריט:')
-      if (!itemName) break
-      
-      const priceStr = prompt('מחיר הפריט:')
-      const price = parseFloat(priceStr || '0')
-      
-      if (price > 0) {
-        manualItems.push({
-          name: itemName.trim(),
-          price,
-          quantity: 1,
-          category: categorizeItem(itemName.trim())
-        })
-      }
-      
-      addMore = confirm('האם תרצה להוסיף פריט נוסף?')
-    }
-    
-    if (manualItems.length > 0) {
-      const manualReceiptData: ReceiptData = {
-        items: manualItems,
-        storeName: 'הכנסה ידנית',
-        totalAmount: manualItems.reduce((sum, item) => sum + item.price, 0),
-        date: new Date()
-      }
-      
-      setReceiptData(manualReceiptData)
-      setSelectedItems(new Set(manualItems.map((_, index) => index)))
-      setShowManualEntry(false)
-    }
-  }
-
   const handleDemoReceipt = () => {
-    // יצירת קבלה דמה פשוטה - התמקדות ב-4 פרטים בלבד
     const demoReceiptData: ReceiptData = {
       items: [
-        { name: 'חלב 3%', price: 5.90, quantity: 1 },
-        { name: 'לחם פרוס', price: 4.50, quantity: 1 },
-        { name: 'בננות', price: 12.90, quantity: 1 },
-        { name: 'יוגורט טבעי', price: 7.60, quantity: 1 },
-        { name: 'עגבניות שרי', price: 8.50, quantity: 1 }
+        { name: 'חלב 3%', price: 5.90, quantity: 1, category: 'מוצרי חלב' },
+        { name: 'לחם פרוס', price: 4.50, quantity: 1, category: 'לחם ומאפים' },
+        { name: 'בננות', price: 12.90, quantity: 1, category: 'פירות וירקות' },
+        { name: 'יוגורט טבעי', price: 3.80, quantity: 2, category: 'מוצרי חלב' },
+        { name: 'עגבניות שרי', price: 8.50, quantity: 1, category: 'פירות וירקות' }
       ],
-      storeName: 'רמי לוי',
-      totalAmount: 39.40,
-      date: new Date(2025, 7, 11) // 11 באוגוסט 2025
+      storeName: 'דוגמה - רמי לוי',
+      totalAmount: 35.60,
+      date: new Date()
     }
     
     setReceiptData(demoReceiptData)
     setSelectedItems(new Set(demoReceiptData.items.map((_, index) => index)))
-    setRawOcrText('רמי לוי\n11/08/2025\nחלב 3% 5.90\nלחם פרוס 4.50\nבננות 12.90\nיוגורט טבעי 7.60\nעגבניות שרי 8.50\nסה"כ: 39.40')
+    setRawOcrText('דוגמה של טקסט OCR:\nרמי לוי\nחלב 3% 5.90\nלחם פרוס 4.50\nבננות 12.90\nיוגורט טבעי 3.80 x2\nעגבניות שרי 8.50\nסה"כ: 35.60')
   }
 
   const handleConfirmSelection = () => {
@@ -185,39 +140,7 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
         />
 
         <div className="p-6 space-y-6">
-          {showManualEntry && (
-            <div className="text-center space-y-4">
-              <div className="border-2 border-blue-300 rounded-lg p-8 bg-blue-50">
-                <h3 className="text-lg font-semibold text-blue-800 mb-4">הכנסה ידנית של פריטים</h3>
-                <p className="text-blue-700 mb-6">
-                  הזיהוי האוטומטי לא עבד כצפוי. תוכל להכניס את הפריטים באופן ידני.
-                </p>
-                
-                <div className="flex gap-4 justify-center">
-                  <ActionButton
-                    onClick={handleManualEntry}
-                    className="bg-blue-600 hover:bg-blue-700 text-white"
-                    icon={Upload}
-                  >
-                    התחל הכנסה ידנית
-                  </ActionButton>
-                  
-                  <ActionButton
-                    onClick={() => {
-                      setShowManualEntry(false)
-                      setReceiptData(null)
-                    }}
-                    variant="secondary"
-                    icon={X}
-                  >
-                    חזור לסריקה
-                  </ActionButton>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {!receiptData && !isProcessing && !showManualEntry && (
+          {!receiptData && !isProcessing && (
             <div className="text-center space-y-4">
               <input
                 ref={fileInputRef}
@@ -227,73 +150,43 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
                 className="hidden"
               />
               
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-12">
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 hover:border-blue-400 transition-colors">
                 <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                  העלה תמונת קבלה
+                </h3>
                 <p className="text-gray-600 mb-4">
-                  העלה תמונה של קבלה לזיהוי:
+                  מותאם במיוחד לקבלות בעברית מחנויות ישראליות
                 </p>
-                <div className="text-center space-y-2 mb-6">
-                  <p className="text-sm font-medium text-blue-600">🎯 מה נזהה:</p>
-                  <div className="grid grid-cols-2 gap-2 text-xs text-gray-600">
-                    <div>📍 שם החנות</div>
-                    <div>📅 תאריך הקנייה</div>
-                    <div>🛒 שמות הפריטים</div>
-                    <div>💰 מחירי הפריטים</div>
-                  </div>
-                </div>
                 
-                <div className="flex gap-4 justify-center">
+                <div className="flex gap-4 justify-center flex-wrap">
                   <ActionButton
                     onClick={() => fileInputRef.current?.click()}
                     icon={Upload}
                     className="bg-blue-600 hover:bg-blue-700 text-white"
                   >
-                    בחר תמונת קבלה
+                    בחר תמונה
                   </ActionButton>
                   
-                  <ActionButton
-                    onClick={() => {
-                      // כאן נוסיף בעתיד תמיכה בצילום ישיר
-                      fileInputRef.current?.click()
-                    }}
-                    icon={Camera}
-                    variant="secondary"
-                  >
-                    צלם קבלה
-                  </ActionButton>
-                  
-                  <ActionButton
-                    onClick={() => setShowManualEntry(true)}
-                    variant="secondary"
-                    className="border-green-300 text-green-700 hover:bg-green-50"
-                    icon={Upload}
-                  >
-                    הכנסה ידנית
-                  </ActionButton>
-
                   <ActionButton
                     onClick={handleDemoReceipt}
-                    icon={ShoppingBag}
+                    icon={FileText}
                     variant="secondary"
                     className="border-purple-300 text-purple-700 hover:bg-purple-50"
                   >
-                    דוגמה
+                    נסה דוגמה
                   </ActionButton>
                 </div>
                 
-                <div className="mt-4 text-xs text-gray-500">
-                  <p className="font-medium">💡 טיפים לתוצאות טובות יותר:</p>
-                  <ul className="text-right mt-2 space-y-1">
-                    <li>• וודא שהקבלה מוארת היטב ללא צללים</li>
-                    <li>• צלם ישר ובמקביל לקבלה (לא באלכסון)</li>
-                    <li>• הקפד שכל הטקסט יהיה ברור וחד</li>
-                    <li>• נסה לחתוך את התמונה לחלק הרלוונטי בלבד</li>
-                    <li>• השתמש ברזולוציה גבוהה (לא לדחוס את התמונה)</li>
+                <div className="mt-6 text-xs text-gray-500 bg-blue-50 rounded-lg p-4">
+                  <h4 className="font-medium text-blue-800 mb-2">💡 טיפים לתוצאות מיטביות:</h4>
+                  <ul className="text-right space-y-1">
+                    <li>📸 צלם ישר מול הקבלה (לא באלכסון)</li>
+                    <li>💡 השתמש בתאורה טובה ללא צללים</li>
+                    <li>🔍 וודא שכל הטקסט ברור וחד</li>
+                    <li>✂️ חתוך את התמונה לחלק הרלוונטי</li>
+                    <li>📱 השתמש ברזולוציה גבוהה</li>
                   </ul>
-                  <div className="mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded text-yellow-800">
-                    <p className="font-medium">⚠️ שימו לב:</p>
-                    <p>זיהוי הטקסט עובד הכי טוב עם קבלות בעברית ואנגלית מחנויות ישראליות מוכרות</p>
-                  </div>
                 </div>
               </div>
             </div>
@@ -301,13 +194,25 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
 
           {isProcessing && (
             <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <p className="text-gray-600 font-medium">מעבד את הקבלה באמצעות זיהוי טקסט...</p>
-              <p className="text-sm text-gray-500 mt-2">
-                זה עלול לקחת עד דקה בהתאם לאיכות התמונה
+              <div className="relative w-24 h-24 mx-auto mb-6">
+                <div className="absolute inset-0 rounded-full border-4 border-blue-200"></div>
+                <div 
+                  className="absolute inset-0 rounded-full border-4 border-blue-600 border-t-transparent animate-spin"
+                ></div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-sm font-bold text-blue-600">{progress}%</span>
+                </div>
+              </div>
+              
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                מעבד קבלה עם OCR מתקדם...
+              </h3>
+              <p className="text-gray-600 mb-4">
+                זיהוי טקסט בעברית ואנגלית, חילוץ פריטים ומחירים
               </p>
-              <div className="mt-4 p-3 bg-blue-50 rounded-lg text-sm text-blue-700">
-                💡 בזמן ההמתנה: הקפד שהדפדפן לא נסגר כדי שהעיבוד יסתיים בהצלחה
+              
+              <div className="bg-blue-50 rounded-lg p-4 text-sm text-blue-700">
+                💡 העיבוד עלול לקחת עד דקה בהתאם לאיכות התמונה
               </div>
             </div>
           )}

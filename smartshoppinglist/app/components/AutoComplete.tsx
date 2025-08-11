@@ -11,6 +11,7 @@ interface AutoCompleteProps {
   purchaseHistory?: ShoppingItem[]
   placeholder?: string
   className?: string
+  autoChangedCategory?: boolean // אפקט הדגשה כאשר הקטגוריה משתנה אוטומטית
 }
 
 export const AutoComplete = ({
@@ -20,7 +21,8 @@ export const AutoComplete = ({
   suggestions,
   purchaseHistory = [],
   placeholder = "הוסף מוצר...",
-  className = ""
+  className = "",
+  autoChangedCategory = false
 }: AutoCompleteProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([])
@@ -118,7 +120,11 @@ export const AutoComplete = ({
             }
           }}
           placeholder={placeholder}
-          className={`w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-right ${className}`}
+          className={`w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-right transition-all duration-300 ${
+            autoChangedCategory 
+              ? 'bg-green-50 border-green-400 ring-2 ring-green-200' 
+              : ''
+          } ${className}`}
           dir="rtl"
         />
         <div className="absolute left-3 top-1/2 transform -translate-y-1/2 flex items-center gap-2">

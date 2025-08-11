@@ -1,4 +1,4 @@
-import { ShoppingBag, X, Check, Calendar, Plus, ShoppingCart } from 'lucide-react'
+import { X, Check, Calendar, Plus, ShoppingCart } from 'lucide-react'
 import { ShoppingItem } from '../types'
 import { formatDate } from '../utils/helpers'
 

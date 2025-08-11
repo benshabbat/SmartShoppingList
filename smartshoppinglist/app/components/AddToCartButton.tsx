@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { ShoppingCart, Check, Zap } from 'lucide-react'
 
 interface AddToCartButtonProps {

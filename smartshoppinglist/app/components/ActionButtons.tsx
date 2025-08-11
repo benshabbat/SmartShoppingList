@@ -1,4 +1,4 @@
-import { Sparkles, TrendingUp, Zap } from 'lucide-react'
+import { Sparkles, TrendingUp } from 'lucide-react'
 import { FadeIn } from './Animations'
 
 interface ActionButtonsProps {

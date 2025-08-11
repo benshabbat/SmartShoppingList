@@ -14,8 +14,8 @@ class SoundManager {
   private initAudioContext() {
     if (typeof window !== 'undefined') {
       try {
-        this.context = new (window.AudioContext || (window as any).webkitAudioContext)()
-      } catch (e) {
+        this.context = new (window.AudioContext || (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext)()
+      } catch {
         console.log('Audio not supported')
       }
     }
@@ -40,7 +40,7 @@ class SoundManager {
 
       oscillator.start(this.context.currentTime)
       oscillator.stop(this.context.currentTime + duration / 1000)
-    } catch (e) {
+    } catch {
       // Silently fail if audio isn't available
     }
   }

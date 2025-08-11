@@ -6,6 +6,7 @@ import { Card, CardHeader } from './Card'
 import { ActionButton } from './ActionButton'
 import { ReceiptData, ShoppingItem } from '../types'
 import { categorizeItem } from '../utils/smartSuggestions'
+import { ReceiptProcessor, processReceiptWithMockData } from '../utils/receiptProcessor'
 
 interface ReceiptScannerProps {
   onReceiptProcessed: (items: ShoppingItem[], storeName: string) => void
@@ -16,6 +17,7 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
   const [isProcessing, setIsProcessing] = useState(false)
   const [receiptData, setReceiptData] = useState<ReceiptData | null>(null)
   const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set())
+  const [processingMode, setProcessingMode] = useState<'real' | 'demo'>('demo')
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -25,41 +27,25 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
     setIsProcessing(true)
     
     try {
-      // כאן נוסיף את הלוגיקה לעיבוד הקבלה
-      // לעת עתה, אני אדמה נתונים לדוגמה
-      await simulateReceiptProcessing()
+      let receiptData: ReceiptData
+      
+      if (processingMode === 'real') {
+        // עיבוד אמיתי עם OCR
+        receiptData = await ReceiptProcessor.processReceiptImage(file)
+      } else {
+        // עיבוד מהיר עם נתונים מדומים
+        receiptData = await processReceiptWithMockData()
+      }
+      
+      setReceiptData(receiptData)
+      // בברירת מחדל, בחר את כל הפריטים
+      setSelectedItems(new Set(receiptData.items.map((_, index) => index)))
     } catch (error) {
       console.error('Error processing receipt:', error)
+      alert('שגיאה בעיבוד הקבלה. אנא נסה שוב.')
     } finally {
       setIsProcessing(false)
     }
-  }
-
-  const simulateReceiptProcessing = async (): Promise<void> => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        // נתונים מדומים לדוגמה
-        const mockReceiptData: ReceiptData = {
-          storeName: 'רמי לוי',
-          totalAmount: 85.50,
-          date: new Date(),
-          items: [
-            { name: 'חלב 3%', price: 5.90, quantity: 2 },
-            { name: 'לחם שחור', price: 8.50, quantity: 1 },
-            { name: 'עגבניות', price: 12.90, quantity: 1 },
-            { name: 'בננות', price: 6.80, quantity: 1 },
-            { name: 'שמן זית', price: 24.90, quantity: 1 },
-            { name: 'אורז יסמין', price: 13.50, quantity: 1 },
-            { name: 'יוגורט טבעי', price: 12.00, quantity: 3 }
-          ]
-        }
-        
-        setReceiptData(mockReceiptData)
-        // בברירת מחדל, בחר את כל הפריטים
-        setSelectedItems(new Set(mockReceiptData.items.map((_, index) => index)))
-        resolve()
-      }, 2000) // סימולציה של זמן עיבוד
-    })
   }
 
   const toggleItemSelection = (index: number) => {
@@ -115,6 +101,41 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
         <div className="p-6 space-y-6">
           {!receiptData && !isProcessing && (
             <div className="text-center space-y-4">
+              {/* בורר מצב עיבוד */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  מצב עיבוד:
+                </label>
+                <div className="flex gap-4 justify-center">
+                  <button
+                    onClick={() => setProcessingMode('demo')}
+                    className={`px-4 py-2 rounded-lg transition-colors ${
+                      processingMode === 'demo'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }`}
+                  >
+                    🚀 מהיר (דמו)
+                  </button>
+                  <button
+                    onClick={() => setProcessingMode('real')}
+                    className={`px-4 py-2 rounded-lg transition-colors ${
+                      processingMode === 'real'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }`}
+                  >
+                    🔍 אמיתי (OCR)
+                  </button>
+                </div>
+                <p className="text-xs text-gray-500 mt-2">
+                  {processingMode === 'demo' 
+                    ? 'מצב מהיר עם נתונים מדומים לבדיקה' 
+                    : 'זיהוי אמיתי של טקסט מהקבלה (עלול להיות איטי יותר)'
+                  }
+                </p>
+              </div>
+              
               <input
                 ref={fileInputRef}
                 type="file"
@@ -156,7 +177,17 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
           {isProcessing && (
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <p className="text-gray-600">מעבד את הקבלה...</p>
+              <p className="text-gray-600">
+                {processingMode === 'real' 
+                  ? 'מעבד את הקבלה באמצעות זיהוי טקסט...' 
+                  : 'מעבד את הקבלה...'
+                }
+              </p>
+              {processingMode === 'real' && (
+                <p className="text-sm text-gray-500 mt-2">
+                  זה עלול לקחת עד דקה בהתאם לאיכות התמונה
+                </p>
+              )}
             </div>
           )}
 

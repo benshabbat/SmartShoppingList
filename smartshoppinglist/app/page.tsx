@@ -1,3 +1,4 @@
+// app/page.tsx
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -26,6 +27,11 @@ interface ExpiringItem {
   daysUntilExpiry: number
 }
 
+interface PurchasedItem {
+  id: string
+  name: string
+}
+
 export default function ShoppingListApp() {
   const [items, setItems] = useState<ShoppingItem[]>([])
   const [newItemName, setNewItemName] = useState('')
@@ -34,6 +40,9 @@ export default function ShoppingListApp() {
   const [suggestions, setSuggestions] = useState<ItemSuggestion[]>([])
   const [expiringItems, setExpiringItems] = useState<ExpiringItem[]>([])
   const [showExpiryModal, setShowExpiryModal] = useState(false)
+  const [showPurchaseExpiryModal, setShowPurchaseExpiryModal] = useState(false)
+  const [purchasedItemForExpiry, setPurchasedItemForExpiry] = useState<PurchasedItem | null>(null)
+  const [purchaseExpiryDate, setPurchaseExpiryDate] = useState('')
   const [purchaseHistory, setPurchaseHistory] = useState<ShoppingItem[]>([])
   const [pantryItems, setPantryItems] = useState<ShoppingItem[]>([])
   const [lastVisit, setLastVisit] = useState<Date | null>(null)

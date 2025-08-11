@@ -14,6 +14,9 @@ export const useShoppingList = () => {
 
   // Load data from localStorage on component mount
   useEffect(() => {
+    // Only access localStorage on the client side
+    if (typeof window === 'undefined') return
+    
     const savedItems = localStorage.getItem(STORAGE_KEYS.SHOPPING_LIST)
     const savedHistory = localStorage.getItem(STORAGE_KEYS.PURCHASE_HISTORY)
     const savedPantry = localStorage.getItem(STORAGE_KEYS.PANTRY_ITEMS)
@@ -47,11 +50,15 @@ export const useShoppingList = () => {
 
   // Save to localStorage when data changes
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.SHOPPING_LIST, JSON.stringify(items))
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEYS.SHOPPING_LIST, JSON.stringify(items))
+    }
   }, [items])
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.PANTRY_ITEMS, JSON.stringify(pantryItems))
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEYS.PANTRY_ITEMS, JSON.stringify(pantryItems))
+    }
   }, [pantryItems])
 
   const addItem = (itemName: string, category: string) => {
@@ -93,7 +100,9 @@ export const useShoppingList = () => {
 
     const newHistory = [...purchaseHistory, updatedItem]
     setPurchaseHistory(newHistory)
-    localStorage.setItem(STORAGE_KEYS.PURCHASE_HISTORY, JSON.stringify(newHistory))
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEYS.PURCHASE_HISTORY, JSON.stringify(newHistory))
+    }
 
     if (updatedItem.expiryDate) {
       setPantryItems(prev => [...prev, updatedItem])
@@ -140,7 +149,9 @@ export const useShoppingList = () => {
     // Add to purchase history
     const newHistory = [...purchaseHistory, newItem]
     setPurchaseHistory(newHistory)
-    localStorage.setItem(STORAGE_KEYS.PURCHASE_HISTORY, JSON.stringify(newHistory))
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEYS.PURCHASE_HISTORY, JSON.stringify(newHistory))
+    }
 
     // Add to pantry if it has expiry date
     if (newItem.expiryDate) {

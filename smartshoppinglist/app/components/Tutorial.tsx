@@ -139,15 +139,19 @@ export const useTutorial = () => {
 
   useEffect(() => {
     // בדוק אם המשתמש כבר ראה את הטוטוריאל
-    const hasSeenTutorial = localStorage.getItem('hasSeenTutorial')
-    if (!hasSeenTutorial) {
-      setShowTutorial(true)
+    if (typeof window !== 'undefined') {
+      const hasSeenTutorial = localStorage.getItem('hasSeenTutorial')
+      if (!hasSeenTutorial) {
+        setShowTutorial(true)
+      }
     }
   }, [])
 
   const closeTutorial = () => {
     setShowTutorial(false)
-    localStorage.setItem('hasSeenTutorial', 'true')
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('hasSeenTutorial', 'true')
+    }
   }
 
   const openTutorial = () => {

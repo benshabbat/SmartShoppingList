@@ -4,8 +4,10 @@ class SoundManager {
   private context: AudioContext | null = null
 
   constructor() {
-    // Load sound preference from localStorage
-    this.enabled = localStorage.getItem('soundEnabled') !== 'false'
+    // Load sound preference from localStorage (client-side only)
+    if (typeof window !== 'undefined') {
+      this.enabled = localStorage.getItem('soundEnabled') !== 'false'
+    }
     
     // Initialize audio context on user interaction
     this.initAudioContext()
@@ -71,7 +73,9 @@ class SoundManager {
 
   toggle() {
     this.enabled = !this.enabled
-    localStorage.setItem('soundEnabled', this.enabled.toString())
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('soundEnabled', this.enabled.toString())
+    }
     
     if (this.enabled) {
       this.notification() // Play test sound when enabling

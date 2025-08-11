@@ -13,10 +13,12 @@ import { CheckoutModal, ExpiryModal } from './components/Modals'
 import { QuickAddButtons } from './components/QuickAddButtons'
 import { Tutorial, useTutorial } from './components/Tutorial'
 import { ToastContainer, useToasts } from './components/Toast'
+import { MotivationalPopup, useMotivationalPopup } from './components/MotivationalPopup'
 
 // Hooks and Utils
 import { useShoppingList } from './hooks/useShoppingList'
 import { getPopularItems } from './utils/smartSuggestions'
+import { useSoundManager } from './utils/soundManager'
 import { ShoppingItem } from './types'
 
 export default function ShoppingListApp() {
@@ -42,6 +44,12 @@ export default function ShoppingListApp() {
   
   // Toast hook
   const { showSuccess, showError, showInfo } = useToasts()
+  
+  // Sound hook
+  const { playAddToCart, playRemoveFromCart, playPurchase, playDelete } = useSoundManager()
+  
+  // Motivational popup hook
+  const { showPopup, itemCount, showMotivation, hideMotivation } = useMotivationalPopup()
 
   // Modal states
   const [showExpiryModal, setShowExpiryModal] = useState(false)
@@ -69,16 +77,22 @@ export default function ShoppingListApp() {
     if (currentCheckoutIndex < checkoutItems.length - 1) {
       setCurrentCheckoutIndex(prev => prev + 1)
     } else {
+      const purchasedCount = checkoutItems.length
       setShowCheckoutModal(false)
       setCheckoutItems([])
       setCurrentCheckoutIndex(0)
+      playPurchase()
       showSuccess('קנייה הושלמה!', 'כל המוצרים נוספו למזווה')
+      
+      // Show motivational popup
+      setTimeout(() => showMotivation(purchasedCount), 1000)
     }
   }
 
-  // Wrapper functions with toasts
+  // Wrapper functions with toasts and sounds
   const handleAddItem = (name: string, category: string) => {
     addItem(name, category)
+    playAddToCart()
     showSuccess('מוצר נוסף', `${name} נוסף לרשימה`)
   }
 
@@ -87,8 +101,10 @@ export default function ShoppingListApp() {
     if (item) {
       toggleItemInCart(id)
       if (item.isInCart) {
+        playRemoveFromCart()
         showInfo('הוסר מהסל', item.name)
       } else {
+        playAddToCart()
         showSuccess('נוסף לסל', item.name)
       }
     }
@@ -98,6 +114,7 @@ export default function ShoppingListApp() {
     const item = items.find(i => i.id === id)
     if (item) {
       removeItem(id)
+      playDelete()
       showError('מוצר הוסר', item.name)
     }
   }
@@ -116,6 +133,13 @@ export default function ShoppingListApp() {
         <Tutorial 
           isOpen={showTutorial} 
           onClose={closeTutorial} 
+        />
+
+        {/* Motivational Popup */}
+        <MotivationalPopup
+          isOpen={showPopup}
+          onClose={hideMotivation}
+          itemCount={itemCount}
         />
 
         {/* Modals */}

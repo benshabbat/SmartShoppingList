@@ -1,8 +1,9 @@
 import { ShoppingItem } from '../types'
 import { ShoppingItemComponent } from './ShoppingItemComponent'
-import { CATEGORIES, CATEGORY_EMOJIS } from '../utils/constants'
+import { CATEGORIES } from '../utils/constants'
 import { getItemsByCategory } from '../utils/helpers'
 import { FadeIn, SlideUp } from './Animations'
+import { CategoryHeader } from './InteractiveEmoji'
 
 interface CategorySectionProps {
   title: string
@@ -54,13 +55,11 @@ export const CategorySection = ({
             categoryItems.length > 0 && (
               <SlideUp key={category} delay={categoryIndex * 100}>
                 <div className="space-y-3">
-                  <div className={`flex items-center gap-3 p-3 rounded-xl ${headerColor} hover:shadow-md transition-shadow duration-200`}>
-                    <span className="text-2xl animate-bounce-gentle">{CATEGORY_EMOJIS[category as keyof typeof CATEGORY_EMOJIS]}</span>
-                    <h4 className="font-semibold text-right flex-1 text-lg">{category}</h4>
-                    <span className="text-sm bg-white bg-opacity-70 px-3 py-1 rounded-full font-medium shadow-sm">
-                      {categoryItems.length}
-                    </span>
-                  </div>
+                  <CategoryHeader 
+                    category={category}
+                    count={categoryItems.length}
+                    headerColor={headerColor}
+                  />
                   
                   <div className="space-y-2 mr-6">
                     {categoryItems.map((item, itemIndex) => (

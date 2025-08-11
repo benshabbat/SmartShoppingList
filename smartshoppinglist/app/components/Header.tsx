@@ -1,21 +1,38 @@
-import { ShoppingCart, HelpCircle } from 'lucide-react'
+import { ShoppingCart, HelpCircle, Volume2, VolumeX } from 'lucide-react'
+import { useSoundManager } from '../utils/soundManager'
 
 interface HeaderProps {
   onOpenTutorial?: () => void
 }
 
 export const Header = ({ onOpenTutorial }: HeaderProps) => {
+  const { soundEnabled, toggleSound } = useSoundManager()
+
   return (
     <div className="text-center mb-8 relative">
-      {onOpenTutorial && (
+      <div className="absolute top-0 left-0 flex gap-2">
+        {onOpenTutorial && (
+          <button
+            onClick={onOpenTutorial}
+            className="p-2 hover:bg-purple-100 rounded-full transition-colors group"
+            title="עזרה וטיפים"
+          >
+            <HelpCircle className="w-6 h-6 text-purple-600 group-hover:text-purple-700" />
+          </button>
+        )}
+        
         <button
-          onClick={onOpenTutorial}
-          className="absolute top-0 left-0 p-2 hover:bg-purple-100 rounded-full transition-colors group"
-          title="עזרה וטיפים"
+          onClick={toggleSound}
+          className="p-2 hover:bg-purple-100 rounded-full transition-colors group"
+          title={soundEnabled ? 'השתק צלילים' : 'הפעל צלילים'}
         >
-          <HelpCircle className="w-6 h-6 text-purple-600 group-hover:text-purple-700" />
+          {soundEnabled ? (
+            <Volume2 className="w-6 h-6 text-purple-600 group-hover:text-purple-700" />
+          ) : (
+            <VolumeX className="w-6 h-6 text-gray-400 group-hover:text-gray-600" />
+          )}
         </button>
-      )}
+      </div>
 
       <div className="flex items-center justify-center gap-3 mb-3">
         <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full shadow-lg animate-bounce-gentle">

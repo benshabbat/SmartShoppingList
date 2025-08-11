@@ -52,7 +52,7 @@ export const useItemOperations = ({
       const appError = handleError(error)
       onShowError('שגיאה', appError.message)
     }
-  }, [items, onToggleCart, onPlaySound, onShowSuccess, onShowInfo])
+  }, [items, onToggleCart, onPlaySound, onShowSuccess, onShowInfo, onShowError])
 
   /**
    * Handle removing item with notifications and sounds

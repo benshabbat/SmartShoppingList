@@ -49,7 +49,6 @@ export const useStatistics = ({
       return purchaseDate >= twoWeeksAgo && purchaseDate < oneWeekAgo
     }).length
 
-    const weeksOfData = Math.max(1, Math.ceil(purchaseHistory.length / TIME_CONSTANTS.WEEK_IN_DAYS))
     const avgPerWeek = calculateAverage([purchasedThisWeek, purchasedLastWeek])
     
     return {

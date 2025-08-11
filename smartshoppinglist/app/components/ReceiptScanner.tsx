@@ -4,7 +4,7 @@ import { useState, useRef } from 'react'
 import { Upload, Camera, X, Check, ShoppingBag } from 'lucide-react'
 import { Card, CardHeader } from './Card'
 import { ActionButton } from './ActionButton'
-import { ReceiptData, ReceiptItem, ShoppingItem } from '../types'
+import { ReceiptData, ShoppingItem } from '../types'
 import { categorizeItem } from '../utils/smartSuggestions'
 
 interface ReceiptScannerProps {
@@ -27,7 +27,7 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
     try {
       // כאן נוסיף את הלוגיקה לעיבוד הקבלה
       // לעת עתה, אני אדמה נתונים לדוגמה
-      await simulateReceiptProcessing(file)
+      await simulateReceiptProcessing()
     } catch (error) {
       console.error('Error processing receipt:', error)
     } finally {
@@ -35,7 +35,7 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
     }
   }
 
-  const simulateReceiptProcessing = async (_file: File): Promise<void> => {
+  const simulateReceiptProcessing = async (): Promise<void> => {
     return new Promise((resolve) => {
       setTimeout(() => {
         // נתונים מדומים לדוגמה

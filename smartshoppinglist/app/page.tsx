@@ -35,7 +35,6 @@ export default function ShoppingListApp() {
     purchaseHistory,
     pantryItems,
     addItem,
-    addItemToCart,
     toggleItemInCart,
     removeItem,
     clearPurchased,
@@ -81,7 +80,7 @@ export default function ShoppingListApp() {
   })
 
   // Statistics hook
-  const { basicStats, weeklyStats } = useStatistics({
+  const {} = useStatistics({
     purchaseHistory,
     suggestions,
     pantryItems,
@@ -102,7 +101,7 @@ export default function ShoppingListApp() {
   }
 
   const handleReceiptProcessed = (receiptItems: ShoppingItem[], storeName: string) => {
-    addItemsFromReceipt(receiptItems, storeName)
+    addItemsFromReceipt(receiptItems)
     setShowReceiptScanner(false)
     showSuccess(
       'קבלה נוספה בהצלחה!', 

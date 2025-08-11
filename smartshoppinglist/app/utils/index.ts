@@ -1,6 +1,10 @@
 // Utility exports following clean code principles
 export * from './classNames'
 export * from './validation'
+export * from './appConstants'
+export * from './errorHandling'
+export * from './dateUtils'
+export * from './mathUtils'
 
 // Re-export existing utilities
 export * from './categories'

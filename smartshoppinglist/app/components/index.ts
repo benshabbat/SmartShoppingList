@@ -7,6 +7,8 @@ export { ItemActions } from './ItemActions'
 export { NotificationBanner } from './NotificationBanner'
 export { ShoppingItemComponent } from './ShoppingItemComponent'
 export { SuggestionItem } from './SuggestionItem'
+export { ActionButton, ActionButtonGroup } from './ActionButton'
+export { Card, CardHeader, CardBody, CardFooter } from './Card'
 
 // Re-export existing components
 export { ActionButtons } from './ActionButtons'

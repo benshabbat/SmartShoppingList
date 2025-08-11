@@ -21,6 +21,7 @@ import {
   useItemOperations,
   useStatistics 
 } from './hooks'
+import { ShoppingItem } from './types'
 import { getPopularItems } from './utils/smartSuggestions'
 import { useSoundManager } from './utils/soundManager'
 import { MESSAGES } from './utils'
@@ -100,7 +101,7 @@ export default function ShoppingListApp() {
     showSuccess(MESSAGES.SUCCESS.LIST_CREATED, `נוספו ${items.length} פריטים`)
   }
 
-  const handleReceiptProcessed = (receiptItems: any[], storeName: string) => {
+  const handleReceiptProcessed = (receiptItems: ShoppingItem[], storeName: string) => {
     addItemsFromReceipt(receiptItems, storeName)
     setShowReceiptScanner(false)
     showSuccess(

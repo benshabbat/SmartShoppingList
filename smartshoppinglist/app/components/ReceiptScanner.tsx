@@ -35,7 +35,7 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
     }
   }
 
-  const simulateReceiptProcessing = async (file: File): Promise<void> => {
+  const simulateReceiptProcessing = async (_file: File): Promise<void> => {
     return new Promise((resolve) => {
       setTimeout(() => {
         // נתונים מדומים לדוגמה
@@ -97,19 +97,20 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div className="flex items-center gap-2">
-            <ShoppingBag className="w-6 h-6 text-blue-600" />
-            <h2 className="text-xl font-bold">סריקת קבלה</h2>
-          </div>
-          <ActionButton
-            onClick={onClose}
-            variant="secondary"
-            size="sm"
-            icon={X}
-            ariaLabel="סגור"
-          />
-        </CardHeader>
+        <CardHeader
+          title="סריקת קבלה"
+          icon={<ShoppingBag className="w-6 h-6 text-blue-600" />}
+          action={
+            <ActionButton
+              onClick={onClose}
+              variant="secondary"
+              size="sm"
+              icon={X}
+            >
+              סגור
+            </ActionButton>
+          }
+        />
 
         <div className="p-6 space-y-6">
           {!receiptData && !isProcessing && (
@@ -167,7 +168,7 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
                   תאריך: {receiptData.date.toLocaleDateString('he-IL')}
                 </p>
                 <p className="text-gray-600">
-                  סה"כ: ₪{receiptData.totalAmount.toFixed(2)}
+                  סה&quot;כ: ₪{receiptData.totalAmount.toFixed(2)}
                 </p>
               </div>
 
@@ -226,6 +227,7 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
                 <ActionButton
                   onClick={onClose}
                   variant="secondary"
+                  icon={X}
                 >
                   ביטול
                 </ActionButton>

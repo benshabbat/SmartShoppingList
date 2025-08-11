@@ -179,7 +179,7 @@ export const useShoppingList = () => {
     setSuggestions(generateSuggestions(newHistory, items))
   }
 
-  const addItemsFromReceipt = (receiptItems: ShoppingItem[], storeName: string) => {
+  const addItemsFromReceipt = (receiptItems: ShoppingItem[], _storeName: string) => {
     // Add items to purchase history since they're already purchased
     const newHistory = [...purchaseHistory, ...receiptItems]
     setPurchaseHistory(newHistory)

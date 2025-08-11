@@ -17,6 +17,7 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
   const [isProcessing, setIsProcessing] = useState(false)
   const [receiptData, setReceiptData] = useState<ReceiptData | null>(null)
   const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set())
+  const [showManualEntry, setShowManualEntry] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,7 +43,13 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
       const receiptData = await ReceiptProcessor.processReceiptImage(file)
       
       if (receiptData.items.length === 0) {
-        alert('לא נמצאו פריטים בקבלה. אנא נסה:\n• לוודא שהתמונה ברורה וחדה\n• שהתאורה טובה\n• שהקבלה מצולמת ישר\n• להעלות תמונה באיכות גבוהה יותר')
+        const shouldTryManual = confirm('לא נמצאו פריטים בקבלה.\n\nהאם תרצה לנסות הכנסה ידנית של הפריטים?')
+        if (shouldTryManual) {
+          setShowManualEntry(true)
+          return
+        } else {
+          alert('לא נמצאו פריטים בקבלה. אנא נסה:\n• לוודא שהתמונה ברורה וחדה\n• שהתאורה טובה\n• שהקבלה מצולמת ישר\n• להעלות תמונה באיכות גבוהה יותר')
+        }
       } else {
         console.log('Successfully processed receipt with', receiptData.items.length, 'items')
       }
@@ -67,6 +74,43 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
       newSelection.add(index)
     }
     setSelectedItems(newSelection)
+  }
+
+  const handleManualEntry = () => {
+    const manualItems = []
+    let addMore = true
+    
+    while (addMore) {
+      const itemName = prompt('שם הפריט:')
+      if (!itemName) break
+      
+      const priceStr = prompt('מחיר הפריט:')
+      const price = parseFloat(priceStr || '0')
+      
+      if (price > 0) {
+        manualItems.push({
+          name: itemName.trim(),
+          price,
+          quantity: 1,
+          category: categorizeItem(itemName.trim())
+        })
+      }
+      
+      addMore = confirm('האם תרצה להוסיף פריט נוסף?')
+    }
+    
+    if (manualItems.length > 0) {
+      const manualReceiptData: ReceiptData = {
+        items: manualItems,
+        storeName: 'הכנסה ידנית',
+        totalAmount: manualItems.reduce((sum, item) => sum + item.price, 0),
+        date: new Date()
+      }
+      
+      setReceiptData(manualReceiptData)
+      setSelectedItems(new Set(manualItems.map((_, index) => index)))
+      setShowManualEntry(false)
+    }
   }
 
   const handleConfirmSelection = () => {
@@ -110,7 +154,39 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
         />
 
         <div className="p-6 space-y-6">
-          {!receiptData && !isProcessing && (
+          {showManualEntry && (
+            <div className="text-center space-y-4">
+              <div className="border-2 border-blue-300 rounded-lg p-8 bg-blue-50">
+                <h3 className="text-lg font-semibold text-blue-800 mb-4">הכנסה ידנית של פריטים</h3>
+                <p className="text-blue-700 mb-6">
+                  הזיהוי האוטומטי לא עבד כצפוי. תוכל להכניס את הפריטים באופן ידני.
+                </p>
+                
+                <div className="flex gap-4 justify-center">
+                  <ActionButton
+                    onClick={handleManualEntry}
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                    icon={Upload}
+                  >
+                    התחל הכנסה ידנית
+                  </ActionButton>
+                  
+                  <ActionButton
+                    onClick={() => {
+                      setShowManualEntry(false)
+                      setReceiptData(null)
+                    }}
+                    variant="secondary"
+                    icon={X}
+                  >
+                    חזור לסריקה
+                  </ActionButton>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {!receiptData && !isProcessing && !showManualEntry && (
             <div className="text-center space-y-4">
               <input
                 ref={fileInputRef}
@@ -147,6 +223,14 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
                     variant="secondary"
                   >
                     צלם קבלה
+                  </ActionButton>
+                  
+                  <ActionButton
+                    onClick={() => setShowManualEntry(true)}
+                    variant="secondary"
+                    className="border-green-300 text-green-700 hover:bg-green-50"
+                  >
+                    הכנסה ידנית
                   </ActionButton>
                 </div>
                 

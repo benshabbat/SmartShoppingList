@@ -121,62 +121,58 @@ export class ReceiptProcessor {
   }
 
   private static parseReceiptTextAggressive(text: string): ReceiptData {
-    console.log('Starting aggressive parsing...')
+    console.log('Starting simplified parsing...')
     const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 1)
     
-    // זיהוי שם החנות
-    const storeName = this.detectStoreName(lines) || 'לא זוהה'
-    console.log('Store name (aggressive):', storeName)
+    // זיהוי שם החנות - רק בשורות הראשונות
+    const storeName = this.detectStoreName(lines.slice(0, 8)) || 'לא זוהה'
+    console.log('Store name:', storeName)
+    
+    // זיהוי תאריך פשוט
+    const receiptDate = this.detectSimpleDate(lines) || new Date()
+    console.log('Receipt date:', receiptDate)
     
     const items: ReceiptItem[] = []
     
-    // עבור על כל שורה ונסה לחלץ פריטים בצורה אגרסיבית
+    // עבור על כל שורה ונסה לחלץ פריטים - התמקדות בפשטות
     for (const line of lines) {
       // דלג על שורות שהן ברור לא פריטים
       if (line.length < 3 || 
           /^[\d\s\-_=*]{4,}$/.test(line) ||
-          /^(תאריך|date|time|שעה|קופה|אסמכתא)/gi.test(line)) {
+          /^(תאריך|date|time|שעה|קופה|אסמכתא|ברקוד|מחלקה)/gi.test(line)) {
         continue
       }
       
-      // חפש כל מספר שנראה כמו מחיר
-      const priceMatches = line.match(/\d+[.,]\d{1,2}/g) || line.match(/\d+/g) || []
+      // חפש מחיר בשורה
+      const price = this.extractPrice(line)
       
-      for (const priceMatch of priceMatches) {
-        const price = parseFloat(priceMatch.replace(',', '.'))
+      if (price && price >= 1 && price <= 1000) {
+        // חלץ שם פריט פשוט
+        let itemName = line.replace(/[\d\.,₪\s]+$/g, '').trim() // הסר מחיר מהסוף
+        itemName = itemName.replace(/^[\d\s]+/, '').trim() // הסר מספרים מההתחלה
+        itemName = itemName.replace(/[^\u0590-\u05ff\w\s]/g, ' ').trim() // הסר תווים מיוחדים
+        itemName = itemName.replace(/\s+/g, ' ').trim() // נקה רווחים כפולים
         
-        // בדוק שזה מחיר סביר (בין 1 ל אלף שקלים)
-        if (price >= 1 && price <= 1000) {
-          // נסה לחלץ את שם הפריט
-          let itemName = line.replace(priceMatch, '').trim()
-          itemName = itemName.replace(/[₪\d\.,\s]+/g, ' ').trim()
-          itemName = itemName.replace(/\s+/g, ' ').trim()
-          
-          // נקה תווים מיוחדים מההתחלה והסוף
-          itemName = itemName.replace(/^[^\u0590-\u05ff\w]+|[^\u0590-\u05ff\w]+$/g, '')
-          
-          if (itemName.length >= 2 && !items.find(item => item.name === itemName)) {
-            items.push({
-              name: itemName,
-              price,
-              quantity: 1,
-              category: detectCategory(itemName)
-            })
-            console.log('Found aggressive item:', itemName, 'Price:', price)
-            break // רק פריט אחד לכל שורה
-          }
+        // בדוק שיש שם פריט תקין
+        if (itemName.length >= 2 && !items.find(item => item.name === itemName)) {
+          items.push({
+            name: itemName,
+            price,
+            quantity: 1
+          })
+          console.log('Found item:', itemName, 'Price:', price)
         }
       }
     }
     
     const totalAmount = items.reduce((sum, item) => sum + item.price, 0)
     
-    console.log('Aggressive parsing found', items.length, 'items')
+    console.log('Found', items.length, 'items, total:', totalAmount)
     
     return {
       storeName,
       totalAmount,
-      date: new Date(),
+      date: receiptDate,
       items
     }
   }
@@ -184,25 +180,29 @@ export class ReceiptProcessor {
   private static parseReceiptText(text: string): ReceiptData {
     const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0)
     
-    console.log('Processing lines:', lines) // דיבוג
+    console.log('Processing lines:', lines.length, 'lines')
     
-    // זיהוי שם החנות
-    const storeName = this.detectStoreName(lines)
+    // זיהוי שם החנות - התמקד בשורות הראשונות
+    const storeName = this.detectStoreName(lines.slice(0, 8))
     console.log('Detected store:', storeName)
     
-    // זיהוי פריטים
-    const items = this.detectItems(lines)
-    console.log('Detected items:', items)
+    // זיהוי תאריך
+    const receiptDate = this.detectSimpleDate(lines) || new Date()
+    console.log('Detected date:', receiptDate)
     
-    // זיהוי סכום כולל
+    // זיהוי פריטים - פשוט ויעיל
+    const items = this.detectItemsSimple(lines)
+    console.log('Detected items:', items.length)
+    
+    // סכום כולל
     const totalAmount = this.detectTotalAmount(lines) || 
-                       items.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0)
-    console.log('Detected total:', totalAmount)
+                       items.reduce((sum: number, item: ReceiptItem) => sum + item.price, 0)
+    console.log('Total amount:', totalAmount)
     
     return {
-      storeName,
+      storeName: storeName || 'לא זוהה',
       totalAmount,
-      date: new Date(),
+      date: receiptDate,
       items
     }
   }
@@ -240,6 +240,45 @@ export class ReceiptProcessor {
     
     // אם לא נמצא סכום כולל, נחשב מסכום כל הפריטים
     return 0
+  }
+
+  private static detectItemsSimple(lines: string[]): ReceiptItem[] {
+    const items: ReceiptItem[] = []
+    
+    for (const line of lines) {
+      // דלג על שורות לא רלוונטיות
+      if (this.shouldFilterLine(line)) {
+        continue
+      }
+      
+      // חפש מחיר בשורה
+      const price = this.extractPrice(line)
+      if (!price || price < 1 || price > 1000) {
+        continue
+      }
+      
+      // חלץ שם הפריט בצורה פשוטה
+      let itemName = line
+      
+      // הסר מחירים
+      itemName = itemName.replace(/[\d\.,₪]+/g, '').trim()
+      
+      // נקה תווים מיוחדים
+      itemName = itemName.replace(/[^\u0590-\u05ff\w\s]/g, ' ').trim()
+      itemName = itemName.replace(/\s+/g, ' ').trim()
+      
+      // בדוק שיש שם תקין
+      if (itemName.length >= 2 && !items.find(item => item.name === itemName)) {
+        items.push({
+          name: itemName,
+          price,
+          quantity: 1
+        })
+        console.log('Simple detection - Item:', itemName, 'Price:', price)
+      }
+    }
+    
+    return items
   }
 
   private static detectItems(lines: string[]): ReceiptItem[] {
@@ -397,6 +436,39 @@ export class ReceiptProcessor {
       }
     }
     return 1
+  }
+
+  private static detectSimpleDate(lines: string[]): Date | null {
+    // חפש תאריך בפורמטים נפוצים בקבלות ישראליות
+    const datePatterns = [
+      /(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2,4})/g, // 12/08/2025 או 12-08-25
+      /(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2})/g,   // 12/08/25
+      /תאריך[:\s]*(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2,4})/gi
+    ]
+    
+    for (const line of lines.slice(0, 15)) { // בדוק רק 15 השורות הראשונות
+      for (const pattern of datePatterns) {
+        const match = pattern.exec(line)
+        if (match) {
+          const day = parseInt(match[1])
+          const month = parseInt(match[2])
+          let year = parseInt(match[3])
+          
+          // תקן שנה דו-ספרתית
+          if (year < 100) {
+            year += year < 50 ? 2000 : 1900
+          }
+          
+          // בדוק שהתאריך סביר
+          if (day >= 1 && day <= 31 && month >= 1 && month <= 12 && year >= 2020 && year <= 2030) {
+            console.log('Found date:', day, month, year)
+            return new Date(year, month - 1, day)
+          }
+        }
+      }
+    }
+    
+    return null
   }
 
   // פונקציה לחילוץ טקסט גולמי בלבד (לצרכי דיבוג)

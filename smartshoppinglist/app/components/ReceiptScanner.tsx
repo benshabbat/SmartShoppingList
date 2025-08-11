@@ -125,23 +125,23 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
   }
 
   const handleDemoReceipt = () => {
-    // יצירת קבלה דמה לבדיקות
+    // יצירת קבלה דמה פשוטה - התמקדות ב-4 פרטים בלבד
     const demoReceiptData: ReceiptData = {
       items: [
-        { name: 'חלב 3%', price: 5.90, quantity: 1, category: 'מוצרי חלב' },
-        { name: 'לחם פרוס', price: 4.50, quantity: 1, category: 'לחם ומאפים' },
-        { name: 'בננות', price: 12.90, quantity: 1, category: 'פירות וירקות' },
-        { name: 'יוגורט', price: 3.80, quantity: 2, category: 'מוצרי חלב' },
-        { name: 'עגבניות', price: 8.50, quantity: 1, category: 'פירות וירקות' }
+        { name: 'חלב 3%', price: 5.90, quantity: 1 },
+        { name: 'לחם פרוס', price: 4.50, quantity: 1 },
+        { name: 'בננות', price: 12.90, quantity: 1 },
+        { name: 'יוגורט טבעי', price: 7.60, quantity: 1 },
+        { name: 'עגבניות שרי', price: 8.50, quantity: 1 }
       ],
-      storeName: 'דוגמה - רמי לוי',
-      totalAmount: 35.60,
-      date: new Date()
+      storeName: 'רמי לוי',
+      totalAmount: 39.40,
+      date: new Date(2025, 7, 11) // 11 באוגוסט 2025
     }
     
     setReceiptData(demoReceiptData)
     setSelectedItems(new Set(demoReceiptData.items.map((_, index) => index)))
-    setRawOcrText('דוגמה של טקסט OCR:\nרמי לוי\nחלב 3% 5.90\nלחם פרוס 4.50\nבננות 12.90\nיוגורט 3.80 x2\nעגבניות 8.50\nסה"כ: 35.60')
+    setRawOcrText('רמי לוי\n11/08/2025\nחלב 3% 5.90\nלחם פרוס 4.50\nבננות 12.90\nיוגורט טבעי 7.60\nעגבניות שרי 8.50\nסה"כ: 39.40')
   }
 
   const handleConfirmSelection = () => {
@@ -230,11 +230,17 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-12">
                 <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                 <p className="text-gray-600 mb-4">
-                  העלה תמונה של קבלה לזיהוי אוטומטי של הפריטים
+                  העלה תמונה של קבלה לזיהוי:
                 </p>
-                <p className="text-sm text-gray-500 mb-6">
-                  התמונה תעובד באמצעות זיהוי טקסט מתקדם (OCR)
-                </p>
+                <div className="text-center space-y-2 mb-6">
+                  <p className="text-sm font-medium text-blue-600">🎯 מה נזהה:</p>
+                  <div className="grid grid-cols-2 gap-2 text-xs text-gray-600">
+                    <div>📍 שם החנות</div>
+                    <div>📅 תאריך הקנייה</div>
+                    <div>🛒 שמות הפריטים</div>
+                    <div>💰 מחירי הפריטים</div>
+                  </div>
+                </div>
                 
                 <div className="flex gap-4 justify-center">
                   <ActionButton
@@ -309,12 +315,12 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
           {receiptData && (
             <div className="space-y-6">
               <div className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="font-bold text-lg mb-2">{receiptData.storeName}</h3>
+                <h3 className="font-bold text-lg mb-2">📍 {receiptData.storeName}</h3>
                 <p className="text-gray-600">
-                  תאריך: {receiptData.date.toLocaleDateString('he-IL')}
+                  📅 תאריך: {receiptData.date.toLocaleDateString('he-IL')}
                 </p>
-                <p className="text-gray-600">
-                  סה&quot;כ: ₪{receiptData.totalAmount.toFixed(2)}
+                <p className="text-gray-600 font-semibold">
+                  💰 סה&quot;כ: ₪{receiptData.totalAmount.toFixed(2)}
                 </p>
               </div>
 
@@ -348,13 +354,10 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
                       </div>
                       
                       <div className="flex-1">
-                        <p className="font-medium">{item.name}</p>
-                        {item.quantity && (
-                          <p className="text-sm text-gray-600">כמות: {item.quantity}</p>
-                        )}
+                        <p className="font-medium">🛒 {item.name}</p>
                       </div>
                       
-                      <p className="font-semibold">₪{item.price.toFixed(2)}</p>
+                      <p className="font-semibold text-lg">₪{item.price.toFixed(2)}</p>
                     </div>
                   ))}
                 </div>

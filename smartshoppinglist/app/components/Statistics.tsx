@@ -135,42 +135,42 @@ export const Statistics = ({
   ]
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-      <div className="flex items-center justify-between mb-6">
+    <div className="bg-white rounded-2xl shadow-lg p-4 xl:p-6 border border-gray-100">
+      <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between mb-4 xl:mb-6 gap-3">
+        <div className="flex items-center gap-3 order-2 xl:order-1">
+          <div className="p-2 xl:p-3 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full">
+            <History className="w-5 h-5 xl:w-6 xl:h-6 text-white" />
+          </div>
+          <h3 className="font-bold text-lg xl:text-xl text-gray-800">סטטיסטיקות מתקדמות</h3>
+        </div>
         <button
           onClick={() => setShowDetails(!showDetails)}
-          className="flex items-center gap-2 text-gray-500 hover:text-gray-700 transition-colors"
+          className="flex items-center gap-2 text-gray-500 hover:text-gray-700 transition-colors order-1 xl:order-2 self-end xl:self-auto"
         >
           {showDetails ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           <span className="text-sm">פרטים</span>
         </button>
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full">
-            <History className="w-5 h-5 text-white" />
-          </div>
-          <h3 className="font-bold text-xl text-gray-800">סטטיסטיקות מתקדמות</h3>
-        </div>
       </div>
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-6 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 lg:gap-4">
         {stats.map((stat, index) => {
           const IconComponent = stat.icon
           return (
             <div 
               key={index} 
-              className={`${stat.bgColor} rounded-xl p-3 lg:p-4 text-center border border-gray-100 hover:shadow-lg transition-all duration-300 transform hover:scale-105`}
+              className={`${stat.bgColor} rounded-xl p-4 xl:p-5 text-center border border-gray-100 hover:shadow-lg transition-all duration-300 transform hover:scale-105 min-h-[140px] xl:min-h-[160px] flex flex-col justify-center`}
             >
-              <div className={`inline-flex p-2 lg:p-3 rounded-full bg-gradient-to-r ${stat.color} mb-2 lg:mb-3 shadow-lg`}>
-                <IconComponent className="w-4 h-4 lg:w-6 lg:h-6 text-white" />
+              <div className={`inline-flex p-2 xl:p-3 rounded-full bg-gradient-to-r ${stat.color} mb-3 xl:mb-4 shadow-lg mx-auto`}>
+                <IconComponent className="w-5 h-5 xl:w-6 xl:h-6 text-white" />
               </div>
-              <div className={`${stat.isText ? 'text-base lg:text-lg' : 'text-2xl lg:text-3xl'} font-bold ${stat.textColor} mb-1 lg:mb-2`}>
+              <div className={`${stat.isText ? 'text-sm xl:text-base' : 'text-xl xl:text-2xl'} font-bold ${stat.textColor} mb-2 xl:mb-3 leading-tight`}>
                 {stat.value}
               </div>
-              <div className="text-xs lg:text-sm text-gray-600 font-medium mb-1">
+              <div className="text-xs xl:text-sm text-gray-600 font-medium mb-1 xl:mb-2 leading-tight">
                 {stat.label}
               </div>
               {stat.subtext && (
-                <div className="text-xs text-gray-500 font-normal">
+                <div className="text-xs text-gray-500 font-normal leading-tight">
                   {stat.subtext}
                 </div>
               )}
@@ -181,21 +181,21 @@ export const Statistics = ({
 
       {/* סטטיסטיקות נוספות */}
       {showDetails && purchaseHistory.length > 0 && (
-        <div className="mt-6 pt-6 border-t border-gray-200">
-          <h4 className="font-semibold text-gray-700 mb-4 text-right">פרטים נוספים</h4>
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 text-sm">
-            <div className="bg-gray-50 rounded-lg p-3">
-              <div className="text-gray-600 text-right">רכישה אחרונה:</div>
-              <div className="font-medium text-gray-800 text-right">
+        <div className="mt-4 xl:mt-6 pt-4 xl:pt-6 border-t border-gray-200">
+          <h4 className="font-semibold text-gray-700 mb-3 xl:mb-4 text-right">פרטים נוספים</h4>
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 xl:gap-4 text-sm">
+            <div className="bg-gray-50 rounded-lg p-3 xl:p-4">
+              <div className="text-gray-600 text-right mb-1">רכישה אחרונה:</div>
+              <div className="font-medium text-gray-800 text-right text-xs xl:text-sm">
                 {purchaseHistory.length > 0 
                   ? formatDate(new Date(purchaseHistory[purchaseHistory.length - 1].purchasedAt!))
                   : 'אין נתונים'
                 }
               </div>
             </div>
-            <div className="bg-gray-50 rounded-lg p-3">
-              <div className="text-gray-600 text-right">מוצר פופולרי:</div>
-              <div className="font-medium text-gray-800 text-right">
+            <div className="bg-gray-50 rounded-lg p-3 xl:p-4">
+              <div className="text-gray-600 text-right mb-1">מוצר פופולרי:</div>
+              <div className="font-medium text-gray-800 text-right text-xs xl:text-sm">
                 {(() => {
                   const itemCount: Record<string, number> = {}
                   purchaseHistory.forEach(item => {
@@ -207,15 +207,15 @@ export const Statistics = ({
                 })()}
               </div>
             </div>
-            <div className="bg-gray-50 rounded-lg p-3">
-              <div className="text-gray-600 text-right">מגמת קניות:</div>
-              <div className="font-medium text-gray-800 text-right">
+            <div className="bg-gray-50 rounded-lg p-3 xl:p-4">
+              <div className="text-gray-600 text-right mb-1">מגמת קניות:</div>
+              <div className="font-medium text-gray-800 text-right text-xs xl:text-sm">
                 {trendIcon} {trend}
               </div>
             </div>
-            <div className="bg-gray-50 rounded-lg p-3">
-              <div className="text-gray-600 text-right">שינוי שבועי:</div>
-              <div className="font-medium text-gray-800 text-right">
+            <div className="bg-gray-50 rounded-lg p-3 xl:p-4">
+              <div className="text-gray-600 text-right mb-1">שינוי שבועי:</div>
+              <div className="font-medium text-gray-800 text-right text-xs xl:text-sm">
                 {lastWeekPurchases - previousWeekPurchases > 0 ? '+' : ''}
                 {lastWeekPurchases - previousWeekPurchases} מוצרים
               </div>
@@ -224,9 +224,9 @@ export const Statistics = ({
 
           {/* גרף פשוט של קניות בשבוע האחרון */}
           {purchasedThisWeek > 0 && (
-            <div className="mt-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4">
-              <h5 className="font-medium text-gray-700 mb-3 text-right">פעילות השבוע</h5>
-              <div className="flex items-end justify-between h-16 gap-1">
+            <div className="mt-4 xl:mt-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 xl:p-6">
+              <h5 className="font-medium text-gray-700 mb-3 xl:mb-4 text-right">פעילות השבוע</h5>
+              <div className="flex items-end justify-between h-16 xl:h-20 gap-1 xl:gap-2">
                 {Array.from({ length: 7 }, (_, i) => {
                   const date = new Date()
                   date.setDate(date.getDate() - (6 - i))
@@ -241,34 +241,34 @@ export const Statistics = ({
                     <div key={i} className="flex flex-col items-center">
                       <div 
                         className="bg-gradient-to-t from-blue-400 to-blue-600 rounded-t"
-                        style={{ height: `${height}px`, width: '20px' }}
+                        style={{ height: `${height}px`, width: '16px' }}
                       />
-                      <div className="text-xs text-gray-500 mt-1">
+                      <div className="text-xs text-gray-500 mt-1 xl:mt-2">
                         {date.getDate()}
                       </div>
                     </div>
                   )
                 })}
               </div>
-              <div className="text-xs text-gray-500 text-center mt-2">קניות ביום</div>
+              <div className="text-xs text-gray-500 text-center mt-2 xl:mt-3">קניות ביום</div>
             </div>
           )}
 
           {/* חלוקה לפי קטגוריות */}
           {Object.keys(categoryCount).length > 1 && (
-            <div className="mt-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-4">
-              <h5 className="font-medium text-gray-700 mb-3 text-right">חלוקה לפי קטגוריות</h5>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+            <div className="mt-4 xl:mt-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-4 xl:p-6">
+              <h5 className="font-medium text-gray-700 mb-3 xl:mb-4 text-right">חלוקה לפי קטגוריות</h5>
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2 gap-2 xl:gap-3">
                 {Object.entries(categoryCount)
                   .sort(([,a], [,b]) => b - a)
                   .slice(0, 5)
                   .map(([category, count], index) => {
                     const percentage = Math.round((count / totalPurchased) * 100)
                     return (
-                      <div key={category} className="flex items-center gap-3">
-                        <div className="flex-1 bg-gray-200 rounded-full h-2">
+                      <div key={category} className="flex items-center gap-2 xl:gap-3">
+                        <div className="flex-1 bg-gray-200 rounded-full h-2 xl:h-3">
                           <div 
-                            className={`h-2 rounded-full bg-gradient-to-r ${
+                            className={`h-2 xl:h-3 rounded-full bg-gradient-to-r ${
                               ['from-purple-400 to-purple-600', 'from-pink-400 to-pink-600', 
                                'from-indigo-400 to-indigo-600', 'from-blue-400 to-blue-600',
                                'from-green-400 to-green-600'][index] || 'from-gray-400 to-gray-600'
@@ -276,7 +276,7 @@ export const Statistics = ({
                             style={{ width: `${percentage}%` }}
                           />
                         </div>
-                        <div className="text-sm text-gray-600 text-right min-w-0 flex-shrink-0">
+                        <div className="text-xs xl:text-sm text-gray-600 text-right min-w-0 flex-shrink-0">
                           {category} ({count})
                         </div>
                       </div>
@@ -291,12 +291,12 @@ export const Statistics = ({
 
       {/* פריטים שעומדים לפוג - תצוגה מפורטת */}
       {showDetails && expiringShortly > 0 && (
-        <div className="mt-6 pt-6 border-t border-gray-200">
-          <h4 className="font-semibold text-orange-700 mb-4 text-right flex items-center gap-2">
+        <div className="mt-4 xl:mt-6 pt-4 xl:pt-6 border-t border-gray-200">
+          <h4 className="font-semibold text-orange-700 mb-3 xl:mb-4 text-right flex items-center gap-2">
             <Clock className="w-4 h-4" />
             מוצרים שעומדים לפוג בקרוב
           </h4>
-          <div className="space-y-2">
+          <div className="space-y-2 xl:space-y-3">
             {pantryItems
               .filter(item => {
                 if (!item.expiryDate) return false
@@ -309,7 +309,7 @@ export const Statistics = ({
                 const expiryDate = new Date(item.expiryDate!)
                 const daysUntilExpiry = Math.ceil((expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
                 return (
-                  <div key={index} className="bg-gradient-to-r from-orange-50 to-red-50 rounded-lg p-3 border border-orange-200">
+                  <div key={index} className="bg-gradient-to-r from-orange-50 to-red-50 rounded-lg p-3 xl:p-4 border border-orange-200">
                     <div className="flex justify-between items-center">
                       <div className={`text-sm font-medium ${
                         daysUntilExpiry === 0 ? 'text-red-600' : 
@@ -319,7 +319,7 @@ export const Statistics = ({
                          daysUntilExpiry === 1 ? 'פג מחר' : `${daysUntilExpiry} ימים`}
                       </div>
                       <div className="text-right">
-                        <div className="font-medium text-gray-800">{item.name}</div>
+                        <div className="font-medium text-gray-800 text-sm xl:text-base">{item.name}</div>
                         <div className="text-xs text-gray-500">{formatDate(expiryDate)}</div>
                       </div>
                     </div>
@@ -333,8 +333,8 @@ export const Statistics = ({
 
       {/* כפתורי פעולה */}
       {showDetails && (
-        <div className="mt-6 pt-6 border-t border-gray-200">
-          <div className="flex flex-wrap gap-3 justify-center sm:justify-start lg:justify-center xl:justify-start">
+        <div className="mt-4 xl:mt-6 pt-4 xl:pt-6 border-t border-gray-200">
+          <div className="flex flex-wrap gap-3 xl:gap-4 justify-center sm:justify-start lg:justify-center xl:justify-start">
             <button
               onClick={() => {
                 const data = {
@@ -352,7 +352,7 @@ export const Statistics = ({
                 document.body.removeChild(a)
                 URL.revokeObjectURL(url)
               }}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition-colors flex items-center gap-2"
+              className="px-4 xl:px-6 py-2 xl:py-3 bg-blue-500 text-white rounded-lg text-sm xl:text-base hover:bg-blue-600 transition-colors flex items-center gap-2"
             >
               <Package className="w-4 h-4" />
               ייצא נתונים
@@ -366,7 +366,7 @@ export const Statistics = ({
                   alert('הפיצ\'ר יתווסף בקרוב!')
                 }
               }}
-              className="px-4 py-2 bg-orange-500 text-white rounded-lg text-sm hover:bg-orange-600 transition-colors flex items-center gap-2"
+              className="px-4 xl:px-6 py-2 xl:py-3 bg-orange-500 text-white rounded-lg text-sm xl:text-base hover:bg-orange-600 transition-colors flex items-center gap-2"
             >
               <Clock className="w-4 h-4" />
               נקה היסטוריה ישנה

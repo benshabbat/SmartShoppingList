@@ -26,15 +26,34 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
     setIsProcessing(true)
     
     try {
+      // בדיקת גודל קובץ
+      if (file.size > 10 * 1024 * 1024) { // 10MB
+        throw new Error('הקובץ גדול מדי. אנא בחר קובץ קטן מ-10MB.')
+      }
+
+      // בדיקת סוג קובץ
+      if (!file.type.startsWith('image/')) {
+        throw new Error('אנא בחר קובץ תמונה בלבד.')
+      }
+
+      console.log('Processing file:', file.name, 'Size:', file.size, 'Type:', file.type)
+      
       // עיבוד אמיתי עם OCR
       const receiptData = await ReceiptProcessor.processReceiptImage(file)
+      
+      if (receiptData.items.length === 0) {
+        alert('לא נמצאו פריטים בקבלה. אנא נסה:\n• לוודא שהתמונה ברורה וחדה\n• שהתאורה טובה\n• שהקבלה מצולמת ישר\n• להעלות תמונה באיכות גבוהה יותר')
+      } else {
+        console.log('Successfully processed receipt with', receiptData.items.length, 'items')
+      }
       
       setReceiptData(receiptData)
       // בברירת מחדל, בחר את כל הפריטים
       setSelectedItems(new Set(receiptData.items.map((_, index) => index)))
     } catch (error) {
       console.error('Error processing receipt:', error)
-      alert('שגיאה בעיבוד הקבלה. אנא נסה שוב או בדוק שהתמונה ברורה.')
+      const errorMessage = error instanceof Error ? error.message : 'שגיאה לא צפויה'
+      alert(`שגיאה בעיבוד הקבלה: ${errorMessage}\n\nטיפים:\n• וודא שהתמונה ברורה וחדה\n• נסה תמונה עם תאורה טובה יותר\n• צלם ישר מול הקבלה\n• נסה לחתוך את התמונה לחלק הרלוונטי`)
     } finally {
       setIsProcessing(false)
     }
@@ -132,12 +151,18 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
                 </div>
                 
                 <div className="mt-4 text-xs text-gray-500">
-                  <p>💡 טיפים לתוצאות טובות יותר:</p>
+                  <p className="font-medium">💡 טיפים לתוצאות טובות יותר:</p>
                   <ul className="text-right mt-2 space-y-1">
-                    <li>• וודא שהקבלה מוארת היטב</li>
-                    <li>• צלם ישר ובמקביל לקבלה</li>
+                    <li>• וודא שהקבלה מוארת היטב ללא צללים</li>
+                    <li>• צלם ישר ובמקביל לקבלה (לא באלכסון)</li>
                     <li>• הקפד שכל הטקסט יהיה ברור וחד</li>
+                    <li>• נסה לחתוך את התמונה לחלק הרלוונטי בלבד</li>
+                    <li>• השתמש ברזולוציה גבוהה (לא לדחוס את התמונה)</li>
                   </ul>
+                  <div className="mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded text-yellow-800">
+                    <p className="font-medium">⚠️ שימו לב:</p>
+                    <p>זיהוי הטקסט עובד הכי טוב עם קבלות בעברית ואנגלית מחנויות ישראליות מוכרות</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -146,10 +171,13 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
           {isProcessing && (
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <p className="text-gray-600">מעבד את הקבלה באמצעות זיהוי טקסט...</p>
+              <p className="text-gray-600 font-medium">מעבד את הקבלה באמצעות זיהוי טקסט...</p>
               <p className="text-sm text-gray-500 mt-2">
                 זה עלול לקחת עד דקה בהתאם לאיכות התמונה
               </p>
+              <div className="mt-4 p-3 bg-blue-50 rounded-lg text-sm text-blue-700">
+                💡 בזמן ההמתנה: הקפד שהדפדפן לא נסגר כדי שהעיבוד יסתיים בהצלחה
+              </div>
             </div>
           )}
 

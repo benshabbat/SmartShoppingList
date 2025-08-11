@@ -20,7 +20,10 @@ export class ReceiptProcessor {
     /(\d+\.?\d*)\s*₪/g,           // 12.50₪
     /₪\s*(\d+\.?\d*)/g,           // ₪12.50
     /(\d+\.\d{2})\s*$/gm,         // 12.50 בסוף שורה
-    /(\d+)\s*\.(\d{2})/g          // 12.50
+    /(\d+)\s*\.(\d{2})\s*$/gm,    // 12.50 בסוף שורה
+    /(\d+\.\d{1,2})\s/g,          // 12.5 או 12.50 עם רווח אחריו
+    /\s(\d+\.\d{2})\s/g,          // 12.50 עם רווחים משני הצדדים
+    /(\d{1,3})\s*,\s*(\d{2})/g    // 12,50 (פורמט אירופאי)
   ]
 
   private static readonly QUANTITY_PATTERNS = [
@@ -37,16 +40,16 @@ export class ReceiptProcessor {
   ]
 
   private static readonly ITEM_FILTER_PATTERNS = [
-    /^[\d\s\-_=]+$/,              // רק מספרים וסימנים
-    /^[₪\d\s\.\,]+$/,             // רק מחירים
+    /^[\d\s\-_=*]{4,}$/,          // רק מספרים וסימנים (4+ תווים)
+    /^[₪\d\s\.\,]{4,}$/,          // רק מחירים (4+ תווים)
     /^\s*$/,                      // שורות ריקות
-    /^[\*\-_=]{3,}$/,             // קווים מפרידים
-    /תאריך|date|time|שעה/gi,      // תאריכים ושעות
-    /מס['\s]*עסק|עוסק/gi,         // מספר עוסק
+    /^[\*\-_=]{5,}$/,             // קווים מפרידים ארוכים
+    /^(תאריך|date|time|שעה)/gi,   // תאריכים ושעות בהתחלת שורה
+    /^מס['\s]*עסק|^עוסק/gi,       // מספר עוסק בהתחלת שורה
     /^ח['\.]?פ['\.]?/gi,          // חשבונית פיסקלית
-    /קופה|קופאי|מכירה/gi,         // מידע על הקופה
-    /ברקוד|barcode/gi,            // ברקודים
-    /מחלקה|אגף|מדף/gi             // מידע על מחלקות
+    /^(קופה|קופאי|מכירה)/gi,      // מידע על הקופה בהתחלת שורה
+    /^(ברקוד|barcode)/gi,         // ברקודים בהתחלת שורה
+    /אסמכתא|קבלה|receipt/gi       // מילות מפתח של קבלות
   ]
 
   public static async processReceiptImage(file: File): Promise<ReceiptData> {
@@ -54,11 +57,13 @@ export class ReceiptProcessor {
       // המרת הקובץ ל-base64 לטסרקט
       const imageData = await this.fileToBase64(file)
       
-      // זיהוי הטקסט בתמונה
+      // זיהוי הטקסט בתמונה עם הגדרות משופרות
       const { data } = await Tesseract.recognize(imageData, 'heb+eng', {
         logger: m => console.log(m)
       })
 
+      console.log('OCR Result:', data.text) // להדפסה לצורכי דיבוג
+      
       // עיבוד הטקסט שזוהה
       return this.parseReceiptText(data.text)
     } catch (error) {
@@ -79,14 +84,20 @@ export class ReceiptProcessor {
   private static parseReceiptText(text: string): ReceiptData {
     const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0)
     
+    console.log('Processing lines:', lines) // דיבוג
+    
     // זיהוי שם החנות
     const storeName = this.detectStoreName(lines)
-    
-    // זיהוי סכום כולל
-    const totalAmount = this.detectTotalAmount(lines)
+    console.log('Detected store:', storeName)
     
     // זיהוי פריטים
     const items = this.detectItems(lines)
+    console.log('Detected items:', items)
+    
+    // זיהוי סכום כולל
+    const totalAmount = this.detectTotalAmount(lines) || 
+                       items.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0)
+    console.log('Detected total:', totalAmount)
     
     return {
       storeName,
@@ -149,7 +160,44 @@ export class ReceiptProcessor {
       }
     }
     
+    // אם לא נמצאו פריטים, נסה גישה פחות מגבילה
+    if (items.length === 0) {
+      console.log('No items found with strict filtering, trying relaxed approach...')
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i]
+        
+        // רק פילטרים בסיסיים
+        if (line.length < 3 || /^[\d\s\-_=*]{5,}$/.test(line)) {
+          continue
+        }
+        
+        const item = this.parseItemLineRelaxed(line, lines[i + 1] || '')
+        if (item) {
+          items.push(item)
+        }
+      }
+    }
+    
     return items
+  }
+
+  private static parseItemLineRelaxed(line: string, nextLine: string): ReceiptItem | null {
+    // גישה פחות מגבילה לזיהוי פריטים
+    const priceMatch = this.extractPrice(line) || this.extractPrice(nextLine)
+    if (!priceMatch) return null
+    
+    // נסה לנקות את השם בצורה פשוטה יותר
+    let itemName = line.replace(/[\d\.₪,\s]+$/g, '').trim()
+    itemName = itemName.replace(/^[\d\.\s]+/, '').trim()
+    
+    if (itemName.length < 2) return null
+    
+    return {
+      name: itemName,
+      price: priceMatch,
+      quantity: this.extractQuantity(line) || 1,
+      category: detectCategory(itemName)
+    }
   }
 
   private static shouldFilterLine(line: string): boolean {
@@ -162,10 +210,20 @@ export class ReceiptProcessor {
     if (!price) return null
     
     // נקה את השורה מהמחיר כדי לקבל את שם הפריט
-    let itemName = line.replace(/[\d\.,₪\s]+$/g, '').trim()
+    let itemName = line
     
-    // נקה תווים מיוחדים
-    itemName = itemName.replace(/[^\u0590-\u05ff\w\s\-]/g, '').trim()
+    // הסר מחירים מהשורה
+    this.PRICE_PATTERNS.forEach(pattern => {
+      itemName = itemName.replace(pattern, '').trim()
+    })
+    
+    // הסר כמויות מהשורה
+    this.QUANTITY_PATTERNS.forEach(pattern => {
+      itemName = itemName.replace(pattern, '').trim()
+    })
+    
+    // נקה תווים מיוחדים בהתחלה וסוף
+    itemName = itemName.replace(/^[^\u0590-\u05ff\w]+|[^\u0590-\u05ff\w]+$/g, '').trim()
     
     // בדוק שיש שם פריט תקין
     if (itemName.length < 2 || /^\d+$/.test(itemName)) {
@@ -190,9 +248,18 @@ export class ReceiptProcessor {
     for (const pattern of this.PRICE_PATTERNS) {
       const matches = Array.from(text.matchAll(pattern))
       for (const match of matches) {
-        const priceStr = match[1] || match[0].replace(/[₪\s]/g, '')
+        let priceStr = ''
+        
+        if (match[1] && match[2]) {
+          // מקרה של 12,50 - צירוף שני חלקים
+          priceStr = `${match[1]}.${match[2]}`
+        } else {
+          // מקרה רגיל
+          priceStr = match[1] || match[0].replace(/[₪\s]/g, '')
+        }
+        
         const price = parseFloat(priceStr.replace(',', '.'))
-        if (!isNaN(price) && price > 0 && price < 1000) { // מחיר סביר
+        if (!isNaN(price) && price > 0 && price < 2000) { // מחיר סביר (הגדלנו את הגבול)
           return price
         }
       }

@@ -6,7 +6,7 @@ import { Card, CardHeader } from './Card'
 import { ActionButton } from './ActionButton'
 import { ReceiptData, ShoppingItem } from '../types'
 import { categorizeItem } from '../utils/smartSuggestions'
-import { ReceiptProcessor, processReceiptWithMockData } from '../utils/receiptProcessor'
+import { ReceiptProcessor } from '../utils/receiptProcessor'
 
 interface ReceiptScannerProps {
   onReceiptProcessed: (items: ShoppingItem[], storeName: string) => void
@@ -17,7 +17,6 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
   const [isProcessing, setIsProcessing] = useState(false)
   const [receiptData, setReceiptData] = useState<ReceiptData | null>(null)
   const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set())
-  const [processingMode, setProcessingMode] = useState<'real' | 'demo'>('demo')
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,22 +26,15 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
     setIsProcessing(true)
     
     try {
-      let receiptData: ReceiptData
-      
-      if (processingMode === 'real') {
-        // עיבוד אמיתי עם OCR
-        receiptData = await ReceiptProcessor.processReceiptImage(file)
-      } else {
-        // עיבוד מהיר עם נתונים מדומים
-        receiptData = await processReceiptWithMockData()
-      }
+      // עיבוד אמיתי עם OCR
+      const receiptData = await ReceiptProcessor.processReceiptImage(file)
       
       setReceiptData(receiptData)
       // בברירת מחדל, בחר את כל הפריטים
       setSelectedItems(new Set(receiptData.items.map((_, index) => index)))
     } catch (error) {
       console.error('Error processing receipt:', error)
-      alert('שגיאה בעיבוד הקבלה. אנא נסה שוב.')
+      alert('שגיאה בעיבוד הקבלה. אנא נסה שוב או בדוק שהתמונה ברורה.')
     } finally {
       setIsProcessing(false)
     }
@@ -101,41 +93,6 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
         <div className="p-6 space-y-6">
           {!receiptData && !isProcessing && (
             <div className="text-center space-y-4">
-              {/* בורר מצב עיבוד */}
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  מצב עיבוד:
-                </label>
-                <div className="flex gap-4 justify-center">
-                  <button
-                    onClick={() => setProcessingMode('demo')}
-                    className={`px-4 py-2 rounded-lg transition-colors ${
-                      processingMode === 'demo'
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                    }`}
-                  >
-                    🚀 מהיר (דמו)
-                  </button>
-                  <button
-                    onClick={() => setProcessingMode('real')}
-                    className={`px-4 py-2 rounded-lg transition-colors ${
-                      processingMode === 'real'
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                    }`}
-                  >
-                    🔍 אמיתי (OCR)
-                  </button>
-                </div>
-                <p className="text-xs text-gray-500 mt-2">
-                  {processingMode === 'demo' 
-                    ? 'מצב מהיר עם נתונים מדומים לבדיקה' 
-                    : 'זיהוי אמיתי של טקסט מהקבלה (עלול להיות איטי יותר)'
-                  }
-                </p>
-              </div>
-              
               <input
                 ref={fileInputRef}
                 type="file"
@@ -147,7 +104,10 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-12">
                 <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                 <p className="text-gray-600 mb-4">
-                  העלה תמונה של הקבלה או צלם תמונה חדשה
+                  העלה תמונה של קבלה לזיהוי אוטומטי של הפריטים
+                </p>
+                <p className="text-sm text-gray-500 mb-6">
+                  התמונה תעובד באמצעות זיהוי טקסט מתקדם (OCR)
                 </p>
                 
                 <div className="flex gap-4 justify-center">
@@ -156,7 +116,7 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
                     icon={Upload}
                     className="bg-blue-600 hover:bg-blue-700 text-white"
                   >
-                    בחר קובץ
+                    בחר תמונת קבלה
                   </ActionButton>
                   
                   <ActionButton
@@ -170,6 +130,15 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
                     צלם קבלה
                   </ActionButton>
                 </div>
+                
+                <div className="mt-4 text-xs text-gray-500">
+                  <p>💡 טיפים לתוצאות טובות יותר:</p>
+                  <ul className="text-right mt-2 space-y-1">
+                    <li>• וודא שהקבלה מוארת היטב</li>
+                    <li>• צלם ישר ובמקביל לקבלה</li>
+                    <li>• הקפד שכל הטקסט יהיה ברור וחד</li>
+                  </ul>
+                </div>
               </div>
             </div>
           )}
@@ -177,17 +146,10 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
           {isProcessing && (
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <p className="text-gray-600">
-                {processingMode === 'real' 
-                  ? 'מעבד את הקבלה באמצעות זיהוי טקסט...' 
-                  : 'מעבד את הקבלה...'
-                }
+              <p className="text-gray-600">מעבד את הקבלה באמצעות זיהוי טקסט...</p>
+              <p className="text-sm text-gray-500 mt-2">
+                זה עלול לקחת עד דקה בהתאם לאיכות התמונה
               </p>
-              {processingMode === 'real' && (
-                <p className="text-sm text-gray-500 mt-2">
-                  זה עלול לקחת עד דקה בהתאם לאיכות התמונה
-                </p>
-              )}
             </div>
           )}
 

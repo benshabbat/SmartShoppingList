@@ -213,38 +213,3 @@ export class ReceiptProcessor {
     return 1
   }
 }
-
-// פונקציית עזר לעיבוד מהיר יותר עם נתונים מדומים לפיתוח
-export const processReceiptWithMockData = async (): Promise<ReceiptData> => {
-  // סימולציה של זמן עיבוד
-  await new Promise(resolve => setTimeout(resolve, 2000))
-  
-  // נתונים מדומים מציאותיים יותר
-  const mockStores = ['רמי לוי', 'שופרסל', 'מגה', 'יוחננוף', 'טיב טעם']
-  const randomStore = mockStores[Math.floor(Math.random() * mockStores.length)]
-  
-  const mockItems: ReceiptItem[] = [
-    { name: 'חלב 3%', price: 5.90, quantity: 2, category: 'מוצרי חלב' },
-    { name: 'לחם שחור', price: 8.50, quantity: 1, category: 'לחם ומאפים' },
-    { name: 'עגבניות', price: 12.90, quantity: 1, category: 'פירות וירקות' },
-    { name: 'בננות', price: 6.80, quantity: 1, category: 'פירות וירקות' },
-    { name: 'יוגורט טבעי', price: 4.50, quantity: 3, category: 'מוצרי חלב' },
-    { name: 'שמן זית', price: 24.90, quantity: 1, category: 'תבלינים ורטבים' },
-    { name: 'אורז יסמין', price: 13.50, quantity: 1, category: 'מזון יבש' },
-    { name: 'גבינה צהובה', price: 18.90, quantity: 1, category: 'מוצרי חלב' }
-  ]
-  
-  // בחר כמה פריטים רנדומליים
-  const selectedItems = mockItems
-    .sort(() => 0.5 - Math.random())
-    .slice(0, Math.floor(Math.random() * 5) + 3)
-  
-  const totalAmount = selectedItems.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0)
-  
-  return {
-    storeName: randomStore,
-    totalAmount: Math.round(totalAmount * 100) / 100,
-    date: new Date(),
-    items: selectedItems
-  }
-}

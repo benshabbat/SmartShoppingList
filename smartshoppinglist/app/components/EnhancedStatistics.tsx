@@ -160,10 +160,10 @@ export const EnhancedStatistics = ({
   const StatCard = ({ stat }: { stat: StatCard }) => {
     const IconComponent = stat.icon
     return (
-      <div className={`${stat.bgColor} rounded-2xl p-6 border border-white shadow-xl backdrop-blur-sm transition-all duration-300 transform hover:scale-105 hover:shadow-2xl group`}>
-        <div className="flex items-start justify-between mb-4">
-          <div className={`p-3 rounded-2xl bg-gradient-to-r ${stat.color} shadow-lg group-hover:shadow-xl transition-shadow`}>
-            <IconComponent className="w-6 h-6 text-white" />
+      <div className={`${stat.bgColor} rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white shadow-md sm:shadow-xl backdrop-blur-sm transition-all duration-300 transform hover:scale-105 hover:shadow-lg sm:hover:shadow-2xl group`}>
+        <div className="flex items-start justify-between mb-3 sm:mb-4">
+          <div className={`p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-gradient-to-r ${stat.color} shadow-lg group-hover:shadow-xl transition-shadow`}>
+            <IconComponent className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white" />
           </div>
           {stat.trend && (
             <div className={`flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full ${
@@ -177,11 +177,11 @@ export const EnhancedStatistics = ({
           )}
         </div>
         
-        <div className={`${stat.isText ? 'text-lg' : 'text-3xl'} font-bold ${stat.textColor} mb-2 group-hover:scale-110 transition-transform`}>
+        <div className={`${stat.isText ? 'text-base sm:text-lg' : 'text-xl sm:text-2xl lg:text-3xl'} font-bold ${stat.textColor} mb-2 group-hover:scale-110 transition-transform`}>
           {stat.value}
         </div>
         
-        <div className="text-sm text-gray-700 font-medium mb-1">
+        <div className="text-xs sm:text-sm text-gray-700 font-medium mb-1">
           {stat.label}
         </div>
         
@@ -195,37 +195,37 @@ export const EnhancedStatistics = ({
   }
 
   return (
-    <div className="bg-white rounded-3xl shadow-2xl p-8 border border-gray-100 backdrop-blur-lg">
+    <div className="bg-white rounded-2xl sm:rounded-3xl shadow-lg sm:shadow-2xl p-4 sm:p-6 lg:p-8 border border-gray-100 backdrop-blur-lg">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-4">
-          <div className="p-3 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl shadow-lg">
-            <History className="w-6 h-6 text-white" />
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div className="p-2 sm:p-3 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl sm:rounded-2xl shadow-lg">
+            <History className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
           </div>
           <div>
-            <h3 className="font-bold text-2xl text-gray-800">סטטיסטיקות מתקדמות</h3>
-            <p className="text-gray-600">תובנות על הרגלי הקנייה שלך</p>
+            <h3 className="font-bold text-lg sm:text-xl lg:text-2xl text-gray-800">סטטיסטיקות מתקדמות</h3>
+            <p className="text-sm sm:text-base text-gray-600 hidden sm:block">תובנות על הרגלי הקנייה שלך</p>
           </div>
         </div>
         
         <button
           onClick={() => setShowDetails(!showDetails)}
-          className="flex items-center gap-2 px-4 py-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200"
+          className="flex items-center gap-2 px-3 sm:px-4 py-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg sm:rounded-xl transition-all duration-200 text-sm sm:text-base self-end sm:self-auto"
         >
           {showDetails ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-          <span className="text-sm font-medium">פרטים</span>
+          <span className="font-medium">פרטים</span>
         </button>
       </div>
       
       {/* Main Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
         {mainStats.map((stat, index) => (
           <StatCard key={index} stat={stat} />
         ))}
       </div>
 
       {/* Secondary Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
         {secondaryStats.map((stat, index) => (
           <StatCard key={index} stat={stat} />
         ))}
@@ -233,52 +233,54 @@ export const EnhancedStatistics = ({
 
       {/* Detailed View */}
       {showDetails && (
-        <div className="space-y-8 animate-in slide-in-from-top-4 duration-500">
+        <div className="space-y-6 sm:space-y-8 animate-in slide-in-from-top-4 duration-500">
           {/* Tabs */}
           <div className="flex justify-center">
-            <div className="bg-gray-100 rounded-2xl p-1">
-              {[
-                { id: 'overview', label: 'סקירה', icon: BarChart3 },
-                { id: 'trends', label: 'מגמות', icon: TrendingUp },
-                { id: 'categories', label: 'קטגוריות', icon: PieChart }
-              ].map((tab) => {
-                const IconComponent = tab.icon
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id as 'overview' | 'trends' | 'categories')}
-                    className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-medium transition-all ${
-                      activeTab === tab.id
-                        ? 'bg-white text-indigo-600 shadow-lg transform scale-105'
-                        : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
-                    }`}
-                  >
-                    <IconComponent size={16} />
-                    {tab.label}
-                  </button>
-                )
-              })}
+            <div className="bg-gray-100 rounded-xl sm:rounded-2xl p-1 w-full sm:w-auto overflow-x-auto">
+              <div className="flex min-w-max sm:min-w-0">
+                {[
+                  { id: 'overview', label: 'סקירה', icon: BarChart3 },
+                  { id: 'trends', label: 'מגמות', icon: TrendingUp },
+                  { id: 'categories', label: 'קטגוריות', icon: PieChart }
+                ].map((tab) => {
+                  const IconComponent = tab.icon
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id as 'overview' | 'trends' | 'categories')}
+                      className={`flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl text-sm font-medium transition-all ${
+                        activeTab === tab.id
+                          ? 'bg-white text-indigo-600 shadow-lg transform scale-105'
+                          : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+                      }`}
+                    >
+                      <IconComponent size={16} />
+                      <span className="whitespace-nowrap">{tab.label}</span>
+                    </button>
+                  )
+                })}
+              </div>
             </div>
           </div>
 
           {/* Tab Content */}
-          <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-2xl p-6">
+          <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl sm:rounded-2xl p-4 sm:p-6">
             {activeTab === 'overview' && (
-              <div className="space-y-6">
-                <h4 className="font-bold text-xl text-gray-800 text-center mb-6">פרטים נוספים</h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <div className="bg-white rounded-xl p-4 shadow-md">
-                    <div className="text-gray-600 text-right mb-2">רכישה אחרונה:</div>
-                    <div className="font-bold text-gray-800 text-right">
+              <div className="space-y-4 sm:space-y-6">
+                <h4 className="font-bold text-lg sm:text-xl text-gray-800 text-center mb-4 sm:mb-6">פרטים נוספים</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                  <div className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-md">
+                    <div className="text-gray-600 text-right mb-2 text-sm sm:text-base">רכישה אחרונה:</div>
+                    <div className="font-bold text-gray-800 text-right text-sm sm:text-base">
                       {purchaseHistory.length > 0 
                         ? formatDate(new Date(purchaseHistory[purchaseHistory.length - 1].purchasedAt!))
                         : 'אין נתונים'
                       }
                     </div>
                   </div>
-                  <div className="bg-white rounded-xl p-4 shadow-md">
-                    <div className="text-gray-600 text-right mb-2">מוצר פופולרי:</div>
-                    <div className="font-bold text-gray-800 text-right">
+                  <div className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-md">
+                    <div className="text-gray-600 text-right mb-2 text-sm sm:text-base">מוצר פופולרי:</div>
+                    <div className="font-bold text-gray-800 text-right text-sm sm:text-base">
                       {(() => {
                         const itemCount: Record<string, number> = {}
                         purchaseHistory.forEach(item => {
@@ -295,10 +297,10 @@ export const EnhancedStatistics = ({
             )}
 
             {activeTab === 'trends' && purchasedThisWeek > 0 && (
-              <div className="space-y-6">
-                <h4 className="font-bold text-xl text-gray-800 text-center mb-6">פעילות השבוע</h4>
-                <div className="bg-white rounded-xl p-6 shadow-md">
-                  <div className="flex items-end justify-between h-32 gap-2">
+              <div className="space-y-4 sm:space-y-6">
+                <h4 className="font-bold text-lg sm:text-xl text-gray-800 text-center mb-4 sm:mb-6">פעילות השבוע</h4>
+                <div className="bg-white rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-md overflow-x-auto">
+                  <div className="flex items-end justify-between h-24 sm:h-32 gap-1 sm:gap-2 min-w-max">
                     {Array.from({ length: 7 }, (_, i) => {
                       const date = new Date()
                       date.setDate(date.getDate() - (6 - i))
@@ -307,10 +309,10 @@ export const EnhancedStatistics = ({
                         new Date(item.purchasedAt).toDateString() === date.toDateString()
                       ).length
                       const maxHeight = Math.max(1, purchasedThisWeek)
-                      const height = Math.max(8, (dayPurchases / maxHeight) * 96)
+                      const height = Math.max(8, (dayPurchases / maxHeight) * (window.innerWidth < 640 ? 64 : 96))
                       
                       return (
-                        <div key={i} className="flex flex-col items-center flex-1">
+                        <div key={i} className="flex flex-col items-center flex-1 min-w-0">
                           <div 
                             className="bg-gradient-to-t from-blue-400 to-blue-600 rounded-t-lg w-full transition-all duration-500 hover:from-blue-500 hover:to-blue-700"
                             style={{ height: `${height}px` }}
@@ -323,16 +325,16 @@ export const EnhancedStatistics = ({
                       )
                     })}
                   </div>
-                  <div className="text-sm text-gray-600 text-center mt-4 font-medium">קניות ביום</div>
+                  <div className="text-xs sm:text-sm text-gray-600 text-center mt-4 font-medium">קניות ביום</div>
                 </div>
               </div>
             )}
 
             {activeTab === 'categories' && Object.keys(categoryCount).length > 1 && (
-              <div className="space-y-6">
-                <h4 className="font-bold text-xl text-gray-800 text-center mb-6">חלוקה לפי קטגוריות</h4>
-                <div className="bg-white rounded-xl p-6 shadow-md">
-                  <div className="space-y-4">
+              <div className="space-y-4 sm:space-y-6">
+                <h4 className="font-bold text-lg sm:text-xl text-gray-800 text-center mb-4 sm:mb-6">חלוקה לפי קטגוריות</h4>
+                <div className="bg-white rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-md">
+                  <div className="space-y-3 sm:space-y-4">
                     {Object.entries(categoryCount)
                       .sort(([,a], [,b]) => b - a)
                       .slice(0, 6)
@@ -352,11 +354,11 @@ export const EnhancedStatistics = ({
                               <div className="text-sm font-medium text-gray-700">
                                 {percentage}%
                               </div>
-                              <div className="text-sm text-gray-600 text-right">
+                              <div className="text-sm text-gray-600 text-right truncate">
                                 {category} ({count})
                               </div>
                             </div>
-                            <div className="bg-gray-200 rounded-full h-3 overflow-hidden">
+                            <div className="bg-gray-200 rounded-full h-2 sm:h-3 overflow-hidden">
                               <div 
                                 className={`h-full rounded-full bg-gradient-to-r ${colors[index]} transition-all duration-700 ease-out`}
                                 style={{ width: `${percentage}%` }}
@@ -374,12 +376,12 @@ export const EnhancedStatistics = ({
 
           {/* Expiring Items */}
           {expiringShortly > 0 && (
-            <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-2xl p-6 border border-orange-200">
-              <h4 className="font-bold text-xl text-orange-800 mb-4 text-center flex items-center justify-center gap-2">
-                <Clock className="w-5 h-5" />
+            <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-orange-200">
+              <h4 className="font-bold text-lg sm:text-xl text-orange-800 mb-4 text-center flex items-center justify-center gap-2">
+                <Clock className="w-4 h-4 sm:w-5 sm:h-5" />
                 מוצרים שעומדים לפוג בקרוב
               </h4>
-              <div className="grid gap-4">
+              <div className="grid gap-3 sm:gap-4">
                 {pantryItems
                   .filter(item => {
                     if (!item.expiryDate) return false
@@ -392,9 +394,9 @@ export const EnhancedStatistics = ({
                     const expiryDate = new Date(item.expiryDate!)
                     const daysUntilExpiry = Math.ceil((expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
                     return (
-                      <div key={index} className="bg-white rounded-xl p-4 border-l-4 border-orange-400 shadow-md">
-                        <div className="flex justify-between items-center">
-                          <div className={`text-sm font-bold px-3 py-1 rounded-full ${
+                      <div key={index} className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-4 border-orange-400 shadow-md">
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0">
+                          <div className={`text-xs sm:text-sm font-bold px-2 sm:px-3 py-1 rounded-full ${
                             daysUntilExpiry === 0 ? 'bg-red-100 text-red-700' : 
                             daysUntilExpiry === 1 ? 'bg-orange-100 text-orange-700' : 
                             'bg-yellow-100 text-yellow-700'
@@ -403,8 +405,8 @@ export const EnhancedStatistics = ({
                              daysUntilExpiry === 1 ? 'פג מחר' : `${daysUntilExpiry} ימים`}
                           </div>
                           <div className="text-right">
-                            <div className="font-bold text-gray-800">{item.name}</div>
-                            <div className="text-sm text-gray-500">{formatDate(expiryDate)}</div>
+                            <div className="font-bold text-gray-800 text-sm sm:text-base">{item.name}</div>
+                            <div className="text-xs sm:text-sm text-gray-500">{formatDate(expiryDate)}</div>
                           </div>
                         </div>
                       </div>
@@ -416,7 +418,7 @@ export const EnhancedStatistics = ({
           )}
 
           {/* Action Buttons */}
-          <div className="flex flex-wrap gap-4 justify-center pt-6 border-t border-gray-200">
+          <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center pt-4 sm:pt-6 border-t border-gray-200">
             <button
               onClick={() => {
                 const data = {
@@ -434,7 +436,7 @@ export const EnhancedStatistics = ({
                 document.body.removeChild(a)
                 URL.revokeObjectURL(url)
               }}
-              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl text-sm font-medium hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 transform hover:scale-105 shadow-lg"
+              className="flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg sm:rounded-xl text-sm font-medium hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 transform hover:scale-105 shadow-lg w-full sm:w-auto"
             >
               <Package className="w-4 h-4" />
               ייצא נתונים
@@ -445,7 +447,7 @@ export const EnhancedStatistics = ({
                   alert('הפיצ\'ר יתווסף בקרוב!')
                 }
               }}
-              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-xl text-sm font-medium hover:from-orange-600 hover:to-red-700 transition-all duration-200 transform hover:scale-105 shadow-lg"
+              className="flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-lg sm:rounded-xl text-sm font-medium hover:from-orange-600 hover:to-red-700 transition-all duration-200 transform hover:scale-105 shadow-lg w-full sm:w-auto"
             >
               <Clock className="w-4 h-4" />
               נקה היסטוריה ישנה

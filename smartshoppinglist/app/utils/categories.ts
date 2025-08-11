@@ -27,6 +27,12 @@ export const CATEGORY_KEYWORDS: Record<string, CategoryType> = {
   'חמאה': CATEGORIES.DAIRY,
   'שמנת': CATEGORIES.DAIRY,
   'קוטג': CATEGORIES.DAIRY,
+  'לבנה': CATEGORIES.DAIRY,
+  'משקה חלב': CATEGORIES.DAIRY,
+  'מוצרלה': CATEGORIES.DAIRY,
+  'פטה': CATEGORIES.DAIRY,
+  'חלב קוקוס': CATEGORIES.DAIRY,
+  'קרם': CATEGORIES.DAIRY,
   
   // בשר ודגים
   'עוף': CATEGORIES.MEAT_FISH,
@@ -35,7 +41,15 @@ export const CATEGORY_KEYWORDS: Record<string, CategoryType> = {
   'סלמון': CATEGORIES.MEAT_FISH,
   'טונה': CATEGORIES.MEAT_FISH,
   'כבש': CATEGORIES.MEAT_FISH,
-  'חזיר': CATEGORIES.MEAT_FISH,
+  'בקר': CATEGORIES.MEAT_FISH,
+  'הודו': CATEGORIES.MEAT_FISH,
+  'נקניק': CATEGORIES.MEAT_FISH,
+  'נתחי': CATEGORIES.MEAT_FISH,
+  'כרעיים': CATEGORIES.MEAT_FISH,
+  'חזה': CATEGORIES.MEAT_FISH,
+  'פילה': CATEGORIES.MEAT_FISH,
+  'קציצות': CATEGORIES.MEAT_FISH,
+  'שניצל': CATEGORIES.MEAT_FISH,
   
   // ירקות
   'עגבני': CATEGORIES.VEGETABLES,
@@ -44,8 +58,21 @@ export const CATEGORY_KEYWORDS: Record<string, CategoryType> = {
   'גזר': CATEGORIES.VEGETABLES,
   'תפוח אדמה': CATEGORIES.VEGETABLES,
   'פלפל ירוק': CATEGORIES.VEGETABLES,
+  'פלפל אדום': CATEGORIES.VEGETABLES,
   'חסה': CATEGORIES.VEGETABLES,
   'סלרי': CATEGORIES.VEGETABLES,
+  'ברוקולי': CATEGORIES.VEGETABLES,
+  'כרוב': CATEGORIES.VEGETABLES,
+  'תרד': CATEGORIES.VEGETABLES,
+  'קישוא': CATEGORIES.VEGETABLES,
+  'חציל': CATEGORIES.VEGETABLES,
+  'דלעת': CATEGORIES.VEGETABLES,
+  'פטרוזיליה': CATEGORIES.VEGETABLES,
+  'שום': CATEGORIES.VEGETABLES,
+  'ירק': CATEGORIES.VEGETABLES,
+  'סלט': CATEGORIES.VEGETABLES,
+  'עדשים': CATEGORIES.VEGETABLES,
+  'חומוס גרגירים': CATEGORIES.VEGETABLES,
   
   // פירות
   'תפוח': CATEGORIES.FRUITS,
@@ -56,6 +83,17 @@ export const CATEGORY_KEYWORDS: Record<string, CategoryType> = {
   'מלון': CATEGORIES.FRUITS,
   'ענבים': CATEGORIES.FRUITS,
   'תות': CATEGORIES.FRUITS,
+  'אבוקדו': CATEGORIES.FRUITS,
+  'מנגו': CATEGORIES.FRUITS,
+  'קיווי': CATEGORIES.FRUITS,
+  'רימון': CATEGORIES.FRUITS,
+  'לימון': CATEGORIES.FRUITS,
+  'אשכולית': CATEGORIES.FRUITS,
+  'דובדבנים': CATEGORIES.FRUITS,
+  'אפרסק': CATEGORIES.FRUITS,
+  'נקטרינה': CATEGORIES.FRUITS,
+  'שזיף': CATEGORIES.FRUITS,
+  'פרי': CATEGORIES.FRUITS,
   
   // לחם ומאפים
   'לחם': CATEGORIES.BREAD,
@@ -64,6 +102,13 @@ export const CATEGORY_KEYWORDS: Record<string, CategoryType> = {
   'בגט': CATEGORIES.BREAD,
   'עוגה': CATEGORIES.BREAD,
   'מאפה': CATEGORIES.BREAD,
+  'טוסט': CATEGORIES.BREAD,
+  'לחמניה': CATEGORIES.BREAD,
+  'כיכר': CATEGORIES.BREAD,
+  'בריוש': CATEGORIES.BREAD,
+  'קרקר': CATEGORIES.BREAD,
+  'ביסקוויט': CATEGORIES.BREAD,
+  'עוגיות': CATEGORIES.BREAD,
   
   // דגנים
   'אורז': CATEGORIES.GRAINS,
@@ -71,6 +116,11 @@ export const CATEGORY_KEYWORDS: Record<string, CategoryType> = {
   'בורגול': CATEGORIES.GRAINS,
   'קינואה': CATEGORIES.GRAINS,
   'שיבולת שועל': CATEGORIES.GRAINS,
+  'קוסקוס': CATEGORIES.GRAINS,
+  'חיטה': CATEGORIES.GRAINS,
+  'שעורה': CATEGORIES.GRAINS,
+  'כוסמת': CATEGORIES.GRAINS,
+  'דגן': CATEGORIES.GRAINS,
   
   // מתוקים
   'שוקולד': CATEGORIES.SWEETS,
@@ -78,6 +128,12 @@ export const CATEGORY_KEYWORDS: Record<string, CategoryType> = {
   'דבש': CATEGORIES.SWEETS,
   'סוכר': CATEGORIES.SWEETS,
   'ריבה': CATEGORIES.SWEETS,
+  'סירופ': CATEGORIES.SWEETS,
+  'ממרח': CATEGORIES.SWEETS,
+  'נוטלה': CATEGORIES.SWEETS,
+  'עוגיה': CATEGORIES.SWEETS,
+  'במבה': CATEGORIES.SWEETS,
+  'סוכריות': CATEGORIES.SWEETS,
   
   // משקאות
   'מים': CATEGORIES.BEVERAGES,
@@ -87,6 +143,23 @@ export const CATEGORY_KEYWORDS: Record<string, CategoryType> = {
   'מיץ': CATEGORIES.BEVERAGES,
   'קפה': CATEGORIES.BEVERAGES,
   'תה': CATEGORIES.BEVERAGES,
+  'משקה': CATEGORIES.BEVERAGES,
+  'מי סודה': CATEGORIES.BEVERAGES,
+  'פאנטה': CATEGORIES.BEVERAGES,
+  'אנרגיה': CATEGORIES.BEVERAGES,
+  'וודקה': CATEGORIES.BEVERAGES,
+  'וויסקי': CATEGORIES.BEVERAGES,
+  
+  // חטיפים
+  'צ\'יפס': CATEGORIES.SNACKS,
+  'אגוזים': CATEGORIES.SNACKS,
+  'בוטנים': CATEGORIES.SNACKS,
+  'קשיו': CATEGORIES.SNACKS,
+  'שקדים': CATEGORIES.SNACKS,
+  'פיסטוק': CATEGORIES.SNACKS,
+  'פתיתים': CATEGORIES.SNACKS,
+  'חטיף': CATEGORIES.SNACKS,
+  'מלוחים': CATEGORIES.SNACKS,
   
   // שמנים ותבלינים
   'שמן': CATEGORIES.OILS_SPICES,
@@ -94,19 +167,69 @@ export const CATEGORY_KEYWORDS: Record<string, CategoryType> = {
   'פלפל שחור': CATEGORIES.OILS_SPICES,
   'קינמון': CATEGORIES.OILS_SPICES,
   'כמון': CATEGORIES.OILS_SPICES,
-  'כורכום': CATEGORIES.OILS_SPICES
+  'כורכום': CATEGORIES.OILS_SPICES,
+  'אורגנו': CATEGORIES.OILS_SPICES,
+  'בזיליקום': CATEGORIES.OILS_SPICES,
+  'פפריקה': CATEGORIES.OILS_SPICES,
+  'חומץ': CATEGORIES.OILS_SPICES,
+  'תבלין': CATEGORIES.OILS_SPICES,
+  'חרדל': CATEGORIES.OILS_SPICES,
+  'קטשופ': CATEGORIES.OILS_SPICES,
+  'מיונז': CATEGORIES.OILS_SPICES,
+  
+  // מוכן
+  'חומוס': CATEGORIES.READY_MADE,
+  'סלט מוכן': CATEGORIES.READY_MADE,
+  'מרק': CATEGORIES.READY_MADE,
+  'קופסיות שימורים': CATEGORIES.READY_MADE,
+  'שימורים': CATEGORIES.READY_MADE,
+  'מוכן': CATEGORIES.READY_MADE,
+  'רוטב': CATEGORIES.READY_MADE,
+  'פלאפל': CATEGORIES.READY_MADE,
+  
+  // קפואים
+  'גלידה': CATEGORIES.FROZEN,
+  'ירקות קפואים': CATEGORIES.FROZEN,
+  'פירות קפואים': CATEGORIES.FROZEN,
+  'קפוא': CATEGORIES.FROZEN,
+  'בורקס': CATEGORIES.FROZEN,
+  'פיצה קפואה': CATEGORIES.FROZEN
 }
 
-// פונקציה לזיהוי קטגוריה אוטומטית
+// פונקציה לזיהוי קטגוריה אוטומטית משופרת
 export const detectCategory = (itemName: string): CategoryType => {
-  const lowerItem = itemName.toLowerCase()
+  const lowerItem = itemName.toLowerCase().trim()
   
+  // חיפוש ישיר לפי מילות מפתח
   for (const [keyword, category] of Object.entries(CATEGORY_KEYWORDS)) {
     if (lowerItem.includes(keyword.toLowerCase())) {
       return category
     }
   }
   
+  // חיפוש חלקי - מילים שיכולות להופיע בתוך שמות מוצרים
+  const partialMatches = [
+    { patterns: ['חלב', 'גבינ', 'יוגור', 'ביצ', 'חמא'], category: CATEGORIES.DAIRY },
+    { patterns: ['עוף', 'בשר', 'דג', 'כבש', 'בקר', 'הוד', 'נקניק'], category: CATEGORIES.MEAT_FISH },
+    { patterns: ['עגבנ', 'מלפפ', 'בצל', 'גזר', 'תפוח אדמ', 'פלפל', 'חס', 'ברוק', 'כרוב'], category: CATEGORIES.VEGETABLES },
+    { patterns: ['תפוח', 'בנאנ', 'תפוז', 'אגס', 'אבטיח', 'מלון', 'ענב', 'תות', 'מנגו'], category: CATEGORIES.FRUITS },
+    { patterns: ['לחם', 'חל', 'פית', 'בגט', 'עוג', 'מאפ', 'טוסט'], category: CATEGORIES.BREAD },
+    { patterns: ['אורז', 'פסט', 'בורג', 'קינו', 'שיבול', 'קוסק'], category: CATEGORIES.GRAINS },
+    { patterns: ['שוקול', 'ממתק', 'דבש', 'סוכר', 'ריב', 'נוטל'], category: CATEGORIES.SWEETS },
+    { patterns: ['מים', 'יין', 'ביר', 'קול', 'מיץ', 'קפה', 'משק'], category: CATEGORIES.BEVERAGES },
+    { patterns: ['צ\'יפס', 'אגוז', 'בוטנ', 'חטיף', 'פתית'], category: CATEGORIES.SNACKS },
+    { patterns: ['שמן', 'מלח', 'פלפל', 'תבלין', 'חומץ'], category: CATEGORIES.OILS_SPICES },
+  ]
+  
+  for (const { patterns, category } of partialMatches) {
+    for (const pattern of patterns) {
+      if (lowerItem.includes(pattern)) {
+        return category
+      }
+    }
+  }
+  
+  // אם לא נמצא התאמה, החזר קטגוריה כללית
   return CATEGORIES.GENERAL
 }
 

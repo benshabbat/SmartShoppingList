@@ -113,32 +113,32 @@ export default function ShoppingListApp() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-100 p-2 sm:p-4">
-      <div className="max-w-4xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6">
+      <div className="max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 lg:gap-6">
           
           {/* Header - Full Width */}
-          <div className="lg:col-span-12">
+          <div className="xl:col-span-12">
             <Header onOpenTutorial={openTutorial} />
             
             {/* Quick Stats */}
-            <div className="grid grid-cols-3 gap-4 mt-4 mb-6">
-              <div className="bg-white rounded-lg p-4 text-center shadow-md">
-                <div className="text-2xl font-bold text-blue-600">{pending.length}</div>
-                <div className="text-sm text-gray-600">לקנות</div>
+            <div className="grid grid-cols-3 gap-2 sm:gap-4 mt-4 mb-6">
+              <div className="bg-white rounded-lg p-2 sm:p-4 text-center shadow-md">
+                <div className="text-lg sm:text-2xl font-bold text-blue-600">{pending.length}</div>
+                <div className="text-xs sm:text-sm text-gray-600">לקנות</div>
               </div>
-              <div className="bg-white rounded-lg p-4 text-center shadow-md">
-                <div className="text-2xl font-bold text-orange-600">{inCart.length}</div>
-                <div className="text-sm text-gray-600">בסל</div>
+              <div className="bg-white rounded-lg p-2 sm:p-4 text-center shadow-md">
+                <div className="text-lg sm:text-2xl font-bold text-orange-600">{inCart.length}</div>
+                <div className="text-xs sm:text-sm text-gray-600">בסל</div>
               </div>
-              <div className="bg-white rounded-lg p-4 text-center shadow-md">
-                <div className="text-2xl font-bold text-green-600">{purchased.length}</div>
-                <div className="text-sm text-gray-600">נקנו</div>
+              <div className="bg-white rounded-lg p-2 sm:p-4 text-center shadow-md">
+                <div className="text-lg sm:text-2xl font-bold text-green-600">{purchased.length}</div>
+                <div className="text-xs sm:text-sm text-gray-600">נקנו</div>
               </div>
             </div>
           </div>
 
           {/* Main Content Area */}
-          <div className="lg:col-span-8 space-y-4">
+          <div className="xl:col-span-8 space-y-4">
             
             {/* Quick List Creator */}
             <QuickListCreator 
@@ -238,10 +238,10 @@ export default function ShoppingListApp() {
           </div>
 
           {/* Sidebar */}
-          <div className="lg:col-span-4 space-y-4">
+          <div className="xl:col-span-4 space-y-4">
             
             {/* Export Data */}
-            <div className="flex justify-center lg:justify-start">
+            <div className="flex justify-center xl:justify-start">
               <DataExport 
                 items={items}
                 purchaseHistory={purchaseHistory}

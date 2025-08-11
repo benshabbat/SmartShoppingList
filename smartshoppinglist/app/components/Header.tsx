@@ -25,7 +25,7 @@ export const Header = ({ onOpenTutorial }: HeaderProps) => {
           רשימת קניות חכמה
         </h1>
       </div>
-      <p className="text-gray-600 text-lg">הוסף לסל ← קנה ← תוקף</p>
+      <p className="text-gray-600 text-lg">הוסף לסל ◀ קנה ◀ תוקף</p>
       <div className="mt-4 flex justify-center">
         <div className="bg-white rounded-full px-4 py-2 shadow-md border hover:shadow-lg transition-shadow">
           <span className="text-sm text-gray-500">מותאם אישית עבורך</span>

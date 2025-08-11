@@ -75,7 +75,7 @@ export const ToastContainer = () => {
   if (toasts.length === 0) return null
 
   return (
-    <div className="fixed top-4 left-4 z-50 max-w-sm">
+    <div className="fixed top-4 right-4 z-50 max-w-sm">
       {toasts.map(toast => (
         <ToastComponent
           key={toast.id}

@@ -112,8 +112,8 @@ export const Tutorial = ({ isOpen, onClose }: TutorialProps) => {
                   onClick={prevStep}
                   className="flex items-center gap-1 px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors"
                 >
-                  <ChevronLeft className="w-4 h-4" />
                   <span>הקודם</span>
+                  <ChevronRight className="w-4 h-4" />
                 </button>
               )}
 
@@ -121,10 +121,10 @@ export const Tutorial = ({ isOpen, onClose }: TutorialProps) => {
                 onClick={nextStep}
                 className="flex items-center gap-1 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl hover:from-purple-600 hover:to-pink-600 transition-all"
               >
-                <span>{currentStep === tutorialSteps.length - 1 ? 'סיום' : 'הבא'}</span>
                 {currentStep < tutorialSteps.length - 1 && (
-                  <ChevronRight className="w-4 h-4" />
+                  <ChevronLeft className="w-4 h-4" />
                 )}
+                <span>{currentStep === tutorialSteps.length - 1 ? 'סיום' : 'הבא'}</span>
               </button>
             </div>
           </div>

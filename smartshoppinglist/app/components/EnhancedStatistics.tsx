@@ -1,4 +1,4 @@
-import { History, TrendingUp, Package, Target, ShoppingCart, Clock, Award, ChevronDown, ChevronUp, BarChart3, PieChart, Calendar } from 'lucide-react'
+import { History, TrendingUp, Package, Target, ShoppingCart, Clock, Award, ChevronDown, ChevronUp, BarChart3, PieChart } from 'lucide-react'
 import { ShoppingItem, ItemSuggestion } from '../types'
 import { formatDate } from '../utils/helpers'
 import { useState } from 'react'
@@ -9,10 +9,12 @@ interface StatisticsProps {
   pantryItems: ShoppingItem[]
 }
 
+import { LucideIcon } from 'lucide-react'
+
 interface StatCard {
   label: string
   value: string | number
-  icon: any
+  icon: LucideIcon
   color: string
   bgColor: string
   textColor: string
@@ -239,20 +241,23 @@ export const EnhancedStatistics = ({
                 { id: 'overview', label: 'סקירה', icon: BarChart3 },
                 { id: 'trends', label: 'מגמות', icon: TrendingUp },
                 { id: 'categories', label: 'קטגוריות', icon: PieChart }
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as any)}
-                  className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-medium transition-all ${
-                    activeTab === tab.id
-                      ? 'bg-white text-indigo-600 shadow-lg transform scale-105'
-                      : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
-                  }`}
-                >
-                  <tab.icon size={16} />
-                  {tab.label}
-                </button>
-              ))}
+              ].map((tab) => {
+                const IconComponent = tab.icon
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as 'overview' | 'trends' | 'categories')}
+                    className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-medium transition-all ${
+                      activeTab === tab.id
+                        ? 'bg-white text-indigo-600 shadow-lg transform scale-105'
+                        : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+                    }`}
+                  >
+                    <IconComponent size={16} />
+                    {tab.label}
+                  </button>
+                )
+              })}
             </div>
           </div>
 

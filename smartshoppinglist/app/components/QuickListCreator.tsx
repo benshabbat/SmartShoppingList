@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { Wand2, Plus, X, Sparkles, ShoppingCart, List } from 'lucide-react'
 import { PRESET_LISTS, parseCustomList, getPresetListKeys } from '../utils/presetLists'
-import { CategoryType } from '../utils/categories'
 
 interface QuickListCreatorProps {
   onCreateList: (items: Array<{name: string, category: string}>) => void

@@ -43,7 +43,7 @@ export const CATEGORY_KEYWORDS: Record<string, CategoryType> = {
   'בצל': CATEGORIES.VEGETABLES,
   'גזר': CATEGORIES.VEGETABLES,
   'תפוח אדמה': CATEGORIES.VEGETABLES,
-  'פלפל': CATEGORIES.VEGETABLES,
+  'פלפל ירוק': CATEGORIES.VEGETABLES,
   'חסה': CATEGORIES.VEGETABLES,
   'סלרי': CATEGORIES.VEGETABLES,
   
@@ -91,7 +91,7 @@ export const CATEGORY_KEYWORDS: Record<string, CategoryType> = {
   // שמנים ותבלינים
   'שמן': CATEGORIES.OILS_SPICES,
   'מלח': CATEGORIES.OILS_SPICES,
-  'פלפל': CATEGORIES.OILS_SPICES,
+  'פלפל שחור': CATEGORIES.OILS_SPICES,
   'קינמון': CATEGORIES.OILS_SPICES,
   'כמון': CATEGORIES.OILS_SPICES,
   'כורכום': CATEGORIES.OILS_SPICES

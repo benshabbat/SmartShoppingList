@@ -2,6 +2,9 @@ import { ShoppingItem } from '../types'
 import { COMMON_PRODUCTS } from './constants'
 import { detectCategory } from './categories'
 
+// Alias for backwards compatibility
+export const categorizeItem = detectCategory
+
 // פונקציה ליצירת הצעות חכמות על בסיס התנהגות המשתמש
 export const generateSmartSuggestions = (
   category: string,

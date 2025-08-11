@@ -1,13 +1,14 @@
-import { ShoppingCart, HelpCircle, Volume2, VolumeX, BarChart3 } from 'lucide-react'
+import { ShoppingCart, HelpCircle, Volume2, VolumeX, BarChart3, Receipt } from 'lucide-react'
 import { useSoundManager } from '../utils/soundManager'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 interface HeaderProps {
   onOpenTutorial?: () => void
+  onOpenReceiptScanner?: () => void
 }
 
-export const Header = ({ onOpenTutorial }: HeaderProps) => {
+export const Header = ({ onOpenTutorial, onOpenReceiptScanner }: HeaderProps) => {
   const { soundEnabled, toggleSound } = useSoundManager()
   const pathname = usePathname()
   const isStatisticsPage = pathname === '/statistics'
@@ -36,6 +37,16 @@ export const Header = ({ onOpenTutorial }: HeaderProps) => {
             <VolumeX className="w-6 h-6 text-gray-400 group-hover:text-gray-600" />
           )}
         </button>
+
+        {onOpenReceiptScanner && !isStatisticsPage && (
+          <button
+            onClick={onOpenReceiptScanner}
+            className="p-2 hover:bg-green-100 rounded-full transition-colors group"
+            title="סרוק קבלה"
+          >
+            <Receipt className="w-6 h-6 text-green-600 group-hover:text-green-700" />
+          </button>
+        )}
       </div>
 
       {/* Statistics Link - positioned on the right */}

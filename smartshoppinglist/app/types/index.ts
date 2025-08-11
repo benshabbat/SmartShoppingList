@@ -7,6 +7,8 @@ export interface ShoppingItem {
   addedAt: Date
   purchasedAt?: Date
   expiryDate?: Date
+  purchaseLocation?: string
+  price?: number
 }
 
 export interface ItemSuggestion {
@@ -21,6 +23,20 @@ export interface ExpiringItem {
   name: string
   expiryDate: Date
   daysUntilExpiry: number
+}
+
+export interface ReceiptItem {
+  name: string
+  price: number
+  quantity?: number
+  category?: string
+}
+
+export interface ReceiptData {
+  items: ReceiptItem[]
+  storeName: string
+  totalAmount: number
+  date: Date
 }
 
 export type Category = 

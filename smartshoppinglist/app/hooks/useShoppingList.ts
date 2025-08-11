@@ -179,6 +179,26 @@ export const useShoppingList = () => {
     setSuggestions(generateSuggestions(newHistory, items))
   }
 
+  const addItemsFromReceipt = (receiptItems: ShoppingItem[], storeName: string) => {
+    // Add items to purchase history since they're already purchased
+    const newHistory = [...purchaseHistory, ...receiptItems]
+    setPurchaseHistory(newHistory)
+    
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEYS.PURCHASE_HISTORY, JSON.stringify(newHistory))
+    }
+
+    // Add items with expiry dates to pantry
+    const itemsWithExpiry = receiptItems.filter(item => item.expiryDate)
+    if (itemsWithExpiry.length > 0) {
+      const newPantry = [...pantryItems, ...itemsWithExpiry]
+      setPantryItems(newPantry)
+    }
+
+    // Update suggestions based on new purchase history
+    setSuggestions(generateSuggestions(newHistory, items))
+  }
+
   const getItemsByStatus = () => {
     const pending = items.filter(item => !item.isInCart && !item.isPurchased)
     const inCart = items.filter(item => item.isInCart && !item.isPurchased)
@@ -203,6 +223,7 @@ export const useShoppingList = () => {
     removeFromPantry,
     getItemsByStatus,
     setExpiringItems,
-    updateItemWithExpiry
+    updateItemWithExpiry,
+    addItemsFromReceipt
   }
 }

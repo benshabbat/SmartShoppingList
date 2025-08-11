@@ -1,5 +1,7 @@
 'use client'
 
+import { useState } from 'react'
+
 // Components
 import { Header } from './components/Header'
 import { AddItemForm } from './components/AddItemForm'
@@ -11,6 +13,7 @@ import { ToastContainer, useToasts } from './components/Toast'
 import { QuickListCreator } from './components/QuickListCreator'
 import { DataExport } from './components/DataExport'
 import { Card, CardHeader } from './components/Card'
+import { ReceiptScanner } from './components/ReceiptScanner'
 
 // Hooks and Utils
 import { 
@@ -23,6 +26,8 @@ import { useSoundManager } from './utils/soundManager'
 import { MESSAGES } from './utils'
 
 export default function ShoppingListApp() {
+  const [showReceiptScanner, setShowReceiptScanner] = useState(false)
+
   const {
     items,
     suggestions,
@@ -34,7 +39,8 @@ export default function ShoppingListApp() {
     removeItem,
     clearPurchased,
     addSuggestedItem,
-    updateItemWithExpiry
+    updateItemWithExpiry,
+    addItemsFromReceipt
   } = useShoppingList()
 
   // Tutorial hook
@@ -94,6 +100,15 @@ export default function ShoppingListApp() {
     showSuccess(MESSAGES.SUCCESS.LIST_CREATED, `נוספו ${items.length} פריטים`)
   }
 
+  const handleReceiptProcessed = (receiptItems: any[], storeName: string) => {
+    addItemsFromReceipt(receiptItems, storeName)
+    setShowReceiptScanner(false)
+    showSuccess(
+      'קבלה נוספה בהצלחה!', 
+      `נוספו ${receiptItems.length} פריטים מ${storeName}`
+    )
+  }
+
   const { pending, inCart, purchased } = getItemsByStatus()
 
   return (
@@ -103,7 +118,10 @@ export default function ShoppingListApp() {
       {showTutorial && <Tutorial isOpen={showTutorial} onClose={closeTutorial} />}
       
       <div className="container mx-auto px-4 py-6 max-w-4xl">
-        <Header onOpenTutorial={openTutorial} />
+        <Header 
+          onOpenTutorial={openTutorial} 
+          onOpenReceiptScanner={() => setShowReceiptScanner(true)}
+        />
         
         {/* Quick Stats */}
         <Card className="mb-6">
@@ -228,6 +246,14 @@ export default function ShoppingListApp() {
           purchaseHistory={purchaseHistory}
           pantryItems={pantryItems}
         />
+
+        {/* Receipt Scanner Modal */}
+        {showReceiptScanner && (
+          <ReceiptScanner
+            onReceiptProcessed={handleReceiptProcessed}
+            onClose={() => setShowReceiptScanner(false)}
+          />
+        )}
       </div>
     </div>
   )

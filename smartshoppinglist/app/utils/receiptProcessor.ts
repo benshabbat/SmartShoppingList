@@ -17,13 +17,14 @@ export class ReceiptProcessor {
   }
 
   private static readonly PRICE_PATTERNS = [
-    /(\d+\.?\d*)\s*₪/g,           // 12.50₪
+    /(\d+\.\d{2})[\s₪]*$/g,       // 12.50 בסוף שורה עם או בלי ₪
+    /(\d+,\d{2})[\s₪]*$/g,        // 12,50 בסוף שורה עם או בלי ₪
+    /(\d+\.?\d*)\s*₪/g,           // 12.50₪ או 12₪
     /₪\s*(\d+\.?\d*)/g,           // ₪12.50
-    /(\d+\.\d{2})\s*$/gm,         // 12.50 בסוף שורה
-    /(\d+)\s*\.(\d{2})\s*$/gm,    // 12.50 בסוף שורה
-    /(\d+\.\d{1,2})\s/g,          // 12.5 או 12.50 עם רווח אחריו
-    /\s(\d+\.\d{2})\s/g,          // 12.50 עם רווחים משני הצדדים
-    /(\d{1,3})\s*,\s*(\d{2})/g    // 12,50 (פורמט אירופאי)
+    /(\d{1,3}\.\d{2})\s/g,        // 12.50 עם רווח
+    /(\d{1,3},\d{2})\s/g,         // 12,50 עם רווח
+    /\s(\d{1,3}[.,]\d{2})\s/g,    // מחיר עם רווחים משני הצדדים
+    /(\d{1,2})\s*[.,]\s*(\d{2})/g // 12 . 50 או 12 , 50
   ]
 
   private static readonly QUANTITY_PATTERNS = [
@@ -57,18 +58,56 @@ export class ReceiptProcessor {
       // המרת הקובץ ל-base64 לטסרקט
       const imageData = await this.fileToBase64(file)
       
-      // זיהוי הטקסט בתמונה עם הגדרות משופרות
-      const { data } = await Tesseract.recognize(imageData, 'heb+eng', {
-        logger: m => console.log(m)
-      })
+      console.log('Starting OCR processing for file:', file.name)
+      
+      // ניסיון ראשון עם עברית ואנגלית
+      let ocrResult
+      try {
+        const { data } = await Tesseract.recognize(imageData, 'heb+eng', {
+          logger: m => {
+            if (m.status === 'recognizing text') {
+              console.log(`OCR Progress: ${(m.progress * 100).toFixed(1)}%`)
+            }
+          }
+        })
+        ocrResult = data.text
+        console.log('OCR Result (heb+eng):', ocrResult)
+      } catch (error) {
+        console.warn('Hebrew OCR failed, trying English only:', error)
+        // ניסיון שני רק עם אנגלית
+        const { data } = await Tesseract.recognize(imageData, 'eng', {
+          logger: m => {
+            if (m.status === 'recognizing text') {
+              console.log(`OCR Progress (eng): ${(m.progress * 100).toFixed(1)}%`)
+            }
+          }
+        })
+        ocrResult = data.text
+        console.log('OCR Result (eng only):', ocrResult)
+      }
 
-      console.log('OCR Result:', data.text) // להדפסה לצורכי דיבוג
+      // אם הטקסט קצר מדי, זה כנראה לא עבד
+      if (ocrResult.length < 10) {
+        throw new Error('הטקסט שזוהה קצר מדי. אנא נסה תמונה איכותית יותר.')
+      }
       
       // עיבוד הטקסט שזוהה
-      return this.parseReceiptText(data.text)
+      const receiptData = this.parseReceiptText(ocrResult)
+      
+      // אם לא נמצאו פריטים, נסה עיבוד אגרסיבי יותר
+      if (receiptData.items.length === 0) {
+        console.log('No items found with standard parsing, trying aggressive parsing...')
+        const aggressiveResult = this.parseReceiptTextAggressive(ocrResult)
+        if (aggressiveResult.items.length > 0) {
+          return aggressiveResult
+        }
+      }
+      
+      return receiptData
     } catch (error) {
       console.error('Error processing receipt:', error)
-      throw new Error('שגיאה בעיבוד הקבלה. אנא נסה שוב.')
+      const errorMessage = error instanceof Error ? error.message : 'שגיאה לא צפויה'
+      throw new Error(`שגיאה בעיבוד הקבלה: ${errorMessage}`)
     }
   }
 
@@ -79,6 +118,67 @@ export class ReceiptProcessor {
       reader.onerror = reject
       reader.readAsDataURL(file)
     })
+  }
+
+  private static parseReceiptTextAggressive(text: string): ReceiptData {
+    console.log('Starting aggressive parsing...')
+    const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 1)
+    
+    // זיהוי שם החנות
+    const storeName = this.detectStoreName(lines) || 'לא זוהה'
+    console.log('Store name (aggressive):', storeName)
+    
+    const items: ReceiptItem[] = []
+    
+    // עבור על כל שורה ונסה לחלץ פריטים בצורה אגרסיבית
+    for (const line of lines) {
+      // דלג על שורות שהן ברור לא פריטים
+      if (line.length < 3 || 
+          /^[\d\s\-_=*]{4,}$/.test(line) ||
+          /^(תאריך|date|time|שעה|קופה|אסמכתא)/gi.test(line)) {
+        continue
+      }
+      
+      // חפש כל מספר שנראה כמו מחיר
+      const priceMatches = line.match(/\d+[.,]\d{1,2}/g) || line.match(/\d+/g) || []
+      
+      for (const priceMatch of priceMatches) {
+        const price = parseFloat(priceMatch.replace(',', '.'))
+        
+        // בדוק שזה מחיר סביר (בין 1 ל אלף שקלים)
+        if (price >= 1 && price <= 1000) {
+          // נסה לחלץ את שם הפריט
+          let itemName = line.replace(priceMatch, '').trim()
+          itemName = itemName.replace(/[₪\d\.,\s]+/g, ' ').trim()
+          itemName = itemName.replace(/\s+/g, ' ').trim()
+          
+          // נקה תווים מיוחדים מההתחלה והסוף
+          itemName = itemName.replace(/^[^\u0590-\u05ff\w]+|[^\u0590-\u05ff\w]+$/g, '')
+          
+          if (itemName.length >= 2 && !items.find(item => item.name === itemName)) {
+            items.push({
+              name: itemName,
+              price,
+              quantity: 1,
+              category: detectCategory(itemName)
+            })
+            console.log('Found aggressive item:', itemName, 'Price:', price)
+            break // רק פריט אחד לכל שורה
+          }
+        }
+      }
+    }
+    
+    const totalAmount = items.reduce((sum, item) => sum + item.price, 0)
+    
+    console.log('Aggressive parsing found', items.length, 'items')
+    
+    return {
+      storeName,
+      totalAmount,
+      date: new Date(),
+      items
+    }
   }
 
   private static parseReceiptText(text: string): ReceiptData {
@@ -245,25 +345,44 @@ export class ReceiptProcessor {
   }
 
   private static extractPrice(text: string): number | null {
+    // נסה את כל הדפוסים
     for (const pattern of this.PRICE_PATTERNS) {
+      pattern.lastIndex = 0 // אפס את האינדקס של regex
       const matches = Array.from(text.matchAll(pattern))
+      
       for (const match of matches) {
         let priceStr = ''
         
         if (match[1] && match[2]) {
-          // מקרה של 12,50 - צירוף שני חלקים
+          // מקרה של שני חלקים נפרדים (12 ו-50)
           priceStr = `${match[1]}.${match[2]}`
+        } else if (match[1]) {
+          // חלק אחד
+          priceStr = match[1].replace(',', '.')
         } else {
-          // מקרה רגיל
-          priceStr = match[1] || match[0].replace(/[₪\s]/g, '')
+          continue
         }
         
-        const price = parseFloat(priceStr.replace(',', '.'))
-        if (!isNaN(price) && price > 0 && price < 2000) { // מחיר סביר (הגדלנו את הגבול)
+        const price = parseFloat(priceStr)
+        if (!isNaN(price) && price >= 0.1 && price <= 2000) {
+          console.log(`Found price: ${price} from text: "${text}"`)
           return price
         }
       }
     }
+    
+    // אם לא נמצא כלום, נסה גישה פשוטה יותר
+    const simpleMatch = text.match(/(\d+[.,]\d{1,2})/g)
+    if (simpleMatch) {
+      for (const match of simpleMatch) {
+        const price = parseFloat(match.replace(',', '.'))
+        if (!isNaN(price) && price >= 0.1 && price <= 2000) {
+          console.log(`Found simple price: ${price} from text: "${text}"`)
+          return price
+        }
+      }
+    }
+    
     return null
   }
 
@@ -278,5 +397,25 @@ export class ReceiptProcessor {
       }
     }
     return 1
+  }
+
+  // פונקציה לחילוץ טקסט גולמי בלבד (לצרכי דיבוג)
+  public static async extractRawText(file: File): Promise<string> {
+    try {
+      const imageData = await this.fileToBase64(file)
+      
+      const { data } = await Tesseract.recognize(imageData, 'heb+eng', {
+        logger: m => {
+          if (m.status === 'recognizing text') {
+            console.log(`OCR Progress: ${(m.progress * 100).toFixed(1)}%`)
+          }
+        }
+      })
+      
+      return data.text
+    } catch (error) {
+      console.error('Error extracting raw text:', error)
+      throw new Error('שגיאה בחילוץ הטקסט')
+    }
   }
 }

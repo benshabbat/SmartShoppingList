@@ -18,6 +18,8 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
   const [receiptData, setReceiptData] = useState<ReceiptData | null>(null)
   const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set())
   const [showManualEntry, setShowManualEntry] = useState(false)
+  const [rawOcrText, setRawOcrText] = useState<string>('')
+  const [showRawText, setShowRawText] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,6 +43,15 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
       
       // עיבוד אמיתי עם OCR
       const receiptData = await ReceiptProcessor.processReceiptImage(file)
+      
+      // שמור את הטקסט הגולמי לצרכי דיבוג
+      try {
+        const rawText = await ReceiptProcessor.extractRawText(file)
+        setRawOcrText(rawText)
+        console.log('Raw OCR text:', rawText)
+      } catch (error) {
+        console.warn('Could not extract raw text:', error)
+      }
       
       if (receiptData.items.length === 0) {
         const shouldTryManual = confirm('לא נמצאו פריטים בקבלה.\n\nהאם תרצה לנסות הכנסה ידנית של הפריטים?')
@@ -111,6 +122,26 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
       setSelectedItems(new Set(manualItems.map((_, index) => index)))
       setShowManualEntry(false)
     }
+  }
+
+  const handleDemoReceipt = () => {
+    // יצירת קבלה דמה לבדיקות
+    const demoReceiptData: ReceiptData = {
+      items: [
+        { name: 'חלב 3%', price: 5.90, quantity: 1, category: 'מוצרי חלב' },
+        { name: 'לחם פרוס', price: 4.50, quantity: 1, category: 'לחם ומאפים' },
+        { name: 'בננות', price: 12.90, quantity: 1, category: 'פירות וירקות' },
+        { name: 'יוגורט', price: 3.80, quantity: 2, category: 'מוצרי חלב' },
+        { name: 'עגבניות', price: 8.50, quantity: 1, category: 'פירות וירקות' }
+      ],
+      storeName: 'דוגמה - רמי לוי',
+      totalAmount: 35.60,
+      date: new Date()
+    }
+    
+    setReceiptData(demoReceiptData)
+    setSelectedItems(new Set(demoReceiptData.items.map((_, index) => index)))
+    setRawOcrText('דוגמה של טקסט OCR:\nרמי לוי\nחלב 3% 5.90\nלחם פרוס 4.50\nבננות 12.90\nיוגורט 3.80 x2\nעגבניות 8.50\nסה"כ: 35.60')
   }
 
   const handleConfirmSelection = () => {
@@ -233,6 +264,15 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
                   >
                     הכנסה ידנית
                   </ActionButton>
+
+                  <ActionButton
+                    onClick={handleDemoReceipt}
+                    icon={ShoppingBag}
+                    variant="secondary"
+                    className="border-purple-300 text-purple-700 hover:bg-purple-50"
+                  >
+                    דוגמה
+                  </ActionButton>
                 </div>
                 
                 <div className="mt-4 text-xs text-gray-500">
@@ -330,6 +370,17 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
                   הוסף לרשימת הקניות ({selectedItems.size})
                 </ActionButton>
                 
+                {rawOcrText && (
+                  <ActionButton
+                    onClick={() => setShowRawText(!showRawText)}
+                    variant="secondary"
+                    className="text-xs"
+                    icon={showRawText ? X : Upload}
+                  >
+                    {showRawText ? 'הסתר' : 'הצג'} טקסט גולמי
+                  </ActionButton>
+                )}
+                
                 <ActionButton
                   onClick={onClose}
                   variant="secondary"
@@ -338,6 +389,18 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
                   ביטול
                 </ActionButton>
               </div>
+
+              {showRawText && rawOcrText && (
+                <div className="mt-4 p-4 bg-gray-100 rounded-lg border">
+                  <h5 className="font-semibold mb-2">טקסט גולמי שזוהה על ידי OCR:</h5>
+                  <pre className="text-xs text-gray-700 whitespace-pre-wrap max-h-40 overflow-y-auto">
+                    {rawOcrText}
+                  </pre>
+                  <p className="text-xs text-gray-500 mt-2">
+                    הטקסט הזה מראה מה ה-OCR זיהה בפועל. אם הוא לא מדויק, נסה תמונה איכותית יותר.
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </div>

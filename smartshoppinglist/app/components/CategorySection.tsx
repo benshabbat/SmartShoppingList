@@ -4,6 +4,7 @@ import { CATEGORIES } from '../utils/constants'
 import { getItemsByCategory } from '../utils/helpers'
 import { FadeIn, SlideUp } from './Animations'
 import { CategoryHeader } from './InteractiveEmoji'
+import { containerStyles } from '../utils/classNames'
 
 interface CategorySectionProps {
   title: string
@@ -15,6 +16,50 @@ interface CategorySectionProps {
   showItemCount?: boolean
   emptyMessage?: string
 }
+
+const EmptyState: React.FC<{ message: string }> = ({ message }) => (
+  <div className="text-center text-gray-500 py-8">
+    <p className="text-lg">{message}</p>
+  </div>
+)
+
+const SectionHeader: React.FC<{ title: string; itemCount: number; showItemCount: boolean }> = ({ 
+  title, 
+  itemCount, 
+  showItemCount 
+}) => (
+  <div className="flex items-center justify-between mb-6">
+    <div className="flex items-center gap-2">
+      {showItemCount && (
+        <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm font-medium">
+          {itemCount}
+        </span>
+      )}
+    </div>
+    <h3 className="font-bold text-xl text-gray-800 text-right">{title}</h3>
+  </div>
+)
+
+const CategoryItems: React.FC<{
+  categoryItems: ShoppingItem[]
+  onToggleCart: (id: string) => void
+  onRemove: (id: string) => void
+  variant: 'pending' | 'inCart' | 'purchased'
+  categoryIndex: number
+}> = ({ categoryItems, onToggleCart, onRemove, variant, categoryIndex }) => (
+  <div className="space-y-2 mr-6">
+    {categoryItems.map((item, itemIndex) => (
+      <FadeIn key={item.id} delay={(categoryIndex * 100) + (itemIndex * 50)}>
+        <ShoppingItemComponent
+          item={item}
+          onToggleCart={onToggleCart}
+          onRemove={onRemove}
+          variant={variant}
+        />
+      </FadeIn>
+    ))}
+  </div>
+)
 
 export const CategorySection = ({
   title,
@@ -29,25 +74,16 @@ export const CategorySection = ({
   const itemsByCategory = getItemsByCategory(items, CATEGORIES)
 
   if (items.length === 0) {
-    return emptyMessage ? (
-      <div className="text-center text-gray-500 py-8">
-        <p className="text-lg">{emptyMessage}</p>
-      </div>
-    ) : null
+    return emptyMessage ? <EmptyState message={emptyMessage} /> : null
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 border border-gray-100">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-2">
-          {showItemCount && (
-            <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm font-medium">
-              {items.length}
-            </span>
-          )}
-        </div>
-        <h3 className="font-bold text-xl text-gray-800 text-right">{title}</h3>
-      </div>
+    <div className={containerStyles.section}>
+      <SectionHeader 
+        title={title}
+        itemCount={items.length}
+        showItemCount={showItemCount}
+      />
 
       <FadeIn>
         <div className="space-y-6">
@@ -61,18 +97,13 @@ export const CategorySection = ({
                     headerColor={headerColor}
                   />
                   
-                  <div className="space-y-2 mr-6">
-                    {categoryItems.map((item, itemIndex) => (
-                      <FadeIn key={item.id} delay={(categoryIndex * 100) + (itemIndex * 50)}>
-                        <ShoppingItemComponent
-                          item={item}
-                          onToggleCart={onToggleCart}
-                          onRemove={onRemove}
-                          variant={variant}
-                        />
-                      </FadeIn>
-                    ))}
-                  </div>
+                  <CategoryItems
+                    categoryItems={categoryItems}
+                    onToggleCart={onToggleCart}
+                    onRemove={onRemove}
+                    variant={variant}
+                    categoryIndex={categoryIndex}
+                  />
                 </div>
               </SlideUp>
             )

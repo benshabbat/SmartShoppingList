@@ -1,6 +1,8 @@
-import { X, Check, Calendar, Plus, ShoppingCart, ArrowRight } from 'lucide-react'
+import { Calendar } from 'lucide-react'
 import { ShoppingItem } from '../types'
+import { ItemActions } from './ItemActions'
 import { formatDate } from '../utils/helpers'
+import { itemContainerStyles, cn } from '../utils/classNames'
 
 interface ShoppingItemComponentProps {
   item: ShoppingItem
@@ -15,63 +17,32 @@ export const ShoppingItemComponent = ({
   onRemove, 
   variant = 'pending' 
 }: ShoppingItemComponentProps) => {
-      const getVariantStyles = () => {
-        switch (variant) {
-          case 'pending':
-            return {
-              container: 'bg-gray-50 hover:bg-gray-100 border border-gray-200',
-              button: 'flex items-center gap-2 px-4 py-2 border-2 border-blue-300 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all hover:shadow-md text-blue-600 hover:text-blue-700',
-              buttonText: 'הוסף לסל',
-              icon: 'w-5 h-5',
-              text: 'font-medium text-gray-800'
-            }
-          case 'inCart':
-            return {
-              container: 'bg-blue-50 hover:bg-blue-100 border border-blue-200',
-              button: 'flex items-center gap-2 px-4 py-2 border-2 border-orange-500 rounded-xl bg-orange-500 hover:bg-orange-600 shadow-md text-white',
-              buttonText: 'חזרה לרשימה',
-              icon: 'w-5 h-5',
-              text: 'font-medium text-blue-800'
-            }
-          case 'purchased':
-            return {
-              container: 'bg-green-50 hover:bg-green-100 border border-green-200',
-              button: 'flex items-center gap-2 px-4 py-2 border-2 border-green-500 rounded-xl bg-green-500 shadow-md text-white',
-              buttonText: 'נקנה',
-              icon: 'w-5 h-5',
-              text: 'line-through text-gray-600 font-medium'
-            }
-        }
-      }
-
-      const styles = getVariantStyles()
+  const getTextStyle = () => {
+    switch (variant) {
+      case 'pending':
+        return 'font-medium text-gray-800'
+      case 'inCart':
+        return 'font-medium text-blue-800'
+      case 'purchased':
+        return 'line-through text-gray-600 font-medium'
+      default:
+        return 'font-medium text-gray-800'
+    }
+  }
 
   return (
-    <div className={`flex items-center gap-4 p-4 rounded-xl transition-all duration-200 ${styles.container}`}>
-      <button
-        onClick={() => onToggleCart(item.id)}
-        className={styles.button}
-      >
-        {variant === 'purchased' ? (
-          <>
-            <Check className={styles.icon} />
-            <span className="text-sm font-medium">{styles.buttonText}</span>
-          </>
-        ) : variant === 'inCart' ? (
-          <>
-            <ArrowRight className={styles.icon} />
-            <span className="text-sm font-medium">{styles.buttonText}</span>
-          </>
-        ) : (
-          <>
-            <Plus className={styles.icon} />
-            <span className="text-sm font-medium">{styles.buttonText}</span>
-          </>
-        )}
-      </button>
+    <div className={cn(
+      'flex items-center gap-4 p-4 rounded-xl transition-all duration-200',
+      itemContainerStyles[variant]
+    )}>
+      <ItemActions
+        variant={variant}
+        onToggleCart={() => onToggleCart(item.id)}
+        onRemove={() => onRemove(item.id)}
+      />
       
       <div className="flex-1 text-right">
-        <div className={styles.text}>{item.name}</div>
+        <div className={getTextStyle()}>{item.name}</div>
         {item.expiryDate && variant === 'purchased' && (
           <div className="text-xs text-gray-400 flex items-center gap-1 justify-end mt-1">
             <span>תוקף עד: {formatDate(item.expiryDate)}</span>
@@ -79,14 +50,6 @@ export const ShoppingItemComponent = ({
           </div>
         )}
       </div>
-      
-      <button
-        onClick={() => onRemove(item.id)}
-        className="text-red-500 hover:text-red-700 transition-colors p-2 rounded-lg hover:bg-red-50"
-        title="הסר מוצר"
-      >
-        <X className="w-5 h-5" />
-      </button>
     </div>
   )
 }

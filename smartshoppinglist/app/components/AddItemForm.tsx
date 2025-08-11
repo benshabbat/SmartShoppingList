@@ -1,9 +1,14 @@
 import { useState, useMemo, useEffect } from 'react'
-import { Plus, Lightbulb } from 'lucide-react'
-import { CATEGORIES, CATEGORY_EMOJIS } from '../utils/constants'
+import { Plus } from 'lucide-react'
+import { CATEGORIES } from '../utils/constants'
 import { Category, ShoppingItem } from '../types'
 import { AutoComplete } from './AutoComplete'
+import { CategorySelector } from './CategorySelector'
+import { NotificationBanner } from './NotificationBanner'
 import { generateSmartSuggestions, suggestCategoryForProduct } from '../utils/smartSuggestions'
+import { useFormField } from '../hooks/useFormState'
+import { validateProductName } from '../utils/validation'
+import { getButtonClasses, containerStyles } from '../utils/classNames'
 
 interface AddItemFormProps {
   onAddItem: (name: string, category: string) => void
@@ -16,7 +21,14 @@ export const AddItemForm = ({
   purchaseHistory = [], 
   currentItems = [] 
 }: AddItemFormProps) => {
-  const [newItemName, setNewItemName] = useState('')
+  const itemName = useFormField({
+    initialValue: '',
+    validator: (value: string) => {
+      const result = validateProductName(value)
+      return result.isValid ? undefined : result.error
+    }
+  })
+  
   const [newItemCategory, setNewItemCategory] = useState<Category>('פירות וירקות')
   const [showCategorySuggestion, setShowCategorySuggestion] = useState(false)
   const [suggestedCategory, setSuggestedCategory] = useState<Category | null>(null)
@@ -29,8 +41,8 @@ export const AddItemForm = ({
 
   // זיהוי קטגוריה מתאימה למוצר שהוזן עם החלפה אוטומטית
   useEffect(() => {
-    if (newItemName.trim().length >= 2) {
-      const suggested = suggestCategoryForProduct(newItemName)
+    if (itemName.value.trim().length >= 2) {
+      const suggested = suggestCategoryForProduct(itemName.value)
       if (suggested !== newItemCategory && suggested !== 'אחר') {
         // החלף אוטומטית את הקטגוריה
         setNewItemCategory(suggested as Category)
@@ -49,25 +61,25 @@ export const AddItemForm = ({
       setShowCategorySuggestion(false)
       setAutoChangedCategory(false)
     }
-  }, [newItemName])
+  }, [itemName.value, newItemCategory])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (newItemName.trim()) {
-      onAddItem(newItemName.trim(), newItemCategory)
-      setNewItemName('')
+    if (itemName.isValid && itemName.value.trim()) {
+      onAddItem(itemName.value.trim(), newItemCategory)
+      itemName.reset()
       setAutoChangedCategory(false)
     }
   }
 
   const handleAutoCompleteSelect = (selectedItem: string) => {
     onAddItem(selectedItem, newItemCategory)
-    setNewItemName('')
+    itemName.reset()
     setAutoChangedCategory(false)
   }
 
   const handleNameChange = (name: string) => {
-    setNewItemName(name)
+    itemName.setValue(name)
     // אם השם התחיל להשתנות, החבא את ההודעה על שינוי אוטומטי
     if (autoChangedCategory && name.length < 2) {
       setAutoChangedCategory(false)
@@ -82,82 +94,40 @@ export const AddItemForm = ({
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 border border-gray-100">
-      {/* הודעה על שינוי אוטומטי של הקטגוריה */}
-      {autoChangedCategory && (
-        <div className="mb-4 p-3 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-right">
-              <span className="text-sm text-green-700">
-                הקטגוריה שונתה אוטומטית ל
-                <span className="font-semibold text-green-800 mr-1">
-                  {CATEGORY_EMOJIS[newItemCategory]} {newItemCategory}
-                </span>
-                עבור &quot;{newItemName}&quot;
-              </span>
-              <Lightbulb className="w-4 h-4 text-green-500" />
-            </div>
-          </div>
-        </div>
-      )}
+    <div className={containerStyles.section}>
+      <NotificationBanner
+        type="auto-change"
+        message=""
+        category={newItemCategory}
+        productName={itemName.value}
+        isVisible={autoChangedCategory}
+      />
 
-      {/* הצעת קטגוריה חכמה */}
-      {showCategorySuggestion && suggestedCategory && (
-        <div className="mb-4 p-3 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl">
-          <div className="flex items-center justify-between">
-            <div className="flex gap-2">
-              <button
-                onClick={acceptCategorySuggestion}
-                className="px-3 py-1 bg-amber-500 text-white rounded-lg text-sm hover:bg-amber-600 transition-colors"
-              >
-                החלף
-              </button>
-              <button
-                onClick={() => setShowCategorySuggestion(false)}
-                className="px-3 py-1 bg-gray-200 text-gray-700 rounded-lg text-sm hover:bg-gray-300 transition-colors"
-              >
-                התעלם
-              </button>
-            </div>
-            <div className="flex items-center gap-2 text-right">
-              <span className="text-sm text-gray-600">
-                אולי &quot;{newItemName}&quot; שייך ל
-                <span className="font-semibold text-amber-700">
-                  {CATEGORY_EMOJIS[suggestedCategory]} {suggestedCategory}
-                </span>
-                ?
-              </span>
-              <Lightbulb className="w-4 h-4 text-amber-500" />
-            </div>
-          </div>
-        </div>
-      )}
+      <NotificationBanner
+        type="suggestion"
+        message=""
+        category={suggestedCategory || undefined}
+        productName={itemName.value}
+        onAccept={acceptCategorySuggestion}
+        onDismiss={() => setShowCategorySuggestion(false)}
+        isVisible={showCategorySuggestion && !!suggestedCategory}
+      />
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-2 text-right">
-              קטגוריה
-            </label>
-            <select
+            <CategorySelector
               value={newItemCategory}
-              onChange={(e) => setNewItemCategory(e.target.value as Category)}
-              className={`w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white shadow-sm transition-all duration-300 ${
-                autoChangedCategory ? 'ring-2 ring-green-400 border-green-300 bg-green-50' : ''
-              }`}
-            >
-              {CATEGORIES.map(category => (
-                <option key={category} value={category}>
-                  {CATEGORY_EMOJIS[category]} {category}
-                </option>
-              ))}
-            </select>
+              onChange={setNewItemCategory}
+              categories={CATEGORIES}
+              isHighlighted={autoChangedCategory}
+            />
           </div>
         </div>
         
         <div className="flex gap-3">
           <AutoComplete
-            value={newItemName}
+            value={itemName.value}
             onChange={handleNameChange}
             onSelect={handleAutoCompleteSelect}
             suggestions={suggestions}
@@ -168,8 +138,8 @@ export const AddItemForm = ({
           />
           <button
             type="submit"
-            className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl hover:from-indigo-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-            disabled={!newItemName.trim()}
+            className={getButtonClasses('primary', 'md', !itemName.isValid || !itemName.value.trim())}
+            disabled={!itemName.isValid || !itemName.value.trim()}
           >
             <Plus className="w-5 h-5" />
           </button>

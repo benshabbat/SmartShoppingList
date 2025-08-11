@@ -9,12 +9,12 @@ import { Header } from './components/Header'
 import { AddItemForm } from './components/AddItemForm'
 import { SmartSuggestions } from './components/SmartSuggestions'
 import { CategorySection } from './components/CategorySection'
-import { ShoppingCart as ShoppingCartComponent } from './components/ShoppingCart'
 import { Statistics } from './components/Statistics'
 import { CheckoutModal, ExpiryModal } from './components/Modals'
 
 // Hooks and Utils
 import { useShoppingList } from './hooks/useShoppingList'
+import { ShoppingItem } from './types'
 
 export default function ShoppingListApp() {
   const {
@@ -26,19 +26,20 @@ export default function ShoppingListApp() {
     addItem,
     toggleItemInCart,
     removeItem,
-    markAsPurchased,
     clearPurchased,
     addSuggestedItem,
     addExpiringItemToList,
     removeFromPantry,
     getItemsByStatus,
-    setExpiringItems
+    setExpiringItems,
+    updateItemWithExpiry
   } = useShoppingList()
 
   // Modal states
+  // Modal states
   const [showExpiryModal, setShowExpiryModal] = useState(false)
   const [showCheckoutModal, setShowCheckoutModal] = useState(false)
-  const [checkoutItems, setCheckoutItems] = useState<typeof items>([])
+  const [checkoutItems, setCheckoutItems] = useState<ShoppingItem[]>([])
   const [currentCheckoutIndex, setCurrentCheckoutIndex] = useState(0)
 
   const startCheckout = () => {
@@ -52,8 +53,8 @@ export default function ShoppingListApp() {
 
   const handleCheckoutNext = (expiryDate?: Date) => {
     const currentItem = checkoutItems[currentCheckoutIndex]
-    markAsPurchased(currentItem, expiryDate)
-
+    updateItemWithExpiry(currentItem.id, expiryDate)
+    
     if (currentCheckoutIndex < checkoutItems.length - 1) {
       setCurrentCheckoutIndex(prev => prev + 1)
     } else {
@@ -129,12 +130,26 @@ export default function ShoppingListApp() {
         />
 
         {/* Shopping Cart */}
-        <ShoppingCartComponent
-          items={inCart}
-          onToggleCart={toggleItemInCart}
-          onRemove={removeItem}
-          onStartCheckout={startCheckout}
-        />
+        {inCart.length > 0 && (
+          <div className="bg-blue-50 rounded-2xl shadow-lg p-6 border border-blue-200 mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <button
+                onClick={startCheckout}
+                className="px-6 py-3 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-colors font-medium shadow-lg hover:shadow-xl transform hover:scale-105"
+              >
+                סיימתי קניות ({inCart.length})
+              </button>
+              <h3 className="font-semibold text-gray-800 text-right">בסל 🛒</h3>
+            </div>
+            <CategorySection 
+              title=""
+              items={inCart}
+              onToggleCart={toggleItemInCart}
+              onRemove={removeItem}
+              variant="inCart"
+            />
+          </div>
+        )}
 
         {/* Purchased Items */}
         {purchased.length > 0 && (
@@ -163,8 +178,6 @@ export default function ShoppingListApp() {
                 onToggleCart={toggleItemInCart}
                 onRemove={removeItem}
                 variant="purchased"
-                headerColor="bg-green-100 text-green-700"
-                showItemCount={false}
               />
             </div>
           </div>

@@ -121,6 +121,36 @@ export const useShoppingList = () => {
     setExpiringItems(prev => prev.filter(item => item.name !== itemName))
   }
 
+  const updateItemWithExpiry = (itemId: string, expiryDate?: Date) => {
+    const updatedItem = items.find(item => item.id === itemId)
+    if (!updatedItem) return
+
+    const newItem = {
+      ...updatedItem,
+      isPurchased: true,
+      purchasedAt: new Date(),
+      expiryDate
+    }
+
+    // Update items list
+    setItems(prev => prev.map(item => 
+      item.id === itemId ? newItem : item
+    ))
+
+    // Add to purchase history
+    const newHistory = [...purchaseHistory, newItem]
+    setPurchaseHistory(newHistory)
+    localStorage.setItem(STORAGE_KEYS.PURCHASE_HISTORY, JSON.stringify(newHistory))
+
+    // Add to pantry if it has expiry date
+    if (newItem.expiryDate) {
+      const newPantry = [...pantryItems, newItem]
+      setPantryItems(newPantry)
+    }
+
+    setSuggestions(generateSuggestions(newHistory, items))
+  }
+
   const getItemsByStatus = () => {
     const pending = items.filter(item => !item.isInCart && !item.isPurchased)
     const inCart = items.filter(item => item.isInCart && !item.isPurchased)
@@ -143,6 +173,7 @@ export const useShoppingList = () => {
     addExpiringItemToList,
     removeFromPantry,
     getItemsByStatus,
-    setExpiringItems
+    setExpiringItems,
+    updateItemWithExpiry
   }
 }

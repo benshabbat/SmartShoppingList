@@ -107,7 +107,7 @@ export const CheckoutModal = ({
 
 interface ExpiryModalProps {
   isOpen: boolean
-  items: ExpiringItem[]
+  expiringItems: ExpiringItem[]
   onAddToList: (itemName: string) => void
   onRemoveFromPantry: (itemName: string) => void
   onClose: () => void
@@ -115,12 +115,12 @@ interface ExpiryModalProps {
 
 export const ExpiryModal = ({ 
   isOpen, 
-  items, 
+  expiringItems, 
   onAddToList, 
   onRemoveFromPantry, 
   onClose 
 }: ExpiryModalProps) => {
-  if (!isOpen || items.length === 0) return null
+  if (!isOpen || expiringItems.length === 0) return null
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -137,7 +137,7 @@ export const ExpiryModal = ({
         </p>
         
         <div className="space-y-3 mb-6 max-h-60 overflow-y-auto">
-          {items.map((item, index) => (
+          {expiringItems.map((item, index) => (
             <div key={index} className={`p-4 rounded-xl border-2 ${getExpiryColor(item.daysUntilExpiry)}`}>
               <div className="flex justify-between items-center">
                 <div className="flex gap-2">

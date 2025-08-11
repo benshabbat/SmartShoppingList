@@ -17,6 +17,7 @@ export interface ItemSuggestion {
 }
 
 export interface ExpiringItem {
+  id: string
   name: string
   expiryDate: Date
   daysUntilExpiry: number

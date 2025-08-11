@@ -71,6 +71,7 @@ export const checkExpiringItems = (pantry: ShoppingItem[]): ExpiringItem[] => {
       
       if (daysUntilExpiry <= 3) {
         expiring.push({
+          id: item.id,
           name: item.name,
           expiryDate,
           daysUntilExpiry

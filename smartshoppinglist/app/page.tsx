@@ -13,6 +13,8 @@ import { CheckoutModal, ExpiryModal } from './components/Modals'
 import { QuickAddButtons } from './components/QuickAddButtons'
 import { Tutorial, useTutorial } from './components/Tutorial'
 import { ToastContainer, useToasts } from './components/Toast'
+import { QuickListCreator } from './components/QuickListCreator'
+import { DataExport } from './components/DataExport'
 
 // Hooks and Utils
 import { useShoppingList } from './hooks/useShoppingList'
@@ -114,10 +116,95 @@ export default function ShoppingListApp() {
 
   const { pending, inCart, purchased } = getItemsByStatus()
 
+  const handleCreateQuickList = (items: Array<{name: string, category: string}>) => {
+    items.forEach(item => {
+      addItem(item.name, item.category)
+    })
+    showSuccess('רשימה נוצרה!', `נוספו ${items.length} פריטים`)
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-100 p-4">
-      <div className="max-w-2xl mx-auto">
-        <Header onOpenTutorial={openTutorial} />
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-100 p-2 sm:p-4">
+      <div className="max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6">
+          
+          {/* Header - Full Width */}
+          <div className="lg:col-span-12">
+            <Header onOpenTutorial={openTutorial} />
+          </div>
+
+          {/* Main Content Area */}
+          <div className="lg:col-span-8 space-y-4">
+            
+            {/* Quick List Creator */}
+            <QuickListCreator onCreateList={handleCreateQuickList} />
+
+            {/* Add Item Form */}
+            <AddItemForm onAddItem={handleAddItem} />
+
+            {/* Smart Suggestions */}
+            <SmartSuggestions 
+              suggestions={suggestions}
+              onAddSuggestion={addSuggestedItem}
+            />
+
+            {/* Quick Add Buttons */}
+            <QuickAddButtons 
+              onAddItem={handleAddItem}
+              popularItems={getPopularItems(purchaseHistory)}
+            />
+
+            {/* Shopping List by Categories */}
+            <div className="space-y-4">
+              {pending.length > 0 && (
+                <CategorySection
+                  title="רשימת קניות"
+                  items={pending}
+                  onToggleCart={handleToggleCart}
+                  onRemove={handleRemoveItem}
+                />
+              )}
+
+              {inCart.length > 0 && (
+                <CategorySection
+                  title="בעגלה"
+                  items={inCart}
+                  onToggleCart={handleToggleCart}
+                  onRemove={handleRemoveItem}
+                />
+              )}
+
+              {purchased.length > 0 && (
+                <CategorySection
+                  title="נקנו"
+                  items={purchased}
+                  onToggleCart={handleToggleCart}
+                  onRemove={handleRemoveItem}
+                />
+              )}
+            </div>
+          </div>
+
+          {/* Sidebar */}
+          <div className="lg:col-span-4 space-y-4">
+            
+            {/* Export Data */}
+            <div className="flex justify-center lg:justify-start">
+              <DataExport 
+                items={items}
+                purchaseHistory={purchaseHistory}
+                pantryItems={pantryItems}
+              />
+            </div>
+
+            {/* Statistics */}
+            <Statistics 
+              purchaseHistory={purchaseHistory}
+              suggestions={suggestions}
+              pantryItems={pantryItems}
+            />
+          </div>
+        </div>
 
         {/* Toast Container */}
         <ToastContainer />

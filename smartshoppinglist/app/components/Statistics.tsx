@@ -1,4 +1,4 @@
-import { History, TrendingUp, Package, Target, Calendar, ShoppingCart, Clock, Award, ChevronDown, ChevronUp } from 'lucide-react'
+import { History, TrendingUp, Package, Target, ShoppingCart, Clock, Award, ChevronDown, ChevronUp } from 'lucide-react'
 import { ShoppingItem, ItemSuggestion } from '../types'
 import { formatDate } from '../utils/helpers'
 import { useState } from 'react'

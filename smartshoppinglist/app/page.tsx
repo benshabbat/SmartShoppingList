@@ -2,7 +2,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ShoppingCart, Clock } from 'lucide-react'
+import { Clock } from 'lucide-react'
 
 // Components
 import { Header } from './components/Header'
@@ -35,7 +35,6 @@ export default function ShoppingListApp() {
     addExpiringItemToList,
     removeFromPantry,
     getItemsByStatus,
-    setExpiringItems,
     updateItemWithExpiry
   } = useShoppingList()
 
@@ -110,6 +109,9 @@ export default function ShoppingListApp() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-100 p-4">
       <div className="max-w-2xl mx-auto">
         <Header onOpenTutorial={openTutorial} />
+
+        {/* Toast Container */}
+        <ToastContainer />
 
         {/* Tutorial */}
         <Tutorial 

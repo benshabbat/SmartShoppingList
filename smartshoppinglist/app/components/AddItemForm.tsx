@@ -83,7 +83,7 @@ export const AddItemForm = ({
             </div>
             <div className="flex items-center gap-2 text-right">
               <span className="text-sm text-gray-600">
-                אולי "{newItemName}" שייך ל
+                אולי &quot;{newItemName}&quot; שייך ל
                 <span className="font-semibold text-amber-700">
                   {CATEGORY_EMOJIS[suggestedCategory]} {suggestedCategory}
                 </span>

@@ -229,6 +229,7 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
                     onClick={() => setShowManualEntry(true)}
                     variant="secondary"
                     className="border-green-300 text-green-700 hover:bg-green-50"
+                    icon={Upload}
                   >
                     הכנסה ידנית
                   </ActionButton>

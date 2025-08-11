@@ -2,15 +2,16 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Check, X, ShoppingCart, History, Lightbulb, Calendar, AlertTriangle, Clock } from 'lucide-react'
+import { Plus, Check, X, ShoppingCart, History, Lightbulb, Calendar, AlertTriangle, Clock, ShoppingBag } from 'lucide-react'
 
 interface ShoppingItem {
   id: string
   name: string
   category?: string
-  isCompleted: boolean
+  isInCart: boolean
+  isPurchased: boolean
   addedAt: Date
-  completedAt?: Date
+  purchasedAt?: Date
   expiryDate?: Date
 }
 
@@ -27,25 +28,18 @@ interface ExpiringItem {
   daysUntilExpiry: number
 }
 
-interface PurchasedItem {
-  id: string
-  name: string
-}
-
 export default function ShoppingListApp() {
   const [items, setItems] = useState<ShoppingItem[]>([])
   const [newItemName, setNewItemName] = useState('')
-  const [newItemExpiry, setNewItemExpiry] = useState('')
-  const [showExpiryInput, setShowExpiryInput] = useState(false)
   const [suggestions, setSuggestions] = useState<ItemSuggestion[]>([])
   const [expiringItems, setExpiringItems] = useState<ExpiringItem[]>([])
   const [showExpiryModal, setShowExpiryModal] = useState(false)
-  const [showPurchaseExpiryModal, setShowPurchaseExpiryModal] = useState(false)
-  const [purchasedItemForExpiry, setPurchasedItemForExpiry] = useState<PurchasedItem | null>(null)
-  const [purchaseExpiryDate, setPurchaseExpiryDate] = useState('')
+  const [showCheckoutModal, setShowCheckoutModal] = useState(false)
+  const [checkoutItems, setCheckoutItems] = useState<ShoppingItem[]>([])
+  const [currentCheckoutIndex, setCurrentCheckoutIndex] = useState(0)
+  const [currentExpiryDate, setCurrentExpiryDate] = useState('')
   const [purchaseHistory, setPurchaseHistory] = useState<ShoppingItem[]>([])
   const [pantryItems, setPantryItems] = useState<ShoppingItem[]>([])
-  const [lastVisit, setLastVisit] = useState<Date | null>(null)
 
   // Load data from localStorage on component mount
   useEffect(() => {
@@ -71,15 +65,12 @@ export default function ShoppingListApp() {
     }
 
     if (savedLastVisit) {
-      setLastVisit(new Date(savedLastVisit))
-      // Check if it's been more than a day since last visit
       const daysSinceVisit = Math.floor((Date.now() - new Date(savedLastVisit).getTime()) / (1000 * 60 * 60 * 24))
-      if (daysSinceVisit >= 1) {
-        setTimeout(() => checkExpiringItems(JSON.parse(savedPantry || '[]')), 1000)
+      if (daysSinceVisit >= 1 && savedPantry) {
+        setTimeout(() => checkExpiringItems(JSON.parse(savedPantry)), 1000)
       }
     }
 
-    // Update last visit
     localStorage.setItem('lastVisit', new Date().toISOString())
   }, [])
 
@@ -102,7 +93,6 @@ export default function ShoppingListApp() {
         const expiryDate = new Date(item.expiryDate)
         const daysUntilExpiry = Math.ceil((expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
         
-        // Show items that expire within 3 days or already expired
         if (daysUntilExpiry <= 3) {
           expiring.push({
             name: item.name,
@@ -127,13 +117,13 @@ export default function ShoppingListApp() {
       const itemName = item.name.toLowerCase()
       if (itemFrequency[itemName]) {
         itemFrequency[itemName].count++
-        if (new Date(item.completedAt!) > itemFrequency[itemName].lastBought) {
-          itemFrequency[itemName].lastBought = new Date(item.completedAt!)
+        if (new Date(item.purchasedAt!) > itemFrequency[itemName].lastBought) {
+          itemFrequency[itemName].lastBought = new Date(item.purchasedAt!)
         }
       } else {
         itemFrequency[itemName] = {
           count: 1,
-          lastBought: new Date(item.completedAt!)
+          lastBought: new Date(item.purchasedAt!)
         }
       }
     })
@@ -151,7 +141,7 @@ export default function ShoppingListApp() {
       })
       .filter(suggestion => {
         const isInCurrentList = items.some(item => 
-          item.name.toLowerCase() === suggestion.name && !item.isCompleted
+          item.name.toLowerCase() === suggestion.name && !item.isPurchased
         )
         return suggestion.frequency > 1 && !isInCurrentList && suggestion.daysSinceLastBought > 3
       })
@@ -165,50 +155,80 @@ export default function ShoppingListApp() {
     setSuggestions(suggestions)
   }
 
-  const addItem = (itemName: string, expiryDate?: string) => {
+  const addItem = (itemName: string) => {
     if (!itemName.trim()) return
     
     const newItem: ShoppingItem = {
       id: Date.now().toString(),
       name: itemName.trim(),
-      isCompleted: false,
-      addedAt: new Date(),
-      expiryDate: expiryDate ? new Date(expiryDate) : undefined
+      isInCart: false,
+      isPurchased: false,
+      addedAt: new Date()
     }
     
     setItems(prev => [...prev, newItem])
     setNewItemName('')
-    setNewItemExpiry('')
-    setShowExpiryInput(false)
   }
 
-  const toggleItem = (id: string) => {
-    setItems(prev => prev.map(item => {
-      if (item.id === id) {
-        const updatedItem = {
-          ...item,
-          isCompleted: !item.isCompleted,
-          completedAt: !item.isCompleted ? new Date() : undefined
-        }
-        
-        // If completing item, add to purchase history and pantry
-        if (!item.isCompleted) {
-          const newHistory = [...purchaseHistory, updatedItem]
-          setPurchaseHistory(newHistory)
-          localStorage.setItem('purchaseHistory', JSON.stringify(newHistory))
-          generateSuggestions(newHistory)
+  const toggleItemInCart = (id: string) => {
+    setItems(prev => prev.map(item => 
+      item.id === id ? { ...item, isInCart: !item.isInCart } : item
+    ))
+  }
 
-          // Add to pantry if it has expiry date
-          if (updatedItem.expiryDate) {
-            const newPantry = [...pantryItems, updatedItem]
-            setPantryItems(newPantry)
-          }
-        }
-        
-        return updatedItem
-      }
-      return item
-    }))
+  const startCheckout = () => {
+    const itemsInCart = items.filter(item => item.isInCart && !item.isPurchased)
+    if (itemsInCart.length === 0) return
+    
+    setCheckoutItems(itemsInCart)
+    setCurrentCheckoutIndex(0)
+    setCurrentExpiryDate('')
+    setShowCheckoutModal(true)
+  }
+
+  const handleCheckoutNext = () => {
+    // Save current item with expiry date
+    const currentItem = checkoutItems[currentCheckoutIndex]
+    const updatedItem = {
+      ...currentItem,
+      isPurchased: true,
+      purchasedAt: new Date(),
+      expiryDate: currentExpiryDate ? new Date(currentExpiryDate) : undefined
+    }
+
+    // Update items list
+    setItems(prev => prev.map(item => 
+      item.id === currentItem.id ? updatedItem : item
+    ))
+
+    // Add to purchase history
+    const newHistory = [...purchaseHistory, updatedItem]
+    setPurchaseHistory(newHistory)
+    localStorage.setItem('purchaseHistory', JSON.stringify(newHistory))
+
+    // Add to pantry if it has expiry date
+    if (updatedItem.expiryDate) {
+      const newPantry = [...pantryItems, updatedItem]
+      setPantryItems(newPantry)
+    }
+
+    // Move to next item or finish
+    if (currentCheckoutIndex < checkoutItems.length - 1) {
+      setCurrentCheckoutIndex(prev => prev + 1)
+      setCurrentExpiryDate('')
+    } else {
+      // Finished checkout
+      setShowCheckoutModal(false)
+      setCheckoutItems([])
+      setCurrentCheckoutIndex(0)
+      setCurrentExpiryDate('')
+      generateSuggestions(newHistory)
+    }
+  }
+
+  const skipExpiryForCurrentItem = () => {
+    setCurrentExpiryDate('')
+    handleCheckoutNext()
   }
 
   const removeItem = (id: string) => {
@@ -230,14 +250,15 @@ export default function ShoppingListApp() {
     setExpiringItems(prev => prev.filter(item => item.name !== itemName))
   }
 
-  const clearCompleted = () => {
-    setItems(prev => prev.filter(item => !item.isCompleted))
+  const clearPurchased = () => {
+    setItems(prev => prev.filter(item => !item.isPurchased))
   }
 
   const getItemsByStatus = () => {
-    const pending = items.filter(item => !item.isCompleted)
-    const completed = items.filter(item => item.isCompleted)
-    return { pending, completed }
+    const pending = items.filter(item => !item.isInCart && !item.isPurchased)
+    const inCart = items.filter(item => item.isInCart && !item.isPurchased)
+    const purchased = items.filter(item => item.isPurchased)
+    return { pending, inCart, purchased }
   }
 
   const formatDate = (date: Date) => {
@@ -254,7 +275,7 @@ export default function ShoppingListApp() {
     return 'text-yellow-600 bg-yellow-50'
   }
 
-  const { pending, completed } = getItemsByStatus()
+  const { pending, inCart, purchased } = getItemsByStatus()
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
@@ -265,8 +286,69 @@ export default function ShoppingListApp() {
             <ShoppingCart className="w-8 h-8 text-indigo-600" />
             <h1 className="text-2xl font-bold text-gray-800">רשימת קניות חכמה</h1>
           </div>
-          <p className="text-gray-600">עם מעקב תוקף ותזכורות</p>
+          <p className="text-gray-600">הוסף לסל ← קנה ← תוקף</p>
         </div>
+
+        {/* Checkout Modal */}
+        {showCheckoutModal && checkoutItems.length > 0 && currentCheckoutIndex < checkoutItems.length && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-sm w-full p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <ShoppingBag className="w-6 h-6 text-green-500" />
+                <h3 className="text-lg font-bold text-gray-800">סיום קניות</h3>
+              </div>
+              
+              <div className="mb-4">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm text-gray-500">
+                    {currentCheckoutIndex + 1} מתוך {checkoutItems.length}
+                  </span>
+                  <div className="w-full bg-gray-200 rounded-full h-2 mx-3">
+                    <div 
+                      className="bg-green-500 h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${((currentCheckoutIndex + 1) / checkoutItems.length) * 100}%` }}
+                    ></div>
+                  </div>
+                </div>
+                
+                <p className="text-gray-600 mb-2">
+                  קנית: <span className="font-medium text-lg">{checkoutItems[currentCheckoutIndex]?.name}</span>
+                </p>
+                <p className="text-gray-600 mb-4">יש תוקף למוצר הזה?</p>
+                
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1 text-right">
+                      תאריך תפוגה (אופציונלי)
+                    </label>
+                    <input
+                      type="date"
+                      value={currentExpiryDate}
+                      onChange={(e) => setCurrentExpiryDate(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      min={new Date().toISOString().split('T')[0]}
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex gap-2">
+                <button
+                  onClick={skipExpiryForCurrentItem}
+                  className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+                >
+                  אין תוקף
+                </button>
+                <button
+                  onClick={handleCheckoutNext}
+                  className="flex-1 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                >
+                  {currentCheckoutIndex < checkoutItems.length - 1 ? 'הבא' : 'סיום'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Expiry Modal */}
         {showExpiryModal && expiringItems.length > 0 && (
@@ -324,45 +406,22 @@ export default function ShoppingListApp() {
 
         {/* Add new item */}
         <div className="bg-white rounded-lg shadow-md p-4 mb-6">
-          <div className="space-y-3">
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={newItemName}
-                onChange={(e) => setNewItemName(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && !showExpiryInput && addItem(newItemName)}
-                placeholder="הוסף מוצר חדש..."
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-right"
-                dir="rtl"
-              />
-              <button
-                onClick={() => setShowExpiryInput(!showExpiryInput)}
-                className={`px-3 py-2 rounded-lg transition-colors ${
-                  showExpiryInput ? 'bg-orange-500 text-white' : 'bg-gray-200 text-gray-600'
-                }`}
-              >
-                <Calendar className="w-5 h-5" />
-              </button>
-              <button
-                onClick={() => addItem(newItemName, newItemExpiry)}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-              >
-                <Plus className="w-5 h-5" />
-              </button>
-            </div>
-            
-            {showExpiryInput && (
-              <div className="flex gap-2 items-center">
-                <input
-                  type="date"
-                  value={newItemExpiry}
-                  onChange={(e) => setNewItemExpiry(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && addItem(newItemName, newItemExpiry)}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-                />
-                <span className="text-sm text-gray-600">תאריך תפוגה</span>
-              </div>
-            )}
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={newItemName}
+              onChange={(e) => setNewItemName(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && addItem(newItemName)}
+              placeholder="הוסף מוצר לרשימה..."
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-right"
+              dir="rtl"
+            />
+            <button
+              onClick={() => addItem(newItemName)}
+              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+            >
+              <Plus className="w-5 h-5" />
+            </button>
           </div>
         </div>
 
@@ -413,27 +472,21 @@ export default function ShoppingListApp() {
           </div>
         )}
 
-        {/* Pending Items */}
+        {/* Shopping List */}
         {pending.length > 0 && (
           <div className="bg-white rounded-lg shadow-md p-4 mb-6">
-            <h3 className="font-semibold text-gray-800 mb-3 text-right">לקנות</h3>
+            <h3 className="font-semibold text-gray-800 mb-3 text-right">רשימת קניות</h3>
             <div className="space-y-2">
               {pending.map(item => (
                 <div key={item.id} className="flex items-center gap-3 p-2 bg-gray-50 rounded-lg">
                   <button
-                    onClick={() => toggleItem(item.id)}
-                    className="w-6 h-6 border-2 border-gray-300 rounded-full hover:border-green-500 transition-colors flex items-center justify-center"
+                    onClick={() => toggleItemInCart(item.id)}
+                    className="w-6 h-6 border-2 border-blue-300 rounded-full hover:border-blue-500 transition-colors flex items-center justify-center"
                   >
-                    {item.isCompleted && <Check className="w-4 h-4 text-green-500" />}
+                    <ShoppingBag className="w-4 h-4 text-blue-500" />
                   </button>
                   <div className="flex-1 text-right">
                     <div className="font-medium">{item.name}</div>
-                    {item.expiryDate && (
-                      <div className="text-xs text-gray-500 flex items-center gap-1 justify-end">
-                        <span>תוקף עד: {formatDate(item.expiryDate)}</span>
-                        <Calendar className="w-3 h-3" />
-                      </div>
-                    )}
                   </div>
                   <button
                     onClick={() => removeItem(item.id)}
@@ -447,12 +500,48 @@ export default function ShoppingListApp() {
           </div>
         )}
 
-        {/* Completed Items */}
-        {completed.length > 0 && (
+        {/* Shopping Cart */}
+        {inCart.length > 0 && (
+          <div className="bg-blue-50 rounded-lg shadow-md p-4 mb-6 border border-blue-200">
+            <div className="flex items-center justify-between mb-3">
+              <button
+                onClick={startCheckout}
+                className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors font-medium"
+              >
+                סיימתי קניות ({inCart.length})
+              </button>
+              <h3 className="font-semibold text-gray-800 text-right">בסל 🛒</h3>
+            </div>
+            <div className="space-y-2">
+              {inCart.map(item => (
+                <div key={item.id} className="flex items-center gap-3 p-2 bg-white rounded-lg">
+                  <button
+                    onClick={() => toggleItemInCart(item.id)}
+                    className="w-6 h-6 border-2 border-blue-500 rounded-full bg-blue-500 flex items-center justify-center"
+                  >
+                    <ShoppingBag className="w-4 h-4 text-white" />
+                  </button>
+                  <div className="flex-1 text-right">
+                    <div className="font-medium text-blue-800">{item.name}</div>
+                  </div>
+                  <button
+                    onClick={() => removeItem(item.id)}
+                    className="text-red-500 hover:text-red-700 transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Purchased Items */}
+        {purchased.length > 0 && (
           <div className="bg-white rounded-lg shadow-md p-4 mb-6">
             <div className="flex items-center justify-between mb-3">
               <button
-                onClick={clearCompleted}
+                onClick={clearPurchased}
                 className="text-sm text-red-600 hover:text-red-800"
               >
                 נקה הכל
@@ -460,14 +549,11 @@ export default function ShoppingListApp() {
               <h3 className="font-semibold text-gray-800 text-right">נקנה ✓</h3>
             </div>
             <div className="space-y-2">
-              {completed.map(item => (
+              {purchased.map(item => (
                 <div key={item.id} className="flex items-center gap-3 p-2 bg-green-50 rounded-lg">
-                  <button
-                    onClick={() => toggleItem(item.id)}
-                    className="w-6 h-6 border-2 border-green-500 rounded-full bg-green-500 flex items-center justify-center"
-                  >
+                  <div className="w-6 h-6 border-2 border-green-500 rounded-full bg-green-500 flex items-center justify-center">
                     <Check className="w-4 h-4 text-white" />
-                  </button>
+                  </div>
                   <div className="flex-1 text-right">
                     <div className="line-through text-gray-600 font-medium">{item.name}</div>
                     {item.expiryDate && (

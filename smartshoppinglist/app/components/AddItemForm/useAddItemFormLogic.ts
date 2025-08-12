@@ -63,10 +63,7 @@ export const useAddItemFormLogic = ({
         setAutoChangedCategory(false)
       }
     }
-      setShowCategorySuggestion(false)
-      setAutoChangedCategory(false)
-    }
-  }, [itemName.value, newItemCategory])
+  }, [itemName.value, newItemCategory, autoChangedCategory])
 
   // Event handlers
   const handleSubmit = (e: React.FormEvent) => {

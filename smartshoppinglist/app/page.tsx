@@ -32,7 +32,8 @@ import { useSoundManager } from './utils/soundManager'
 import { MESSAGES } from './utils'
 
 export default function ShoppingListApp() {
-  const { loading, isAuthenticated, isGuest } = useAuth()
+  const { loading, isAuthenticated, isGuest, switchToAuth } = useAuth()
+  const [showLoginForm, setShowLoginForm] = useState(false)
   const [showReceiptScanner, setShowReceiptScanner] = useState(false)
   const [showExpiryModal, setShowExpiryModal] = useState(false)
   const [checkoutItems, setCheckoutItems] = useState<ShoppingItem[]>([])
@@ -155,9 +156,15 @@ export default function ShoppingListApp() {
     )
   }
 
-  // Show login form if user is not authenticated (not logged in and not in guest mode)
-  if (!isAuthenticated) {
-    return <LoginForm />
+  // Show login form if user is not authenticated OR if explicitly requested
+  if (!isAuthenticated || showLoginForm) {
+    return (
+      <LoginForm 
+        onSuccess={() => {
+          setShowLoginForm(false)
+        }} 
+      />
+    )
   }
 
   return (
@@ -173,7 +180,7 @@ export default function ShoppingListApp() {
         />
         
         {/* Guest Mode Notification - More subtle version after authentication */}
-        <GuestModeNotification />
+        <GuestModeNotification onSwitchToAuth={() => setShowLoginForm(true)} />
         
         {/* First-time guest explanation */}
         {isGuest && !localStorage.getItem('guest_explanation_seen') && (

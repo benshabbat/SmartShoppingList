@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react'
 import { User, X } from 'lucide-react'
 import { useAuth } from '@/app/hooks/useAuth'
 
-export function GuestModeNotification() {
+interface GuestModeNotificationProps {
+  onSwitchToAuth?: () => void
+}
+
+export function GuestModeNotification({ onSwitchToAuth }: GuestModeNotificationProps) {
   const { isGuest, switchToAuth } = useAuth()
   const [isDismissed, setIsDismissed] = useState(false)
   const [showMinimized, setShowMinimized] = useState(false)
@@ -62,11 +66,17 @@ export function GuestModeNotification() {
             </div>
             <div className="flex gap-1">
               <button
-                onClick={switchToAuth}
+                onClick={() => {
+                  if (onSwitchToAuth) {
+                    onSwitchToAuth()
+                  } else {
+                    switchToAuth()
+                  }
+                }}
                 className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-full transition-colors"
                 title="התחבר עם חשבון"
               >
-                � התחבר
+                💫 התחבר
               </button>
               <button
                 onClick={handleDismiss}

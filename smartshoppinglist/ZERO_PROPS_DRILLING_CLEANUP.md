@@ -199,10 +199,14 @@ const stats = useStatistics()
 - `GuestExplanationBanner` ✅
 - `WelcomeMessage` ✅
 - `ShoppingCartSection` ✅
-- `CategorySection` ✅ **NEW!**
-- `CategoryItems` ✅ **NEW!**
+- `CategorySection` ✅
+- `CategoryItems` ✅
+- `ShoppingListSections` ✅ **ENHANCED!**
+- `SmartSuggestions` ✅
+- `QuickAddButtons` ✅
+- `ReceiptScanner` ✅
+- `DataImportModal` ✅
 - `Header` and all sub-components ✅
-- `MainShoppingView` ✅
 - `MainShoppingView` ✅
 - All major UI sections ✅
 

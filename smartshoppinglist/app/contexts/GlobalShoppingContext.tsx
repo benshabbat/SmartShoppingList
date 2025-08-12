@@ -94,9 +94,11 @@ export const GlobalShoppingProvider = ({ children }: GlobalShoppingProviderProps
   const itemsStore = useShoppingItemsStore()
   const uiStore = useUIStore()
   
-  // Load items on mount and when user changes
+  // Load items on mount and when user changes - only on client side
   useEffect(() => {
-    itemsStore.loadItems(user?.id)
+    if (typeof window !== 'undefined') {
+      itemsStore.loadItems(user?.id)
+    }
   }, [user?.id, itemsStore.loadItems])
   
   // Computed values (derived state)

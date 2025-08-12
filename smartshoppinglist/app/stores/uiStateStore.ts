@@ -88,6 +88,11 @@ export const useUIStore = create<UIState>()(
       
       // Guest Actions
       shouldShowGuestExplanation: () => {
+        // Check if we're in browser environment
+        if (typeof window === 'undefined') {
+          return false // Return false during SSR
+        }
+        
         const { hasShownGuestExplanation } = get()
         const stored = localStorage.getItem(GUEST_EXPLANATION_KEY)
         return !hasShownGuestExplanation && !stored
@@ -95,7 +100,10 @@ export const useUIStore = create<UIState>()(
       
       dismissGuestExplanation: () => {
         set({ hasShownGuestExplanation: true })
-        localStorage.setItem(GUEST_EXPLANATION_KEY, 'true')
+        // Check if we're in browser environment
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(GUEST_EXPLANATION_KEY, 'true')
+        }
       },
       
       // Loading Actions

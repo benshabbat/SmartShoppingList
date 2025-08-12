@@ -119,14 +119,15 @@ export const useShoppingItemsStore = create<ShoppingItemsState>()(
             // Load from database for authenticated users
             const dbItems = await ShoppingItemService.getShoppingItems(userId)
             items = dbItems.map(convertDbItemToShoppingItem)
-          } else {
-            // Load from localStorage for guest users
+          } else if (typeof window !== 'undefined') {
+            // Load from localStorage for guest users - only on client side
             const stored = localStorage.getItem(STORAGE_KEYS.SHOPPING_LIST)
             if (stored) {
               const parsedItems = JSON.parse(stored)
               items = parseDatesInItems(parsedItems)
             }
           }
+          // If we're on server side and no userId, just use empty array
 
           // Separate items by status
           const purchaseHistory = items.filter(item => item.isPurchased)
@@ -185,8 +186,8 @@ export const useShoppingItemsStore = create<ShoppingItemsState>()(
             // Save to database
             const dbItem = convertShoppingItemToDb(newItem)
             await ShoppingItemService.createShoppingItem({ id: newItem.id, user_id: userId, ...dbItem })
-          } else {
-            // Save to localStorage
+          } else if (typeof window !== 'undefined') {
+            // Save to localStorage - only on client side
             const updatedItems = [...items, newItem]
             localStorage.setItem(STORAGE_KEYS.SHOPPING_LIST, JSON.stringify(updatedItems))
           }
@@ -218,8 +219,8 @@ export const useShoppingItemsStore = create<ShoppingItemsState>()(
             // Update in database
             const dbUpdates = convertShoppingItemToDb(updatedItem)
             await ShoppingItemService.updateShoppingItem(id, dbUpdates)
-          } else {
-            // Update in localStorage
+          } else if (typeof window !== 'undefined') {
+            // Update in localStorage - only on client side
             const updatedItems = [...items]
             updatedItems[itemIndex] = updatedItem
             localStorage.setItem(STORAGE_KEYS.SHOPPING_LIST, JSON.stringify(updatedItems))
@@ -241,8 +242,8 @@ export const useShoppingItemsStore = create<ShoppingItemsState>()(
           if (userId) {
             // Delete from database
             await ShoppingItemService.deleteShoppingItem(id)
-          } else {
-            // Delete from localStorage
+          } else if (typeof window !== 'undefined') {
+            // Delete from localStorage - only on client side
             const { items } = get()
             const updatedItems = items.filter(item => item.id !== id)
             localStorage.setItem(STORAGE_KEYS.SHOPPING_LIST, JSON.stringify(updatedItems))

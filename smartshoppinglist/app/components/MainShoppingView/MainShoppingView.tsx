@@ -23,12 +23,10 @@ import { MAIN_VIEW_STYLES } from './constants'
  * - Modular Structure: Broken into focused sub-components
  */
 export function MainShoppingView() {
-  const { isGuest } = useMainShoppingViewLogic()
-
   return (
     <div className={MAIN_VIEW_STYLES.CONTAINER}>
-      {/* Guest-specific UI */}
-      <GuestSection isGuest={isGuest} />
+      {/* Guest-specific UI - ZERO PROPS DRILLING */}
+      <GuestSection />
 
       {/* Quick Stats */}
       <QuickStatsCards />

@@ -1,17 +1,15 @@
-import React from 'react'
 import { GuestWelcomeMessage } from '../../GuestWelcomeMessage'
 import { GuestExplanationBanner } from './GuestExplanationBanner'
 import { useGlobalShopping } from '../../../contexts/GlobalShoppingContext'
-
-interface GuestSectionProps {
-  isGuest: boolean
-}
+import { useAuth } from '../../../hooks/useAuth'
 
 /**
- * Guest Section Component
+ * Guest Section Component - ZERO PROPS DRILLING
  * Single Responsibility: Handle all guest-related UI elements
+ * Gets everything from context!
  */
-export function GuestSection({ isGuest }: GuestSectionProps) {
+export function GuestSection() {
+  const { isGuest } = useAuth()
   const { shouldShowGuestExplanation, dismissGuestExplanation } = useGlobalShopping()
 
   if (!isGuest) {
@@ -20,9 +18,9 @@ export function GuestSection({ isGuest }: GuestSectionProps) {
 
   return (
     <>
-      <GuestWelcomeMessage isGuest={isGuest} />
+      <GuestWelcomeMessage />
       {shouldShowGuestExplanation && (
-        <GuestExplanationBanner onDismiss={dismissGuestExplanation} />
+        <GuestExplanationBanner />
       )}
     </>
   )

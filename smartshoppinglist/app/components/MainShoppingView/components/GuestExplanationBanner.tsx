@@ -1,17 +1,16 @@
-import React from 'react'
+import { useGlobalShopping } from '../../../contexts/GlobalShoppingContext'
 import { MAIN_VIEW_TEXT, MAIN_VIEW_STYLES } from '../constants'
 
-interface GuestExplanationBannerProps {
-  onDismiss: () => void
-}
-
 /**
- * Guest Explanation Banner Component
+ * Guest Explanation Banner Component - ZERO PROPS DRILLING
  * Single Responsibility: Display first-time guest explanation
+ * Gets everything from context!
  */
-export function GuestExplanationBanner({ onDismiss }: GuestExplanationBannerProps) {
+export function GuestExplanationBanner() {
+  const { dismissGuestExplanation } = useGlobalShopping()
+
   const handleDismiss = () => {
-    onDismiss()
+    dismissGuestExplanation()
     if (typeof window !== 'undefined') {
       window.location.reload()
     }

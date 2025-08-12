@@ -1,10 +1,14 @@
 'use client'
 
-interface GuestWelcomeMessageProps {
-  isGuest: boolean
-}
+import { useAuth } from '../hooks/useAuth'
 
-export function GuestWelcomeMessage({ isGuest }: GuestWelcomeMessageProps) {
+/**
+ * Guest Welcome Message - ZERO PROPS DRILLING
+ * Gets everything from context!
+ */
+export function GuestWelcomeMessage() {
+  const { isGuest } = useAuth()
+
   if (!isGuest || typeof window === 'undefined' || localStorage.getItem('guest_explanation_seen')) {
     return null
   }

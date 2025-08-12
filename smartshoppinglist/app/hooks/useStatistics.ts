@@ -1,8 +1,9 @@
 /**
- * Statistics calculations hook following DRY principles
+ * Statistics calculations hook following DRY principles - ZERO PROPS DRILLING
  */
 
 import { useMemo } from 'react'
+import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
 import { ShoppingItem, ItemSuggestion } from '../types'
 import { TIME_CONSTANTS } from '../utils/appConstants'
 import { 
@@ -18,17 +19,11 @@ import {
   calculateGrowth 
 } from '../utils/mathUtils'
 
-interface UseStatisticsProps {
-  purchaseHistory: ShoppingItem[]
-  suggestions: ItemSuggestion[]
-  pantryItems: ShoppingItem[]
-}
-
-export const useStatistics = ({
-  purchaseHistory,
-  suggestions,
-  pantryItems,
-}: UseStatisticsProps) => {
+/**
+ * Statistics Hook - Gets all data from context!
+ */
+export const useStatistics = () => {
+  const { purchaseHistory, suggestions, pantryItems } = useGlobalShopping()
   
   const basicStats = useMemo(() => ({
     totalPurchased: purchaseHistory.length,

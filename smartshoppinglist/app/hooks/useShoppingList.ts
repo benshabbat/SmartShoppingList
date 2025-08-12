@@ -5,6 +5,16 @@ import { ShoppingItem, ItemSuggestion, ExpiringItem } from '../types'
 import { STORAGE_KEYS } from '../utils/constants'
 import { generateSuggestions, checkExpiringItems } from '../utils/helpers'
 
+// Helper function to convert date strings back to Date objects
+const parseDatesInItems = (items: any[]): ShoppingItem[] => {
+  return items.map(item => ({
+    ...item,
+    addedAt: item.addedAt ? new Date(item.addedAt) : new Date(),
+    purchasedAt: item.purchasedAt ? new Date(item.purchasedAt) : undefined,
+    expiryDate: item.expiryDate ? new Date(item.expiryDate) : undefined,
+  }))
+}
+
 export const useShoppingList = () => {
   const [items, setItems] = useState<ShoppingItem[]>([])
   const [suggestions, setSuggestions] = useState<ItemSuggestion[]>([])
@@ -23,17 +33,18 @@ export const useShoppingList = () => {
     const savedLastVisit = localStorage.getItem(STORAGE_KEYS.LAST_VISIT)
     
     if (savedItems) {
-      setItems(JSON.parse(savedItems))
+      const parsedItems = parseDatesInItems(JSON.parse(savedItems))
+      setItems(parsedItems)
     }
     
     if (savedHistory) {
-      const history = JSON.parse(savedHistory)
+      const history = parseDatesInItems(JSON.parse(savedHistory))
       setPurchaseHistory(history)
       setSuggestions(generateSuggestions(history, JSON.parse(savedItems || '[]')))
     }
 
     if (savedPantry) {
-      const pantry = JSON.parse(savedPantry)
+      const pantry = parseDatesInItems(JSON.parse(savedPantry))
       setPantryItems(pantry)
       setExpiringItems(checkExpiringItems(pantry))
     }
@@ -41,7 +52,10 @@ export const useShoppingList = () => {
     if (savedLastVisit) {
       const daysSinceVisit = Math.floor((Date.now() - new Date(savedLastVisit).getTime()) / (1000 * 60 * 60 * 24))
       if (daysSinceVisit >= 1 && savedPantry) {
-        setTimeout(() => setExpiringItems(checkExpiringItems(JSON.parse(savedPantry))), 1000)
+        setTimeout(() => {
+          const pantry = parseDatesInItems(JSON.parse(savedPantry))
+          setExpiringItems(checkExpiringItems(pantry))
+        }, 1000)
       }
     }
 

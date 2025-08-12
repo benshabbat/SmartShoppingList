@@ -1,9 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
 import type { ShoppingItem } from '../types'
-import { useAuthStore } from '../stores/authStore'
-import { useShoppingListStore } from '../stores/shoppingListStore'
-import { useUIStore } from '../stores/uiStore'
+import { useAuthStore } from '../stores/core/authStore'
+import { useShoppingDataStore } from '../stores/data/shoppingDataStore'
+import { useUIStore } from '../stores/ui/uiStore'
 
 // Query Keys
 export const shoppingItemKeys = {
@@ -107,7 +107,7 @@ export function useAddShoppingItem() {
   const queryClient = useQueryClient()
   const user = useAuthStore((state) => state.user)
   const addToast = useUIStore((state) => state.addToast)
-  const addItem = useShoppingListStore((state) => state.addItem)
+  const addItem = useShoppingDataStore((state) => state.addItem)
 
   return useMutation({
     mutationFn: async (item: Omit<ShoppingItem, 'id' | 'addedAt'>): Promise<ShoppingItem> => {

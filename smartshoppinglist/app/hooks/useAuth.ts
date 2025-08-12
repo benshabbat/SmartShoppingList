@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
-import { useAuthStore } from '../stores/authStore'
-import { useUIStore } from '../stores/uiStore'
+import { useAuthStore } from '../stores/core/authStore'
+import { useUIStore } from '../stores/ui/uiStore'
 import type { User } from '@supabase/supabase-js'
 
 // Query Keys

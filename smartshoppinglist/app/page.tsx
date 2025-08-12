@@ -38,6 +38,7 @@ export default function ShoppingListApp() {
   const [showReceiptScanner, setShowReceiptScanner] = useState(false)
   const [showExpiryModal, setShowExpiryModal] = useState(false)
   const [showDataImportModal, setShowDataImportModal] = useState(false)
+
   const [checkoutItems, setCheckoutItems] = useState<ShoppingItem[]>([])
 
   // Main shopping list functionality - hooks must be called unconditionally
@@ -160,11 +161,12 @@ export default function ShoppingListApp() {
     )
   }
 
-  // Show login form if user is not authenticated OR if explicitly requested
-  if (!isAuthenticated || showLoginForm) {
+  // Show login form if user is not authenticated AND not loading
+  if (!isAuthenticated && !loading) {
     return (
       <LoginForm 
         onSuccess={() => {
+          console.log('LoginForm onSuccess called')
           setShowLoginForm(false)
           // Check if there's guest data to import after successful login
           if (hasGuestData()) {

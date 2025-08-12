@@ -19,83 +19,68 @@ export function useAuth() {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
   const [isGuest, setIsGuest] = useState(false)
-  const [isInitialized, setIsInitialized] = useState(false)
 
-  // Initialize guest state on component mount
+  // Main initialization effect
   useEffect(() => {
-    if (typeof window === 'undefined') return
-    
-    const guestMode = localStorage.getItem('guest_mode')
-    if (guestMode === 'true') {
-      setUser(GUEST_USER)
-      setIsGuest(true)
-      setLoading(false)
-      setIsInitialized(true)
-      return
-    }
-
-    setIsInitialized(true)
-  }, [])
-
-  useEffect(() => {
-    if (!isInitialized) return
-    
-    const guestMode = localStorage.getItem('guest_mode')
-    const hasSupabase = supabase !== null
-
-    // If already in guest mode, don't proceed with Supabase auth
-    if (guestMode === 'true') {
-      return
-    }
-
-    // If Supabase is not available and no explicit choice made, show login form
-    if (!hasSupabase && guestMode !== 'false') {
-      setLoading(false)
-      return
-    }
-
-    // Get initial session only if guest mode is not explicitly chosen
-    const getSession = async () => {
+    const initializeAuth = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession()
-        if (error) {
-          console.error('Error getting session:', error)
-          // Don't fallback to guest mode automatically - let user choose
-        } else {
-          setSession(session)
-          setUser(session?.user ?? null)
+        // Check for guest mode first
+        if (typeof window !== 'undefined') {
+          const guestMode = localStorage.getItem('guest_mode')
+          if (guestMode === 'true') {
+            setUser(GUEST_USER)
+            setIsGuest(true)
+            setLoading(false)
+            return
+          }
+        }
+
+        // Try to get Supabase session
+        if (supabase) {
+          try {
+            const { data: { session }, error } = await supabase.auth.getSession()
+            if (!error && session) {
+              setSession(session)
+              setUser(session.user)
+            }
+          } catch (error) {
+            console.error('Supabase auth error:', error)
+          }
         }
       } catch (error) {
-        console.error('Supabase connection error:', error)
-        // Don't fallback to guest mode automatically - let user choose
-      }
-      setLoading(false)
-    }
-
-    getSession()
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event: AuthChangeEvent, session: Session | null) => {
-        console.log('Auth event:', event)
-        // Clear guest mode when successfully authenticated
-        if (session?.user && typeof window !== 'undefined') {
-          localStorage.removeItem('guest_mode')
-        }
-        setSession(session)
-        setUser(session?.user ?? null)
-        setIsGuest(false)
+        console.error('Auth initialization error:', error)
+      } finally {
         setLoading(false)
       }
-    )
+    }
 
-    return () => subscription.unsubscribe()
-  }, [isInitialized])
+    initializeAuth()
+
+    // Listen for auth changes if Supabase is available
+    if (supabase) {
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(
+        async (event: AuthChangeEvent, session: Session | null) => {
+          // Clear guest mode when successfully authenticated
+          if (session?.user && typeof window !== 'undefined') {
+            localStorage.removeItem('guest_mode')
+          }
+          setSession(session)
+          setUser(session?.user ?? null)
+          setIsGuest(false)
+          setLoading(false)
+        }
+      )
+
+      return () => subscription.unsubscribe()
+    }
+  }, [])
 
   const signInAsGuest = () => {
     if (typeof window !== 'undefined') {
       localStorage.setItem('guest_mode', 'true')
     }
+    
+    // Update state synchronously
     setUser(GUEST_USER)
     setIsGuest(true)
     setSession(null)

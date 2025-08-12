@@ -19,7 +19,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
 
   const handleGuestLogin = () => {
     signInAsGuest()
-    onSuccess?.()
+    // Don't call onSuccess for guest login - let the state change trigger re-render naturally
   }
 
   const handleSubmit = async (e: React.FormEvent) => {

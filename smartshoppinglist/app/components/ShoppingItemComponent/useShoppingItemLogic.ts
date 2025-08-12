@@ -1,5 +1,5 @@
 import { ShoppingItem } from '../../types'
-import { useUpdateShoppingItem, useDeleteShoppingItem } from '../../hooks/useShoppingItems'
+import { useShoppingListContext } from '../../providers'
 
 interface UseShoppingItemLogicProps {
   item: ShoppingItem
@@ -14,26 +14,18 @@ export const useShoppingItemLogic = ({
   item, 
   variant = 'pending' 
 }: UseShoppingItemLogicProps) => {
-  const updateItemMutation = useUpdateShoppingItem()
-  const deleteItemMutation = useDeleteShoppingItem()
+  const { handleToggleCart, handleRemoveItem } = useShoppingListContext()
 
   // Event handlers
-  const handleToggleCart = () => {
-    updateItemMutation.mutate({
-      id: item.id,
-      updates: { isInCart: !item.isInCart }
-    })
+  const handleToggleCartLocal = () => {
+    handleToggleCart(item.id)
   }
 
   const handleRemove = () => {
-    deleteItemMutation.mutate(item.id)
+    handleRemoveItem(item.id)
   }
 
   // Computed values
-  const isUpdating = updateItemMutation.isPending
-  const isDeleting = deleteItemMutation.isPending
-  const isLoading = isUpdating || isDeleting
-
   const getTextStyle = () => {
     switch (variant) {
       case 'pending':
@@ -49,13 +41,8 @@ export const useShoppingItemLogic = ({
 
   return {
     // Event handlers
-    handleToggleCart,
+    handleToggleCart: handleToggleCartLocal,
     handleRemove,
-    
-    // State
-    isLoading,
-    isUpdating,
-    isDeleting,
     
     // Computed values
     textStyle: getTextStyle(),

@@ -1,7 +1,7 @@
 // Enhanced Shopping List Context with better state management
 'use client'
 
-import { createContext, useContext, ReactNode, useState } from 'react'
+import { createContext, useContext, ReactNode, useState, useEffect } from 'react'
 import { useShoppingList, useItemOperations, useAnalytics } from '../hooks'
 import { useToasts } from '../components/Toast'
 import { useTutorial } from '../components/Tutorial'
@@ -78,6 +78,11 @@ interface ShoppingListContextValue {
   handleExpiryModalSubmit: (itemsWithExpiry: Array<{ id: string; expiryDate?: Date }>) => void
   handleAddExpiringItem: (itemName: string) => Promise<void>
   handleCheckoutWithExpiry: () => void
+  handleGuestDataImport: () => void
+  handleLoginSuccess: () => void
+  handleHeaderReceiptScannerOpen: () => void
+  shouldShowGuestExplanation: () => boolean
+  dismissGuestExplanation: () => void
 
   // Helper functions
   hasExpiringItems: boolean
@@ -212,9 +217,44 @@ export function ShoppingListProvider({ children }: ShoppingListProviderProps) {
     openExpiryModal(inCart)
   }
 
+  const shouldShowGuestExplanation = () => {
+    return typeof window !== 'undefined' && !localStorage.getItem('guest_explanation_seen')
+  }
+
+  const dismissGuestExplanation = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('guest_explanation_seen', 'true')
+    }
+  }
+
+  const handleHeaderReceiptScannerOpen = () => {
+    if (typeof window !== 'undefined' && (window as any).openReceiptScanner) {
+      (window as any).openReceiptScanner()
+    }
+  }
+
+  const handleGuestDataImport = () => {
+    importGuestData()
+    showSuccess('הנתונים יובאו בהצלחה!')
+  }
+
+  const handleLoginSuccess = () => {
+    // Check if there's guest data to import after successful login
+    if (hasGuestData()) {
+      openDataImportModal()
+    }
+  }
+
   // Helper computed values
   const isPantryEmpty = pantryItems.length === 0
   const hasItemsInCart = getItemsByStatus().inCart.length > 0
+
+  // Expose receipt scanner opener to parent components  
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      (window as any).openReceiptScanner = openReceiptScanner
+    }
+  }, [openReceiptScanner])
 
   const contextValue: ShoppingListContextValue = {
     // Data
@@ -245,6 +285,11 @@ export function ShoppingListProvider({ children }: ShoppingListProviderProps) {
     handleExpiryModalSubmit,
     handleAddExpiringItem,
     handleCheckoutWithExpiry,
+    handleGuestDataImport,
+    handleLoginSuccess,
+    handleHeaderReceiptScannerOpen,
+    shouldShowGuestExplanation,
+    dismissGuestExplanation,
 
     // Helper computed values
     isPantryEmpty,

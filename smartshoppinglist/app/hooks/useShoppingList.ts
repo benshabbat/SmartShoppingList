@@ -193,7 +193,23 @@ export function useShoppingList() {
   }, [pantryItems, user, isGuest, loading])
 
   const addItem = async (itemName: string, category: string) => {
-    if (!itemName.trim() || !user) return
+    if (!itemName.trim()) return
+    
+    // Check if item already exists
+    const existingItem = items.find(item => 
+      item.name.toLowerCase().trim() === itemName.toLowerCase().trim()
+    )
+    
+    if (existingItem) {
+      // If item exists but not in cart, add to cart instead
+      if (!existingItem.isInCart) {
+        await toggleItemInCart(existingItem.id)
+        return existingItem.id
+      } else {
+        // Item already exists and is in cart
+        throw new Error('המוצר כבר קיים ברשימה')
+      }
+    }
     
     const newItem: ShoppingItem = {
       id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
@@ -208,7 +224,7 @@ export function useShoppingList() {
       if (isGuest) {
         // Add to local state for guest users
         setItems(prev => [...prev, newItem])
-      } else {
+      } else if (user) {
         // Add to database for authenticated users
         const dbItem = await ShoppingItemService.createShoppingItem({
           user_id: user.id,
@@ -221,6 +237,9 @@ export function useShoppingList() {
         
         const convertedItem = convertDbItemToShoppingItem(dbItem)
         setItems(prev => [...prev, convertedItem])
+      } else {
+        // Fallback for no user
+        return
       }
       
       return newItem.id
@@ -233,7 +252,7 @@ export function useShoppingList() {
   }
 
   const addItemToCart = async (itemName: string, category: string) => {
-    if (!itemName.trim() || !user) return
+    if (!itemName.trim()) return
     
     const newItem: ShoppingItem = {
       id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
@@ -247,7 +266,7 @@ export function useShoppingList() {
     try {
       if (isGuest) {
         setItems(prev => [...prev, newItem])
-      } else {
+      } else if (user) {
         const dbItem = await ShoppingItemService.createShoppingItem({
           user_id: user.id,
           name: newItem.name,
@@ -259,6 +278,9 @@ export function useShoppingList() {
         
         const convertedItem = convertDbItemToShoppingItem(dbItem)
         setItems(prev => [...prev, convertedItem])
+      } else {
+        // Fallback for no user
+        return
       }
       
       return newItem.id

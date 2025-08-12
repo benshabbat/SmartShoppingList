@@ -1,6 +1,5 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { useShoppingListContext } from '../providers'
 import { useAuthContext } from '../hooks'
 
@@ -67,17 +66,13 @@ export function MainShoppingView() {
     hasItemsInCart,
     hasExpiringItems,
     hasPurchaseHistory,
+    // Guest functions
+    shouldShowGuestExplanation,
+    dismissGuestExplanation,
   } = useShoppingListContext()
 
   // Get items by status
   const { pending, inCart, purchased } = getItemsByStatus()
-
-  // Expose receipt scanner opener to parent components
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      (window as any).openReceiptScanner = openReceiptScanner
-    }
-  }, [openReceiptScanner])
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-4xl space-y-6">
@@ -87,7 +82,7 @@ export function MainShoppingView() {
       )}
 
       {/* First-time guest explanation */}
-      {isGuest && typeof window !== 'undefined' && !localStorage.getItem('guest_explanation_seen') && (
+      {isGuest && shouldShowGuestExplanation() && (
         <div className="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl p-4 mb-6 border border-indigo-200">
           <div className="flex items-start gap-3">
             <div className="bg-indigo-100 rounded-full p-2 mt-1">
@@ -104,8 +99,8 @@ export function MainShoppingView() {
               <div className="flex gap-2">
                 <button
                   onClick={() => {
+                    dismissGuestExplanation()
                     if (typeof window !== 'undefined') {
-                      localStorage.setItem('guest_explanation_seen', 'true')
                       window.location.reload()
                     }
                   }}

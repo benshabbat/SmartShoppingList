@@ -23,7 +23,6 @@ export const ShoppingItemComponent = ({
       variant={variant}
       textStyle={logic.textStyle}
       showExpiryDate={logic.showExpiryDate}
-      isLoading={logic.isLoading}
       onToggleCart={logic.handleToggleCart}
       onRemove={logic.handleRemove}
     />

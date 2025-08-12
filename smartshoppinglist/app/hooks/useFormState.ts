@@ -6,14 +6,18 @@ export interface FormField<T> {
   isValid: boolean
 }
 
-export interface UseFormStateOptions<T> {
+export interface UseFormFieldOptions<T> {
   initialValue: T
   validator?: (value: T) => string | undefined
 }
 
-export const useFormField = <T>({ initialValue, validator }: UseFormStateOptions<T>) => {
+/**
+ * Hook for managing individual form field state with validation
+ */
+export const useFormField = <T>({ initialValue, validator }: UseFormFieldOptions<T>) => {
   const [field, setField] = useState<FormField<T>>({
     value: initialValue,
+    error: validator?.(initialValue),
     isValid: !validator || !validator(initialValue)
   })
 
@@ -37,6 +41,9 @@ export const useFormField = <T>({ initialValue, validator }: UseFormStateOptions
   }
 }
 
+/**
+ * Hook for managing form state with multiple fields
+ */
 export const useFormState = <T extends Record<string, unknown>>(initialState: T) => {
   const [formData, setFormData] = useState<T>(initialState)
   

@@ -3,7 +3,7 @@ import { useAnalyticsStore } from '../stores/data/analyticsStore'
 import { ShoppingItem } from '../types'
 
 /**
- * Custom hook for managing analytics and insights
+ * Main analytics hook for managing analytics and insights
  * Automatically refreshes data when shopping items change
  */
 export const useAnalytics = (purchaseHistory: ShoppingItem[], pantryItems: ShoppingItem[]) => {
@@ -16,7 +16,6 @@ export const useAnalytics = (purchaseHistory: ShoppingItem[], pantryItems: Shopp
     }
   }, [purchaseHistory, pantryItems, store.refreshAnalytics])
   
-  // Return all analytics data and actions
   return {
     // Analytics data
     smartSuggestions: store.smartSuggestions,
@@ -34,7 +33,7 @@ export const useAnalytics = (purchaseHistory: ShoppingItem[], pantryItems: Shopp
     expiringItemsCount: store.expiringItemsCount,
     topCategory: store.topCategory,
     
-    // Loading state
+    // State
     isAnalyzing: store.isAnalyzing,
     lastAnalysisDate: store.lastAnalysisDate,
     
@@ -51,14 +50,16 @@ export const useAnalytics = (purchaseHistory: ShoppingItem[], pantryItems: Shopp
 }
 
 /**
- * Hook for smart suggestions only
+ * Specialized hook for smart suggestions management
  */
-export const useSmartSuggestionsHook = () => {
-  const suggestions = useAnalyticsStore(state => state.smartSuggestions)
-  const isAnalyzing = useAnalyticsStore(state => state.isAnalyzing)
-  const generateSuggestions = useAnalyticsStore(state => state.generateSmartSuggestions)
-  const addSuggestion = useAnalyticsStore(state => state.addToSuggestions)
-  const removeSuggestion = useAnalyticsStore(state => state.removeFromSuggestions)
+export const useSmartSuggestions = () => {
+  const {
+    smartSuggestions: suggestions,
+    isAnalyzing,
+    generateSmartSuggestions: generateSuggestions,
+    addToSuggestions: addSuggestion,
+    removeFromSuggestions: removeSuggestion,
+  } = useAnalyticsStore()
   
   return {
     suggestions,
@@ -70,12 +71,14 @@ export const useSmartSuggestionsHook = () => {
 }
 
 /**
- * Hook for popular items (quick add)
+ * Specialized hook for popular items (quick add functionality)
  */
-export const usePopularItemsHook = () => {
-  const popularItems = useAnalyticsStore(state => state.popularItems)
-  const isAnalyzing = useAnalyticsStore(state => state.isAnalyzing)
-  const refreshPopularItems = useAnalyticsStore(state => state.refreshPopularItems)
+export const usePopularItems = () => {
+  const {
+    popularItems,
+    isAnalyzing,
+    refreshPopularItems,
+  } = useAnalyticsStore()
   
   return {
     popularItems,
@@ -85,12 +88,14 @@ export const usePopularItemsHook = () => {
 }
 
 /**
- * Hook for category statistics
+ * Specialized hook for category analytics
  */
 export const useCategoryAnalytics = () => {
-  const categoryStats = useAnalyticsStore(state => state.categoryStats)
-  const topCategory = useAnalyticsStore(state => state.topCategory)
-  const updateCategoryStats = useAnalyticsStore(state => state.updateCategoryStats)
+  const {
+    categoryStats,
+    topCategory,
+    updateCategoryStats,
+  } = useAnalyticsStore()
   
   return {
     categoryStats,

@@ -7,6 +7,10 @@ export interface UseKeyboardNavigationOptions {
   onClose: () => void
 }
 
+/**
+ * Hook for keyboard navigation in lists/dropdowns
+ * Handles arrow keys, enter, and escape
+ */
 export const useKeyboardNavigation = ({
   itemCount,
   isOpen,
@@ -25,18 +29,21 @@ export const useKeyboardNavigation = ({
           prev < itemCount - 1 ? prev + 1 : 0
         )
         break
+        
       case 'ArrowUp':
         e.preventDefault()
         setSelectedIndex(prev => 
           prev > 0 ? prev - 1 : itemCount - 1
         )
         break
+        
       case 'Enter':
         e.preventDefault()
         if (selectedIndex >= 0) {
           onSelect(selectedIndex)
         }
         break
+        
       case 'Escape':
         e.preventDefault()
         onClose()
@@ -44,6 +51,7 @@ export const useKeyboardNavigation = ({
     }
   }, [isOpen, itemCount, selectedIndex, onSelect, onClose])
 
+  // Register keyboard event listener when open
   useEffect(() => {
     if (isOpen) {
       document.addEventListener('keydown', handleKeyDown)
@@ -51,6 +59,7 @@ export const useKeyboardNavigation = ({
     }
   }, [handleKeyDown, isOpen])
 
+  // Reset selection when closed
   useEffect(() => {
     if (!isOpen) {
       setSelectedIndex(-1)

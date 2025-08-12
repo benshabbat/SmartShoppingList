@@ -34,6 +34,7 @@ interface GlobalShoppingContextValue {
   toggleItemInCart: (id: string) => Promise<void>
   removeItem: (id: string) => Promise<void>
   clearPurchasedItems: () => Promise<void>
+  clearCartItems: () => Promise<void>
   
   // === UI ACTIONS (no props needed) ===
   openReceiptScanner: () => void
@@ -124,8 +125,8 @@ export const useShoppingData = () => {
 }
 
 export const useShoppingActions = () => {
-  const { addItem, toggleItemInCart, removeItem, clearPurchasedItems } = useGlobalShopping()
-  return { addItem, toggleItemInCart, removeItem, clearPurchasedItems }
+  const { addItem, toggleItemInCart, removeItem, clearPurchasedItems, clearCartItems } = useGlobalShopping()
+  return { addItem, toggleItemInCart, removeItem, clearPurchasedItems, clearCartItems }
 }
 
 export const useShoppingUI = () => {

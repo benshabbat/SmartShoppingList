@@ -86,6 +86,35 @@ const stats = useStatistics()
 
 ---
 
+### 6. **CategorySection & CategoryItems** ✅ **NEW!**
+**Before**: Received callback props
+```tsx
+// ❌ Props Drilling
+<CategorySection
+  title="רשימת קניות"
+  items={pendingItems}
+  onToggleCart={toggleItemInCart}
+  onRemove={removeItem}
+/>
+```
+
+**After**: Gets everything from context
+```tsx
+// ✅ Zero Props Drilling
+<CategorySection
+  title="רשימת קניות"
+  items={pendingItems}
+/>
+```
+
+**Changes Made**:
+- `CategorySection` no longer accepts `onToggleCart` and `onRemove` props
+- `CategoryItems` sub-component uses `useGlobalShopping()` directly
+- All shopping actions come from context
+- Props interface cleaned to only essential data
+
+---
+
 ## 🗑️ Removed Unused Files
 
 ### Legacy Providers (No Longer Needed):
@@ -148,6 +177,10 @@ const stats = useStatistics()
 - `GuestExplanationBanner` ✅
 - `WelcomeMessage` ✅
 - `ShoppingCartSection` ✅
+- `CategorySection` ✅ **NEW!**
+- `CategoryItems` ✅ **NEW!**
+- `Header` and all sub-components ✅
+- `MainShoppingView` ✅
 - `MainShoppingView` ✅
 - All major UI sections ✅
 

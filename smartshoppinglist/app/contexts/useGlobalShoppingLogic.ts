@@ -184,6 +184,28 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
     }
   }, [computedValues.purchasedItems.length, itemsStore.clearPurchasedItems, user?.id, playDelete, showInfo, showError])
 
+  // Clear cart items - move all items from cart back to pending
+  const clearCartItems = useCallback(async () => {
+    try {
+      const cartItemsCount = computedValues.cartItems.length
+      
+      if (cartItemsCount === 0) {
+        showInfo('אין פריטים בסל הקניות')
+        return
+      }
+
+      // Move all cart items back to pending
+      for (const item of computedValues.cartItems) {
+        await itemsStore.toggleItemInCart(item.id, user?.id)
+      }
+      
+      playDelete()
+      showInfo(`${cartItemsCount} פריטים הוחזרו לרשימת הקניות`)
+    } catch (error) {
+      showError('שגיאה בניקוי הסל')
+    }
+  }, [computedValues.cartItems, itemsStore.toggleItemInCart, user?.id, playDelete, showInfo, showError])
+
   // Complex operations with enhanced logic
   const handleCheckout = useCallback(() => {
     const cartItems = computedValues.cartItems
@@ -326,6 +348,7 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
     toggleItemInCart,
     removeItem,
     clearPurchasedItems,
+    clearCartItems,
     
     // UI Actions
     openReceiptScanner: uiStore.openReceiptScanner,

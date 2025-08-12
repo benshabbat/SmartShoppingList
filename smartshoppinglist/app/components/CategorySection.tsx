@@ -5,12 +5,11 @@ import { getItemsByCategory } from '../utils/helpers'
 import { FadeIn, SlideUp } from './Animations'
 import { CategoryHeader } from './InteractiveEmoji'
 import { containerStyles } from '../utils/classNames'
+import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
 
 interface CategorySectionProps {
   title: string
   items: ShoppingItem[]
-  onToggleCart: (id: string) => void
-  onRemove: (id: string) => void
   variant?: 'pending' | 'inCart' | 'purchased'
   headerColor?: string
   showItemCount?: boolean
@@ -42,28 +41,29 @@ const SectionHeader: React.FC<{ title: string; itemCount: number; showItemCount:
 
 const CategoryItems: React.FC<{
   categoryItems: ShoppingItem[]
-  onToggleCart: (id: string) => void
-  onRemove: (id: string) => void
   variant: 'pending' | 'inCart' | 'purchased'
   categoryIndex: number
-}> = ({ categoryItems, onToggleCart, onRemove, variant, categoryIndex }) => (
-  <div className="space-y-2 mr-6">
-    {categoryItems.map((item, itemIndex) => (
-      <FadeIn key={item.id} delay={(categoryIndex * 100) + (itemIndex * 50)}>
-        <ShoppingItemComponent
-          item={item}
-          variant={variant}
-        />
-      </FadeIn>
-    ))}
-  </div>
-)
+}> = ({ categoryItems, variant, categoryIndex }) => {
+  // ZERO PROPS DRILLING - Get actions from context!
+  const { toggleItemInCart, removeItem } = useGlobalShopping()
+  
+  return (
+    <div className="space-y-2 mr-6">
+      {categoryItems.map((item, itemIndex) => (
+        <FadeIn key={item.id} delay={(categoryIndex * 100) + (itemIndex * 50)}>
+          <ShoppingItemComponent
+            item={item}
+            variant={variant}
+          />
+        </FadeIn>
+      ))}
+    </div>
+  )
+}
 
 export const CategorySection = ({
   title,
   items,
-  onToggleCart,
-  onRemove,
   variant = 'pending',
   headerColor = 'bg-gray-100 text-gray-700',
   showItemCount = true,
@@ -97,8 +97,6 @@ export const CategorySection = ({
                   
                   <CategoryItems
                     categoryItems={categoryItems}
-                    onToggleCart={onToggleCart}
-                    onRemove={onRemove}
                     variant={variant}
                     categoryIndex={categoryIndex}
                   />

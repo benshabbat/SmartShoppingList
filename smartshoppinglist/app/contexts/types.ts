@@ -57,6 +57,7 @@ export interface EnhancedGlobalShoppingContextValue extends ShoppingState, Shopp
   toggleItemInCart: (id: string) => Promise<void>
   removeItem: (id: string) => Promise<void>
   clearPurchasedItems: () => Promise<void>
+  clearCartItems: () => Promise<void>
   
   // === UI ACTIONS ===
   openReceiptScanner: () => void
@@ -113,6 +114,7 @@ export interface UseShoppingActionsReturn {
   toggleItemInCart: (id: string) => Promise<void>
   removeItem: (id: string) => Promise<void>
   clearPurchasedItems: () => Promise<void>
+  clearCartItems: () => Promise<void>
 }
 
 export interface UseShoppingComputedReturn extends ShoppingState {

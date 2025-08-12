@@ -42,8 +42,6 @@ export function ShoppingCartSection() {
       <CategorySection 
         title=""
         items={cartItems}
-        onToggleCart={toggleItemInCart}
-        onRemove={removeItem}
         variant="inCart"
       />
     </Card>

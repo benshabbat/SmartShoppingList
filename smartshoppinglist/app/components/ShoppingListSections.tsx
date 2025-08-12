@@ -13,7 +13,8 @@ export function ShoppingListSections() {
     toggleItemInCart,
     removeItem,
     handleCheckout,
-    clearPurchasedItems
+    clearPurchasedItems,
+    clearCartItems
   } = useGlobalShopping()
   return (
     <div className="space-y-4">
@@ -22,8 +23,6 @@ export function ShoppingListSections() {
         <CategorySection
           title="רשימת קניות"
           items={pendingItems}
-          onToggleCart={toggleItemInCart}
-          onRemove={removeItem}
         />
       ) : (
         <Card className="text-center bg-white/80 backdrop-blur-sm shadow-lg border-0">
@@ -51,7 +50,7 @@ export function ShoppingListSections() {
                   🛒 סיימתי קניות ({cartItems.length})
                 </button>
                 <button
-                  onClick={() => {/* Clear cart logic */}}
+                  onClick={clearCartItems}
                   className="px-4 py-3 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl hover:from-red-600 hover:to-pink-600 transition-all duration-200 font-bold shadow-lg hover:shadow-xl transform hover:scale-105"
                 >
                   🗑️
@@ -62,8 +61,6 @@ export function ShoppingListSections() {
           <CategorySection 
             title=""
             items={cartItems}
-            onToggleCart={toggleItemInCart}
-            onRemove={removeItem}
             variant="inCart"
           />
         </Card>
@@ -87,8 +84,6 @@ export function ShoppingListSections() {
           <CategorySection
             title=""
             items={purchasedItems}
-            onToggleCart={toggleItemInCart}
-            onRemove={removeItem}
             variant="purchased"
           />
         </Card>

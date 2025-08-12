@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { UserService } from '../../../lib/services/userService'
 import { useAuth } from '../../hooks/useAuth'
 import { useMainAppLogic } from '../MainAppContent/useMainAppLogic'
+import { AuthErrorHandler, FormValidator } from './utils'
+import { FORM_VALIDATION } from './constants'
 
 /**
  * Custom hook for LoginForm business logic
@@ -46,22 +48,8 @@ export const useLoginFormLogic = () => {
         setMessage('נרשמת בהצלחה! בדוק את המייל שלך לאימות החשבון.')
       }
     } catch (err: unknown) {
-      const errorMessage = (err as Error).message || 'אירעה שגיאה'
-      
-      // Handle specific Supabase errors with Hebrew messages
-      if (errorMessage.includes('Invalid login credentials')) {
-        setError('פרטי התחברות שגויים. אנא בדוק את המייל והסיסמה')
-      } else if (errorMessage.includes('Email not confirmed')) {
-        setError('המייל לא אומת. אנא בדוק את תיבת המייל שלך ולחץ על הלינק לאימות')
-      } else if (errorMessage.includes('User already registered')) {
-        setError('המשתמש כבר רשום במערכת. נסה להתחבר במקום')
-      } else if (errorMessage.includes('Password should be at least')) {
-        setError('הסיסמה חייבת להכיל לפחות 6 תווים')
-      } else if (errorMessage.includes('Unable to validate email address')) {
-        setError('כתובת המייל לא תקינה')
-      } else {
-        setError(errorMessage)
-      }
+      const errorMessage = AuthErrorHandler.translateError(err)
+      setError(errorMessage)
     } finally {
       setLoading(false)
     }
@@ -80,7 +68,8 @@ export const useLoginFormLogic = () => {
       await UserService.resetPassword(email)
       setMessage('נשלח לינק לאיפוס סיסמה למייל שלך')
     } catch (err: unknown) {
-      setError((err as Error).message || 'אירעה שגיאה')
+      const errorMessage = AuthErrorHandler.translateError(err)
+      setError(errorMessage)
     } finally {
       setLoading(false)
     }
@@ -98,9 +87,9 @@ export const useLoginFormLogic = () => {
   }
 
   // Validation
-  const isEmailValid = email.includes('@')
-  const isPasswordValid = password.length >= 6
-  const isFullNameValid = fullName.trim().length >= 2
+  const isEmailValid = FormValidator.validateEmail(email).isValid
+  const isPasswordValid = FormValidator.validatePassword(password).isValid
+  const isFullNameValid = FormValidator.validateFullName(fullName).isValid
   const isFormValid = isEmailValid && isPasswordValid && (isLogin || isFullNameValid)
 
   return {

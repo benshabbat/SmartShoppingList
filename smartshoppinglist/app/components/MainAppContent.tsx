@@ -1,7 +1,7 @@
 // Main app content with clean architecture and reduced props drilling
 'use client'
 
-import { useShoppingListContext } from '../providers'
+import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
 import { useAuthContext } from '../hooks'
 
 // UI Components
@@ -13,19 +13,25 @@ import { Tutorial } from './Tutorial'
 import { LoadingOverlay } from './LoadingOverlay'
 import { GuestModeNotification } from './GuestModeNotification'
 
-// Types
-import { ShoppingItem } from '../types'
-
 export function MainAppContent() {
   const { loading, isAuthenticated, isGuest } = useAuthContext()
   const {
     showTutorial,
-    closeTutorial,
-    hasGuestData,
-    handleGuestDataImport,
-    handleLoginSuccess,
-    handleHeaderReceiptScannerOpen,
-  } = useShoppingListContext()
+    openDataImportModal,
+    showSuccess
+  } = useGlobalShopping()
+  
+  // Temporary simple implementations
+  const hasGuestData = () => false // TODO: Implement guest data detection
+  const handleGuestDataImport = () => {
+    showSuccess('יתווסף בעתיד')
+  }
+  const handleLoginSuccess = () => {
+    // Check if there's guest data to import after successful login
+    if (hasGuestData()) {
+      openDataImportModal()
+    }
+  }
   
   // Show loading state
   if (loading) {

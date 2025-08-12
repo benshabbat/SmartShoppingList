@@ -1,7 +1,7 @@
 'use client'
 
 import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
-import { useAuthContext } from '../hooks'
+import { useAuth } from '../hooks/useAuth'
 
 // Components
 import { AddItemForm } from './AddItemForm'
@@ -18,7 +18,7 @@ import { ExpiryDateModal } from './ExpiryDateModal'
 import { DataImportModal } from './DataImportModal'
 
 export function MainShoppingView() {
-  const { isGuest } = useAuthContext()
+  const { isGuest } = useAuth()
   
   // Get everything from global context - NO PROPS DRILLING!
   const {

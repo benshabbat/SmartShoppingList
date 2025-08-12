@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { UserService } from '../../../lib/services/userService'
-import { useAuthContext } from '../../hooks/useAuthContext'
+import { useAuth } from '../../hooks/useAuth'
 
 interface UseLoginFormLogicProps {
   onSuccess?: () => void
@@ -11,7 +11,7 @@ interface UseLoginFormLogicProps {
  * Handles form state, validation, authentication, and error handling
  */
 export const useLoginFormLogic = ({ onSuccess }: UseLoginFormLogicProps) => {
-  const { signInAsGuest } = useAuthContext()
+  const { signInAsGuest } = useAuth()
   
   // Form state
   const [isLogin, setIsLogin] = useState(true)

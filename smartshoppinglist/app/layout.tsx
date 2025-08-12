@@ -1,6 +1,6 @@
 import './globals.css'
 import { QueryProvider } from './providers/QueryProvider'
-import { GlobalAppProvider } from './contexts/GlobalAppContext'
+import { GlobalShoppingProvider } from './contexts/GlobalShoppingContext'
 
 export const metadata = {
   title: 'רשימת קניות חכמה',
@@ -16,9 +16,9 @@ export default function RootLayout({
     <html lang="he" dir="rtl">
       <body>
         <QueryProvider>
-          <GlobalAppProvider>
+          <GlobalShoppingProvider>
             {children}
-          </GlobalAppProvider>
+          </GlobalShoppingProvider>
         </QueryProvider>
       </body>
     </html>

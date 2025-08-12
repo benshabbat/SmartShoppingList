@@ -10,8 +10,14 @@ import { useAuth } from '../hooks/useAuth'
 import { useToasts } from '../components/Toast'
 import { useSoundManager } from '../utils/soundManager'
 import { ShoppingItem, ItemSuggestion, ExpiringItem } from '../types'
+import type { 
+  EnhancedGlobalShoppingContextValue,
+  ShoppingAnalytics,
+  ShoppingState,
+  ComputedShoppingItem
+} from './types'
 
-export const useGlobalShoppingLogic = () => {
+export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => {
   const { user, isGuest } = useAuth()
   const { showSuccess, showError, showInfo } = useToasts()
   const { playAddToCart, playRemoveFromCart, playPurchase, playDelete } = useSoundManager()
@@ -50,18 +56,18 @@ export const useGlobalShoppingLogic = () => {
         : 0,
       
       // Category distribution
-      categoryStats: itemsStore.items.reduce((acc, item) => {
+      categoryStats: itemsStore.items.reduce((acc: Record<string, number>, item: ShoppingItem) => {
         acc[item.category] = (acc[item.category] || 0) + 1
         return acc
       }, {} as Record<string, number>),
       
       // Recent activity
-      recentlyAdded: itemsStore.items
+      recentlyAdded: [...itemsStore.items]
         .sort((a: ShoppingItem, b: ShoppingItem) => new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime())
         .slice(0, 5),
       
       // Priority items (in cart + expiring soon)
-      priorityItems: itemsByStatus.inCart.filter(item => 
+      priorityItems: itemsByStatus.inCart.filter((item: ShoppingItem) => 
         item.expiryDate && new Date(item.expiryDate) <= new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)
       )
     }
@@ -78,7 +84,7 @@ export const useGlobalShoppingLogic = () => {
 
       // Check for duplicates
       const existingItem = itemsStore.items.find(
-        item => item.name.toLowerCase() === itemName.toLowerCase() && !item.isPurchased
+        (item: ShoppingItem) => item.name.toLowerCase() === itemName.toLowerCase() && !item.isPurchased
       )
       
       if (existingItem) {
@@ -108,7 +114,7 @@ export const useGlobalShoppingLogic = () => {
 
   const toggleItemInCart = useCallback(async (id: string) => {
     try {
-      const item = itemsStore.items.find(i => i.id === id)
+      const item = itemsStore.items.find((i: ShoppingItem) => i.id === id)
       if (!item) {
         showError('הפריט לא נמצא')
         return
@@ -130,7 +136,7 @@ export const useGlobalShoppingLogic = () => {
 
   const removeItem = useCallback(async (id: string) => {
     try {
-      const item = itemsStore.items.find(i => i.id === id)
+      const item = itemsStore.items.find((i: ShoppingItem) => i.id === id)
       if (!item) {
         showError('הפריט לא נמצא')
         return
@@ -170,7 +176,7 @@ export const useGlobalShoppingLogic = () => {
       return
     }
     
-    const itemsWithoutExpiry = cartItems.filter(item => !item.expiryDate)
+    const itemsWithoutExpiry = cartItems.filter((item: ShoppingItem) => !item.expiryDate)
     
     if (itemsWithoutExpiry.length > 0) {
       uiStore.openExpiryModal(itemsWithoutExpiry)
@@ -187,7 +193,7 @@ export const useGlobalShoppingLogic = () => {
 
       for (const item of items) {
         const existingItem = itemsStore.items.find(
-          existing => existing.name.toLowerCase() === item.name.toLowerCase() && !existing.isPurchased
+          (existing: ShoppingItem) => existing.name.toLowerCase() === item.name.toLowerCase() && !existing.isPurchased
         )
         
         if (existingItem) {
@@ -215,7 +221,7 @@ export const useGlobalShoppingLogic = () => {
 
       for (const item of items) {
         const existingItem = itemsStore.items.find(
-          existing => existing.name.toLowerCase() === item.name.toLowerCase() && !existing.isPurchased
+          (existing: ShoppingItem) => existing.name.toLowerCase() === item.name.toLowerCase() && !existing.isPurchased
         )
         
         if (!existingItem) {

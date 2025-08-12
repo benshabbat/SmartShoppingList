@@ -305,5 +305,67 @@ const MyComponent = () => {
 - ✅ הפרדה מושלמת של Logic/UI
 - ✅ אפס props drilling
 - ✅ קוד נקי, מתוחזק וניתן להרחבה
+- ✅ רכיבים לדוגמה שמציגים את היתרונות
+
+## 🧪 רכיבים לדוגמה בפרויקט
+
+הפרויקט כולל רכיבים לדוגמה ב-`app/components/examples/`:
+
+### `ZeroPropsDrillingDemo.tsx`
+רכיב מלא שמדגים איך לקבל הכל מהקונטקסט ללא props:
+```typescript
+import { ZeroPropsDrillingDemo } from './components/examples'
+
+// לא מעביר שום props!
+<ZeroPropsDrillingDemo />
+```
+
+### `PropsDrillingComparison.tsx`
+השוואה ויזואלית בין "לפני" ו"אחרי":
+```typescript
+import { PropsDrillingComparison } from './components/examples'
+
+// מציג השוואה אינטראקטיבית
+<PropsDrillingComparison />
+```
+
+### `ShoppingAnalytics.tsx`
+רכיב אנליטיקה מתקדם:
+```typescript
+import { ShoppingAnalytics } from './components/examples'
+
+// מציג סטטיסטיקות מלאות ללא props
+<ShoppingAnalytics />
+```
+
+### `SmartShoppingActions.tsx`
+רכיב פעולות חכמות:
+```typescript
+import { SmartShoppingActions } from './components/examples'
+
+// כולל פעולות מהירות ו-validation ללא props
+<SmartShoppingActions />
+```
+
+### איך להוסיף לדף:
+```typescript
+import { 
+  ZeroPropsDrillingDemo, 
+  PropsDrillingComparison,
+  ShoppingAnalytics,
+  SmartShoppingActions
+} from './components/examples'
+
+const DemoPage = () => {
+  return (
+    <div className="space-y-8 p-6">
+      <ZeroPropsDrillingDemo />
+      <PropsDrillingComparison />
+      <ShoppingAnalytics />
+      <SmartShoppingActions />
+    </div>
+  )
+}
+```
 
 הארכיטקטורה כעת מושלמת לפרויקט מקצועי וניתנת להרחבה! 🚀

@@ -1,4 +1,3 @@
-import React from 'react'
 import { Card } from '../Card'
 import { useLoginFormLogic } from './useLoginFormLogic'
 
@@ -32,27 +31,7 @@ export function LoginFormUI() {
     setPassword,
     setFullName
   } = useLoginFormLogic()
- * Pure UI component for LoginForm
- * Contains only rendering logic, no business logic
- */
-export const LoginFormUI = ({
-  isLogin,
-  email,
-  password,
-  fullName,
-  loading,
-  error,
-  message,
-  isFormValid,
-  onGuestLogin,
-  onSubmit,
-  onForgotPassword,
-  onToggleMode,
-  onClearMessages,
-  onEmailChange,
-  onPasswordChange,
-  onFullNameChange,
-}: LoginFormUIProps) => {
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-4">
       <div className="w-full max-w-md">
@@ -91,7 +70,7 @@ export const LoginFormUI = ({
             
             <button
               type="button"
-              onClick={onGuestLogin}
+              onClick={handleGuestLogin}
               className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center gap-2"
             >
               <span className="text-xl">🛒</span>
@@ -115,7 +94,7 @@ export const LoginFormUI = ({
             </div>
           </div>
 
-          <form onSubmit={onSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             {!isLogin && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -124,7 +103,7 @@ export const LoginFormUI = ({
                 <input
                   type="text"
                   value={fullName}
-                  onChange={(e) => onFullNameChange(e.target.value)}
+                  onChange={(e) => setFullName(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required={!isLogin}
                 />
@@ -138,7 +117,7 @@ export const LoginFormUI = ({
               <input
                 type="email"
                 value={email}
-                onChange={(e) => onEmailChange(e.target.value)}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
@@ -151,7 +130,7 @@ export const LoginFormUI = ({
               <input
                 type="password"
                 value={password}
-                onChange={(e) => onPasswordChange(e.target.value)}
+                onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
                 minLength={6}
@@ -190,7 +169,7 @@ export const LoginFormUI = ({
             {isLogin && (
               <button
                 type="button"
-                onClick={onForgotPassword}
+                onClick={handleForgotPassword}
                 className="text-blue-600 hover:text-blue-800 text-sm"
                 disabled={loading}
               >
@@ -201,7 +180,7 @@ export const LoginFormUI = ({
             <div>
               <button
                 type="button"
-                onClick={onToggleMode}
+                onClick={toggleMode}
                 className="text-blue-600 hover:text-blue-800 text-sm"
               >
                 {isLogin ? 'אין לך חשבון? הירשם כאן' : 'יש לך חשבון? התחבר כאן'}

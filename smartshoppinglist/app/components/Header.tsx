@@ -1,15 +1,14 @@
 import { ShoppingCart, HelpCircle, Volume2, VolumeX, BarChart3, Receipt, LogOut, User } from 'lucide-react'
 import { useAuthStore, useUIStore, useSoundEnabled } from '../stores'
 import { useLogout, useGuestMode } from '../hooks/useAuthQueries'
+import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-interface HeaderProps {
-  onOpenTutorial?: () => void
-  onOpenReceiptScanner?: () => void
-}
-
-export const Header = ({ onOpenTutorial, onOpenReceiptScanner }: HeaderProps) => {
+export const Header = () => {
+  // Get functions from global context - NO PROPS DRILLING!
+  const { openTutorial, openReceiptScanner } = useGlobalShopping()
+  
   const soundEnabled = useSoundEnabled()
   const toggleSound = useUIStore((state) => state.toggleSound)
   
@@ -46,15 +45,13 @@ export const Header = ({ onOpenTutorial, onOpenReceiptScanner }: HeaderProps) =>
   return (
     <div className="text-center mb-8 relative">
       <div className="absolute top-0 left-0 flex gap-2">
-        {onOpenTutorial && (
-          <button
-            onClick={onOpenTutorial}
-            className="p-2 hover:bg-purple-100 rounded-full transition-colors group"
-            title="עזרה וטיפים"
-          >
-            <HelpCircle className="w-6 h-6 text-purple-600 group-hover:text-purple-700" />
-          </button>
-        )}
+        <button
+          onClick={openTutorial}
+          className="p-2 hover:bg-purple-100 rounded-full transition-colors group"
+          title="עזרה וטיפים"
+        >
+          <HelpCircle className="w-6 h-6 text-purple-600 group-hover:text-purple-700" />
+        </button>
         
         <button
           onClick={toggleSound}
@@ -68,9 +65,9 @@ export const Header = ({ onOpenTutorial, onOpenReceiptScanner }: HeaderProps) =>
           )}
         </button>
 
-        {onOpenReceiptScanner && !isStatisticsPage && (
+        {!isStatisticsPage && (
           <button
-            onClick={onOpenReceiptScanner}
+            onClick={openReceiptScanner}
             className="p-2 hover:bg-green-100 rounded-full transition-colors group"
             title="סרוק קבלה"
           >

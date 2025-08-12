@@ -1,20 +1,21 @@
 import React from 'react'
 import { Search, Clock, TrendingUp } from 'lucide-react'
-import { ShoppingItem } from '../types'
+import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
 
 interface SuggestionItemProps {
   suggestion: string
   isHighlighted: boolean
-  purchaseHistory: ShoppingItem[]
   onClick: () => void
 }
 
 export const SuggestionItem: React.FC<SuggestionItemProps> = ({
   suggestion,
   isHighlighted,
-  purchaseHistory,
   onClick
 }) => {
+  // Get purchase history from global context - NO PROPS DRILLING!
+  const { purchaseHistory } = useGlobalShopping()
+  
   // חישוב תדירות מוצרים
   const getProductFrequency = (productName: string): number => {
     return purchaseHistory.filter(item => 

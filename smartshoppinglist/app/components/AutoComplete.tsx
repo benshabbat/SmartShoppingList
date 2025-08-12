@@ -139,7 +139,6 @@ export const AutoComplete = ({
               key={index}
               suggestion={suggestion}
               isHighlighted={index === selectedIndex}
-              purchaseHistory={purchaseHistory}
               onClick={() => handleSelect(suggestion)}
             />
           ))}

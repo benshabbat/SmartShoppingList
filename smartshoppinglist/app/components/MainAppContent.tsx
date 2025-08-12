@@ -44,9 +44,7 @@ export function MainAppContent() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
       {/* Header */}
-      <Header 
-        onOpenReceiptScanner={handleHeaderReceiptScannerOpen}
-      />
+      <Header />
 
       {/* Guest Mode Notification */}
       {isGuest && hasGuestData() && (
@@ -59,12 +57,7 @@ export function MainAppContent() {
       <MainShoppingView />
 
       {/* Tutorial */}
-      {showTutorial && (
-        <Tutorial 
-          isOpen={showTutorial}
-          onClose={closeTutorial}
-        />
-      )}
+      <Tutorial />
 
       {/* Toast Notifications */}
       <ToastContainer />

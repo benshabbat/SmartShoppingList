@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { X, ChevronRight, ChevronLeft, Lightbulb } from 'lucide-react'
 import { FadeIn } from './Animations'
+import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
 
 interface TutorialStep {
   title: string
@@ -32,19 +33,17 @@ const tutorialSteps: TutorialStep[] = [
   }
 ]
 
-interface TutorialProps {
-  isOpen: boolean
-  onClose: () => void
-}
-
-export const Tutorial = ({ isOpen, onClose }: TutorialProps) => {
+export const Tutorial = () => {
+  // Get tutorial state from global context - NO PROPS DRILLING!
+  const { showTutorial, closeTutorial } = useGlobalShopping()
+  
   const [currentStep, setCurrentStep] = useState(0)
 
   const nextStep = () => {
     if (currentStep < tutorialSteps.length - 1) {
       setCurrentStep(prev => prev + 1)
     } else {
-      onClose()
+      closeTutorial()
     }
   }
 
@@ -55,10 +54,10 @@ export const Tutorial = ({ isOpen, onClose }: TutorialProps) => {
   }
 
   const skipTutorial = () => {
-    onClose()
+    closeTutorial()
   }
 
-  if (!isOpen) return null
+  if (!showTutorial) return null
 
   const currentTutorialStep = tutorialSteps[currentStep]
 
@@ -67,7 +66,7 @@ export const Tutorial = ({ isOpen, onClose }: TutorialProps) => {
       <FadeIn>
         <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 relative">
           <button
-            onClick={onClose}
+            onClick={closeTutorial}
             className="absolute top-4 left-4 p-1 hover:bg-gray-100 rounded-full transition-colors"
           >
             <X className="w-5 h-5 text-gray-500" />

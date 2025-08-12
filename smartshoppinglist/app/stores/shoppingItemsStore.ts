@@ -36,7 +36,7 @@ interface ShoppingItemsState {
 
   // Database Operations
   loadItems: (userId?: string) => Promise<void>
-  addItem: (itemName: string, category: string, userId?: string) => Promise<string | undefined>
+  addItem: (itemName: string, category: string, userId?: string, isInCart?: boolean) => Promise<string | undefined>
   updateItem: (id: string, updates: Partial<ShoppingItem>, userId?: string) => Promise<void>
   deleteItem: (id: string, userId?: string) => Promise<void>
   toggleItemCart: (id: string, userId?: string) => Promise<void>
@@ -152,7 +152,7 @@ export const useShoppingItemsStore = create<ShoppingItemsState>()(
         }
       },
 
-      addItem: async (itemName, category, userId) => {
+      addItem: async (itemName, category, userId, isInCart = false) => {
         set({ loading: true, error: null })
         try {
           const { items } = get()
@@ -176,7 +176,7 @@ export const useShoppingItemsStore = create<ShoppingItemsState>()(
             id: crypto.randomUUID(),
             name: itemName,
             category,
-            isInCart: false,
+            isInCart: isInCart,
             isPurchased: false,
             addedAt: new Date(),
           }

@@ -4,16 +4,12 @@ import { useState } from 'react'
 import { Wand2, Plus, X, Sparkles, ShoppingCart, List, Eye, Check } from 'lucide-react'
 import { PRESET_LISTS, parseCustomList, getPresetListKeys } from '../utils/presetLists'
 import { CATEGORY_EMOJIS } from '../utils/constants'
+import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
 
-interface QuickListCreatorProps {
-  onCreateList: (items: Array<{name: string, category: string}>) => void
-  onAddToCart?: (items: Array<{name: string, category: string}>) => void
-}
-
-export const QuickListCreator: React.FC<QuickListCreatorProps> = ({ 
-  onCreateList, 
-  onAddToCart 
-}) => {
+export const QuickListCreator: React.FC = () => {
+  // Get functions from global context - NO PROPS DRILLING!
+  const { createQuickList, addBulkToCart } = useGlobalShopping()
+  
   const [isExpanded, setIsExpanded] = useState(false)
   const [customList, setCustomList] = useState('')
   const [actionMode, setActionMode] = useState<'list' | 'cart'>('list')
@@ -26,10 +22,10 @@ export const QuickListCreator: React.FC<QuickListCreatorProps> = ({
     const list = PRESET_LISTS[listKey]
     if (!list) return
     
-    if (actionMode === 'cart' && onAddToCart) {
-      onAddToCart(list.items)
+    if (actionMode === 'cart') {
+      addBulkToCart(list.items)
     } else {
-      onCreateList(list.items)
+      createQuickList(list.items)
     }
     
     setIsExpanded(false)
@@ -40,10 +36,10 @@ export const QuickListCreator: React.FC<QuickListCreatorProps> = ({
     
     const items = parseCustomList(customList)
     
-    if (actionMode === 'cart' && onAddToCart) {
-      onAddToCart(items)
+    if (actionMode === 'cart') {
+      addBulkToCart(items)
     } else {
-      onCreateList(items)
+      createQuickList(items)
     }
     
     setCustomList('')

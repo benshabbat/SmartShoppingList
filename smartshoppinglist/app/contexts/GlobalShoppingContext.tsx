@@ -50,6 +50,7 @@ interface GlobalShoppingContextValue {
   // === COMPLEX OPERATIONS (no props needed) ===
   handleCheckout: () => void
   createQuickList: (items: Array<{name: string, category: string}>) => Promise<void>
+  addBulkToCart: (items: Array<{name: string, category: string}>) => Promise<void>
   processReceipt: (receiptItems: ShoppingItem[], storeName: string) => void
   submitExpiryModal: (itemsWithExpiry: Array<{ id: string; expiryDate?: Date }>) => void
   
@@ -186,6 +187,18 @@ export const GlobalShoppingProvider = ({ children }: GlobalShoppingProviderProps
       showError('שגיאה ביצירת רשימה מהירה')
     }
   }
+
+  const addBulkToCart = async (items: Array<{name: string, category: string}>) => {
+    try {
+      for (const item of items) {
+        await itemsStore.addItem(item.name, item.category, user?.id, true) // Add directly to cart
+      }
+      showSuccess(`נוספו ${items.length} פריטים לעגלה`)
+      playAddToCart()
+    } catch (error) {
+      showError('שגיאה בהוספת פריטים לעגלה')
+    }
+  }
   
   const processReceipt = (receiptItems: ShoppingItem[], storeName: string) => {
     showSuccess(`נסרקו ${receiptItems.length} פריטים מ-${storeName}`)
@@ -264,6 +277,7 @@ export const GlobalShoppingProvider = ({ children }: GlobalShoppingProviderProps
     // Complex Operations
     handleCheckout,
     createQuickList,
+    addBulkToCart,
     processReceipt,
     submitExpiryModal,
     

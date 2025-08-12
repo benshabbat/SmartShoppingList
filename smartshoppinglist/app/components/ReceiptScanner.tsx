@@ -7,13 +7,12 @@ import { ActionButton } from './ActionButton'
 import { ReceiptData, ShoppingItem } from '../types'
 import { ReceiptOCR } from '../utils/receiptOCR'
 import { categorizeItem } from '../utils/smartSuggestions'
+import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
 
-interface ReceiptScannerProps {
-  onReceiptProcessed: (items: ShoppingItem[], storeName: string) => void
-  onClose: () => void
-}
-
-export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerProps) {
+export function ReceiptScanner() {
+  // Get functions from global context - NO PROPS DRILLING!
+  const { showReceiptScanner, closeReceiptScanner, processReceipt } = useGlobalShopping()
+  
   const [isProcessing, setIsProcessing] = useState(false)
   const [receiptData, setReceiptData] = useState<ReceiptData | null>(null)
   const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set())
@@ -21,6 +20,9 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
   const [rawOcrText, setRawOcrText] = useState<string>('')
   const [progress, setProgress] = useState(0)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  
+  // Don't render if not open
+  if (!showReceiptScanner) return null
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -118,7 +120,7 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
       price: item.price
     }))
 
-    onReceiptProcessed(shoppingItems, receiptData.storeName)
+    processReceipt(shoppingItems, receiptData.storeName)
   }
 
   return (
@@ -129,7 +131,7 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
           icon={<ShoppingBag className="w-6 h-6 text-blue-600" />}
           action={
             <ActionButton
-              onClick={onClose}
+              onClick={closeReceiptScanner}
               variant="secondary"
               size="sm"
               icon={X}
@@ -290,7 +292,7 @@ export function ReceiptScanner({ onReceiptProcessed, onClose }: ReceiptScannerPr
                 )}
                 
                 <ActionButton
-                  onClick={onClose}
+                  onClick={closeReceiptScanner}
                   variant="secondary"
                   icon={X}
                 >

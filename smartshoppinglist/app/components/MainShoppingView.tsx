@@ -112,7 +112,7 @@ export function MainShoppingView() {
       <QuickStatsCards />
 
       {/* Quick List Creator - SIMPLIFIED */}
-      {/* <QuickListCreator /> */}
+      <QuickListCreator />
 
       {/* Add Item Form - NO PROPS DRILLING! */}
       <div className="bg-white rounded-xl shadow-lg p-6">
@@ -128,9 +128,9 @@ export function MainShoppingView() {
       <QuickAddButtons />
 
       {/* Expiry Notifications - SIMPLIFIED */}
-      {/* {hasExpiringItems && expiringItems.length > 0 && (
+      {hasExpiringItems && expiringItems.length > 0 && (
         <ExpiryNotification />
-      )} */}
+      )}
 
       {/* Shopping List Sections - NO PROPS! */}
       <ShoppingListSections />
@@ -143,7 +143,7 @@ export function MainShoppingView() {
       )}
 
       {/* Modals - SIMPLIFIED */}
-      {/* {showReceiptScanner && (
+      {showReceiptScanner && (
         <ReceiptScanner />
       )}
 
@@ -153,7 +153,7 @@ export function MainShoppingView() {
 
       {showDataImportModal && (
         <DataImportModal />
-      )} */}
+      )}
     </div>
   )
 }

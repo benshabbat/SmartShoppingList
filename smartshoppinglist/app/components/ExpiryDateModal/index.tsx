@@ -1,41 +1,40 @@
-import { ShoppingItem } from '../../types'
+import { useGlobalShopping } from '../../contexts/GlobalShoppingContext'
 import { useExpiryDateModalLogic } from './useExpiryDateModalLogic'
 import { ExpiryDateModalUI } from './ExpiryDateModalUI'
 
-interface ExpiryDateModalProps {
-  items: ShoppingItem[]
-  isOpen: boolean
-  onClose: () => void
-  onSubmit: (itemsWithExpiry: Array<{ id: string; expiryDate?: Date }>) => void
-}
-
 /**
  * Container component that combines logic and UI
- * Follows the Container/Presentational pattern
+ * Uses global context - NO PROPS DRILLING!
  */
-export function ExpiryDateModal({ 
-  items, 
-  isOpen, 
-  onClose, 
-  onSubmit 
-}: ExpiryDateModalProps) {
+export function ExpiryDateModal() {
+  // Get everything from global context - NO PROPS DRILLING!
+  const { 
+    showExpiryModal, 
+    closeExpiryModal, 
+    submitExpiryModal,
+    checkoutItems 
+  } = useGlobalShopping()
+  
+  // Don't render if not open
+  if (!showExpiryModal) return null
+  
   const logic = useExpiryDateModalLogic({
-    items,
-    onSubmit,
-    onClose
+    items: checkoutItems,
+    onSubmit: submitExpiryModal,
+    onClose: closeExpiryModal
   })
 
   return (
     <ExpiryDateModalUI
-      items={items}
-      isOpen={isOpen}
+      items={checkoutItems}
+      isOpen={showExpiryModal}
       expiryDates={logic.expiryDates}
       skippedItems={logic.skippedItems}
       today={logic.today}
       quickDateOptions={logic.quickDateOptions}
       hasAnyDates={logic.hasAnyDates}
       allItemsProcessed={logic.allItemsProcessed}
-      onClose={onClose}
+      onClose={closeExpiryModal}
       onExpiryDateChange={logic.handleExpiryDateChange}
       onSkipItem={logic.handleSkipItem}
       onSubmit={logic.handleSubmit}

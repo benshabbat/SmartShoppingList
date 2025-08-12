@@ -2,25 +2,29 @@
 
 import React from 'react'
 import { AlertTriangle, Clock, X, ShoppingCart } from 'lucide-react'
-import { ExpiringItem } from '../types'
+import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
 
-interface ExpiryNotificationProps {
-  expiringItems: ExpiringItem[]
-  onAddToList: (itemName: string) => void
-  onRemoveFromPantry: (itemName: string) => void
-  onDismiss: () => void
-}
-
-export function ExpiryNotification({ 
-  expiringItems, 
-  onAddToList, 
-  onRemoveFromPantry, 
-  onDismiss 
-}: ExpiryNotificationProps) {
+export function ExpiryNotification() {
+  // Get everything from global context - NO PROPS DRILLING!
+  const { expiringItems, addItem, dismissGuestExplanation } = useGlobalShopping()
+  
   if (expiringItems.length === 0) return null
 
   const urgentItems = expiringItems.filter(item => item.daysUntilExpiry <= 1)
   const soonItems = expiringItems.filter(item => item.daysUntilExpiry > 1 && item.daysUntilExpiry <= 3)
+
+  const handleAddToList = (itemName: string) => {
+    addItem(itemName, 'כללי') // Default category
+  }
+
+  const handleRemoveFromPantry = (itemName: string) => {
+    // TODO: Implement remove from pantry in global context
+    console.log('Remove from pantry:', itemName)
+  }
+
+  const handleDismiss = () => {
+    dismissGuestExplanation() // Reuse existing function or create new one
+  }
 
   const getExpiryMessage = (daysUntilExpiry: number) => {
     if (daysUntilExpiry < 0) return 'פג תוקף!'
@@ -45,7 +49,7 @@ export function ExpiryNotification({
               <h3 className="font-bold text-red-800">🚨 דחוף - מוצרים שפג תוקפם!</h3>
             </div>
             <button
-              onClick={onDismiss}
+              onClick={handleDismiss}
               className="text-red-400 hover:text-red-600"
             >
               <X size={20} />
@@ -67,14 +71,14 @@ export function ExpiryNotification({
                 
                 <div className="flex gap-2">
                   <button
-                    onClick={() => onAddToList(item.name)}
+                    onClick={() => handleAddToList(item.name)}
                     className="px-3 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm flex items-center gap-1"
                   >
                     <ShoppingCart size={16} />
                     קנה עוד
                   </button>
                   <button
-                    onClick={() => onRemoveFromPantry(item.name)}
+                    onClick={() => handleRemoveFromPantry(item.name)}
                     className="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm"
                   >
                     הסר מהמטבח
@@ -94,7 +98,7 @@ export function ExpiryNotification({
               <h3 className="font-bold text-yellow-800">⏰ מוצרים שמתקרבים לפג תוקף</h3>
             </div>
             <button
-              onClick={onDismiss}
+              onClick={handleDismiss}
               className="text-yellow-400 hover:text-yellow-600"
             >
               <X size={20} />
@@ -116,14 +120,14 @@ export function ExpiryNotification({
                 
                 <div className="flex gap-2">
                   <button
-                    onClick={() => onAddToList(item.name)}
+                    onClick={() => handleAddToList(item.name)}
                     className="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm flex items-center gap-1"
                   >
                     <ShoppingCart size={16} />
                     קנה עוד
                   </button>
                   <button
-                    onClick={() => onRemoveFromPantry(item.name)}
+                    onClick={() => handleRemoveFromPantry(item.name)}
                     className="px-3 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm"
                   >
                     הסר

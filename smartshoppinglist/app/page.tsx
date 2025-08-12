@@ -25,7 +25,7 @@ import {
   useShoppingList, 
   useItemOperations,
   useStatistics,
-  useAuth
+  useAuthContext
 } from './hooks'
 import { ShoppingItem } from './types'
 import { getPopularItems } from './utils/smartSuggestions'
@@ -33,11 +33,14 @@ import { useSoundManager } from './utils/soundManager'
 import { MESSAGES } from './utils'
 
 export default function ShoppingListApp() {
-  const { loading, isAuthenticated, isGuest, switchToAuth } = useAuth()
+  const { loading, isAuthenticated, isGuest, switchToAuth } = useAuthContext()
   const [showLoginForm, setShowLoginForm] = useState(false)
   const [showReceiptScanner, setShowReceiptScanner] = useState(false)
   const [showExpiryModal, setShowExpiryModal] = useState(false)
   const [showDataImportModal, setShowDataImportModal] = useState(false)
+
+  // Debug log
+  console.log('🚀 App render:', { loading, isAuthenticated, isGuest, showLoginForm })
 
   const [checkoutItems, setCheckoutItems] = useState<ShoppingItem[]>([])
 
@@ -161,8 +164,8 @@ export default function ShoppingListApp() {
     )
   }
 
-  // Show login form if user is not authenticated AND not loading
-  if (!isAuthenticated && !loading) {
+  // Show login form if user is not authenticated 
+  if (!isAuthenticated) {
     return (
       <LoginForm 
         onSuccess={() => {

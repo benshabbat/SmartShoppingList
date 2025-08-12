@@ -1,4 +1,5 @@
 import './globals.css'
+import { AuthProvider } from './hooks/useAuthContext'
 
 export const metadata = {
   title: 'רשימת קניות חכמה',
@@ -12,7 +13,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="he" dir="rtl">
-      <body>{children}</body>
+      <body>
+        <AuthProvider>
+          {children}
+        </AuthProvider>
+      </body>
     </html>
   )
 }

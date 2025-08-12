@@ -4,6 +4,7 @@ export { useKeyboardNavigation } from './useKeyboardNavigation'
 export { useItemOperations } from './useItemOperations'
 export { useStatistics } from './useStatistics'
 export { useAuth } from './useAuth'
+export { useAuthContext } from './useAuthContext'
 export { useConstants } from './useConstants'
 
 // Re-export existing hooks

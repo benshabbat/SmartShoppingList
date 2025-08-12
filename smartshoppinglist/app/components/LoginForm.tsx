@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { UserService } from '@/lib/services/userService'
-import { useAuth } from '@/app/hooks/useAuth'
+import { useAuthContext } from '@/app/hooks/useAuthContext'
 import { Card } from './Card'
 
 interface LoginFormProps {
@@ -8,7 +8,7 @@ interface LoginFormProps {
 }
 
 export function LoginForm({ onSuccess }: LoginFormProps) {
-  const { signInAsGuest } = useAuth()
+  const { signInAsGuest } = useAuthContext()
   const [isLogin, setIsLogin] = useState(true)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -18,7 +18,9 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
   const [message, setMessage] = useState<string | null>(null)
 
   const handleGuestLogin = () => {
+    console.log('🎯 handleGuestLogin called')
     signInAsGuest()
+    console.log('🎯 signInAsGuest executed')
     // Don't call onSuccess for guest login - let the state change trigger re-render naturally
   }
 

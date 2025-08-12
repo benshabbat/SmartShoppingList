@@ -1,6 +1,6 @@
 import { ShoppingCart, HelpCircle, Volume2, VolumeX, BarChart3, Receipt, LogOut, User } from 'lucide-react'
 import { useSoundManager } from '../utils/soundManager'
-import { useAuth } from '../hooks/useAuth'
+import { useAuthContext } from '../hooks/useAuthContext'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
@@ -11,7 +11,7 @@ interface HeaderProps {
 
 export const Header = ({ onOpenTutorial, onOpenReceiptScanner }: HeaderProps) => {
   const { soundEnabled, toggleSound } = useSoundManager()
-  const { user, signOut, isAuthenticated, isGuest, switchToAuth } = useAuth()
+  const { user, signOut, isAuthenticated, isGuest, switchToAuth } = useAuthContext()
   const pathname = usePathname()
   const isStatisticsPage = pathname === '/statistics'
 

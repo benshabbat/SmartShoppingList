@@ -20,6 +20,17 @@ export function useAuth() {
   const [loading, setLoading] = useState(true)
   const [isGuest, setIsGuest] = useState(false)
 
+  // Debug effect
+  useEffect(() => {
+    console.log('🔄 Auth state changed:', { 
+      hasUser: !!user, 
+      userId: user?.id, 
+      isGuest, 
+      loading, 
+      isAuthenticated: !!user 
+    })
+  }, [user, isGuest, loading])
+
   // Main initialization effect
   useEffect(() => {
     const initializeAuth = async () => {
@@ -76,8 +87,10 @@ export function useAuth() {
   }, [])
 
   const signInAsGuest = () => {
+    console.log('🔥 signInAsGuest called')
     if (typeof window !== 'undefined') {
       localStorage.setItem('guest_mode', 'true')
+      console.log('🔥 localStorage set to guest_mode: true')
     }
     
     // Update state synchronously
@@ -85,6 +98,7 @@ export function useAuth() {
     setIsGuest(true)
     setSession(null)
     setLoading(false)
+    console.log('🔥 State updated: user=GUEST_USER, isGuest=true, loading=false')
   }
 
   const signOut = async () => {

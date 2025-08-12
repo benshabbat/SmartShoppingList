@@ -1,24 +1,26 @@
-import React from 'react'
 import { HelpCircle, Volume2, VolumeX, Receipt } from 'lucide-react'
+import { useHeaderLogic } from '../useHeaderLogic'
 import { HEADER_STYLES, HEADER_TEXT } from '../constants'
-import type { LeftActionsProps } from '../types'
 
 /**
- * Left Actions Component
+ * Left Actions Component - ZERO PROPS DRILLING
  * Single Responsibility: Handle left side action buttons
+ * Gets everything from context!
  */
-export function LeftActions({
-  soundEnabled,
-  isStatisticsPage,
-  onOpenTutorial,
-  onToggleSound,
-  onOpenReceiptScanner,
-}: LeftActionsProps) {
+export function LeftActions() {
+  const {
+    soundEnabled,
+    isStatisticsPage,
+    openTutorial,
+    toggleSound,
+    openReceiptScanner,
+  } = useHeaderLogic()
+
   return (
     <div className={HEADER_STYLES.LEFT_ACTIONS}>
       {/* Help Button */}
       <button
-        onClick={onOpenTutorial}
+        onClick={openTutorial}
         className={`${HEADER_STYLES.BUTTON.BASE} ${HEADER_STYLES.BUTTON.HELP}`}
         title={HEADER_TEXT.TOOLTIPS.HELP}
       >
@@ -27,7 +29,7 @@ export function LeftActions({
       
       {/* Sound Toggle Button */}
       <button
-        onClick={onToggleSound}
+        onClick={toggleSound}
         className={`${HEADER_STYLES.BUTTON.BASE} ${HEADER_STYLES.BUTTON.SOUND}`}
         title={soundEnabled ? HEADER_TEXT.TOOLTIPS.SOUND_ON : HEADER_TEXT.TOOLTIPS.SOUND_OFF}
       >
@@ -41,7 +43,7 @@ export function LeftActions({
       {/* Receipt Scanner Button - Only on main page */}
       {!isStatisticsPage && (
         <button
-          onClick={onOpenReceiptScanner}
+          onClick={openReceiptScanner}
           className={`${HEADER_STYLES.BUTTON.BASE} ${HEADER_STYLES.BUTTON.RECEIPT}`}
           title={HEADER_TEXT.TOOLTIPS.RECEIPT_SCANNER}
         >

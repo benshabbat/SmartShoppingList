@@ -1,33 +1,26 @@
-import React from 'react'
+import { useLoginFormLogic } from '../useLoginFormLogic'
 import { CSS_CLASSES, UI_TEXT } from '../constants'
 
-interface FormActionsProps {
-  isLogin: boolean
-  loading: boolean
-  isFormValid: boolean
-  onForgotPassword: () => void
-  onToggleMode: () => void
-  className?: string
-}
-
 /**
- * Form Actions Component
+ * Form Actions Component - ZERO PROPS DRILLING
  * Single Responsibility: Handle form action buttons and links
+ * Gets everything from context!
  */
-export function FormActions({
-  isLogin,
-  loading,
-  isFormValid,
-  onForgotPassword,
-  onToggleMode,
-  className = ''
-}: FormActionsProps) {
+export function FormActions() {
+  const { 
+    isLogin, 
+    loading, 
+    isFormValid, 
+    handleForgotPassword, 
+    toggleMode 
+  } = useLoginFormLogic()
+
   return (
-    <div className={`mt-6 text-center space-y-2 ${className}`}>
+    <div className="mt-6 text-center space-y-2">
       {isLogin && (
         <button
           type="button"
-          onClick={onForgotPassword}
+          onClick={handleForgotPassword}
           className={CSS_CLASSES.BUTTON.LINK}
           disabled={loading}
         >
@@ -38,7 +31,7 @@ export function FormActions({
       <div>
         <button
           type="button"
-          onClick={onToggleMode}
+          onClick={toggleMode}
           className={CSS_CLASSES.BUTTON.LINK}
         >
           {isLogin ? UI_TEXT.FORM.TOGGLE.TO_SIGNUP : UI_TEXT.FORM.TOGGLE.TO_LOGIN}

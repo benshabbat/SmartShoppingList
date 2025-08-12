@@ -1,4 +1,3 @@
-import React from 'react'
 import { Check, ArrowRight, Plus, X } from 'lucide-react'
 
 export type ItemActionType = 'add-to-cart' | 'remove-from-cart' | 'mark-purchased' | 'remove'

@@ -1,34 +1,31 @@
-import React from 'react'
 import { UserMenu, NavigationButton } from './'
-import type { RightActionsProps } from '../types'
+import { useHeaderLogic } from '../useHeaderLogic'
 
 /**
- * Right Actions Component
+ * Right Actions Component - ZERO PROPS DRILLING
  * Single Responsibility: Handle right side actions (user menu and navigation)
+ * Gets everything from context!
  */
-export function RightActions({
-  user,
-  isGuest,
-  isStatisticsPage,
-  onSwitchToAuth,
-  onSignOut,
-}: RightActionsProps) {
+export function RightActions() {
+  const {
+    user,
+    isGuest,
+    isStatisticsPage,
+    handleSwitchToAuth,
+    handleSignOut,
+  } = useHeaderLogic()
+
   const isAuthenticated = !!user
 
   return (
     <div className="absolute top-0 right-0 flex gap-2">
       {/* User Menu - Only for authenticated users */}
       {isAuthenticated && (
-        <UserMenu
-          user={user}
-          isGuest={isGuest}
-          onSwitchToAuth={onSwitchToAuth}
-          onSignOut={onSignOut}
-        />
+        <UserMenu />
       )}
       
       {/* Navigation Button */}
-      <NavigationButton isStatisticsPage={isStatisticsPage} />
+      <NavigationButton />
     </div>
   )
 }

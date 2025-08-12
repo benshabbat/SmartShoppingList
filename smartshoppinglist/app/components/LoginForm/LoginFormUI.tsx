@@ -117,14 +117,8 @@ export function LoginFormUI() {
             <AccountBenefitsSection />
           </form>
 
-          {/* Form Actions */}
-          <FormActions
-            isLogin={isLogin}
-            loading={loading}
-            isFormValid={isFormValid}
-            onForgotPassword={handleForgotPassword}
-            onToggleMode={toggleMode}
-          />
+          {/* Form Actions - ZERO PROPS DRILLING */}
+          <FormActions />
         </Card>
       </div>
     </div>

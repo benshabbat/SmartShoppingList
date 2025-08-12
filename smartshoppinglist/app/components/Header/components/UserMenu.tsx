@@ -1,19 +1,21 @@
-import React from 'react'
 import { User, LogOut } from 'lucide-react'
 import { HEADER_STYLES, HEADER_TEXT } from '../constants'
 import { UserActionsHandler } from '../utils'
-import type { UserMenuProps } from '../types'
+import { useHeaderLogic } from '../useHeaderLogic'
 
 /**
- * User Menu Component
+ * User Menu Component - ZERO PROPS DRILLING
  * Single Responsibility: Handle user authentication display and actions
+ * Gets everything from context!
  */
-export function UserMenu({
-  user,
-  isGuest,
-  onSwitchToAuth,
-  onSignOut,
-}: UserMenuProps) {
+export function UserMenu() {
+  const {
+    user,
+    isGuest,
+    handleSwitchToAuth,
+    handleSignOut,
+  } = useHeaderLogic()
+
   if (!user) return null
 
   const displayName = UserActionsHandler.getUserDisplayName(user, isGuest)
@@ -32,7 +34,7 @@ export function UserMenu({
       {/* Guest Login Button */}
       {isGuest && (
         <button
-          onClick={onSwitchToAuth}
+          onClick={handleSwitchToAuth}
           className={HEADER_STYLES.USER_MENU.LOGIN_BUTTON}
           title={HEADER_TEXT.TOOLTIPS.LOGIN}
         >
@@ -42,7 +44,7 @@ export function UserMenu({
       
       {/* Logout Button */}
       <button
-        onClick={onSignOut}
+        onClick={handleSignOut}
         className={HEADER_STYLES.BUTTON.LOGOUT}
         title={logoutTooltip}
       >

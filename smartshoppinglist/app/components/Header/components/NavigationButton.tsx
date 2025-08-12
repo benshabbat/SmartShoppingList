@@ -1,14 +1,16 @@
-import React from 'react'
 import Link from 'next/link'
 import { BarChart3, ShoppingCart } from 'lucide-react'
 import { HEADER_STYLES, HEADER_TEXT, ROUTES } from '../constants'
-import type { NavigationButtonProps } from '../types'
+import { useHeaderLogic } from '../useHeaderLogic'
 
 /**
- * Navigation Button Component
+ * Navigation Button Component - ZERO PROPS DRILLING
  * Single Responsibility: Handle navigation between main pages
+ * Gets everything from context!
  */
-export function NavigationButton({ isStatisticsPage }: NavigationButtonProps) {
+export function NavigationButton() {
+  const { isStatisticsPage } = useHeaderLogic()
+
   if (!isStatisticsPage) {
     // Show Statistics button when on main page
     return (

@@ -14,6 +14,8 @@ import { QuickListCreator } from './components/QuickListCreator'
 import { DataExport } from './components/DataExport'
 import { Card, CardHeader } from './components/Card'
 import { ReceiptScanner } from './components/ReceiptScanner'
+import { ExpiryDateModal } from './components/ExpiryDateModal'
+import { ExpiryNotification } from './components/ExpiryNotification'
 
 // Hooks and Utils
 import { 
@@ -28,19 +30,25 @@ import { MESSAGES } from './utils'
 
 export default function ShoppingListApp() {
   const [showReceiptScanner, setShowReceiptScanner] = useState(false)
+  const [showExpiryModal, setShowExpiryModal] = useState(false)
+  const [checkoutItems, setCheckoutItems] = useState<ShoppingItem[]>([])
 
   const {
     items,
     suggestions,
     purchaseHistory,
     pantryItems,
+    expiringItems,
     addItem,
     toggleItemInCart,
     removeItem,
     clearPurchased,
     addSuggestedItem,
     updateItemWithExpiry,
-    addItemsFromReceipt
+    addItemsFromReceipt,
+    addExpiringItemToList,
+    removeFromPantry,
+    setExpiringItems
   } = useShoppingList()
 
   // Tutorial hook
@@ -59,6 +67,7 @@ export default function ShoppingListApp() {
     handleClearPurchased,
     handleClearCart,
     handleCheckout,
+    handleCompletePurchase,
     getItemsByStatus,
   } = useItemOperations({
     items,
@@ -69,6 +78,10 @@ export default function ShoppingListApp() {
     onShowSuccess: showSuccess,
     onShowError: showError,
     onShowInfo: showInfo,
+    onShowExpiryModal: (cartItems) => {
+      setCheckoutItems(cartItems)
+      setShowExpiryModal(true)
+    },
     onPlaySound: (soundType) => {
       switch (soundType) {
         case 'addToCart': playAddToCart(); break
@@ -109,6 +122,21 @@ export default function ShoppingListApp() {
     )
   }
 
+  const handleExpiryModalSubmit = (itemsWithExpiry: Array<{ id: string; expiryDate?: Date }>) => {
+    handleCompletePurchase(itemsWithExpiry)
+    setShowExpiryModal(false)
+    setCheckoutItems([])
+  }
+
+  const handleExpiryModalClose = () => {
+    setShowExpiryModal(false)
+    setCheckoutItems([])
+  }
+
+  const handleAddExpiringItem = (itemName: string) => {
+    handleAddItem(itemName, 'אחר') // Default category for expired items
+  }
+
   const { pending, inCart, purchased } = getItemsByStatus()
 
   return (
@@ -122,6 +150,16 @@ export default function ShoppingListApp() {
           onOpenTutorial={openTutorial} 
           onOpenReceiptScanner={() => setShowReceiptScanner(true)}
         />
+        
+        {/* Expiry Notifications */}
+        {expiringItems.length > 0 && (
+          <ExpiryNotification
+            expiringItems={expiringItems}
+            onAddToList={handleAddExpiringItem}
+            onRemoveFromPantry={removeFromPantry}
+            onDismiss={() => setExpiringItems([])}
+          />
+        )}
         
         {/* Quick Stats */}
         <Card className="mb-6">
@@ -252,6 +290,16 @@ export default function ShoppingListApp() {
           <ReceiptScanner
             onReceiptProcessed={handleReceiptProcessed}
             onClose={() => setShowReceiptScanner(false)}
+          />
+        )}
+
+        {/* Expiry Date Modal */}
+        {showExpiryModal && (
+          <ExpiryDateModal
+            items={checkoutItems}
+            isOpen={showExpiryModal}
+            onClose={handleExpiryModalClose}
+            onSubmit={handleExpiryModalSubmit}
           />
         )}
       </div>

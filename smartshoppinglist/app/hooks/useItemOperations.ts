@@ -17,6 +17,7 @@ interface UseItemOperationsProps {
   onShowError: (title: string, message: string) => void
   onShowInfo: (title: string, message: string) => void
   onPlaySound: (soundType: 'addToCart' | 'removeFromCart' | 'purchase' | 'delete') => void
+  onShowExpiryModal?: (items: ShoppingItem[]) => void
 }
 
 export const useItemOperations = ({
@@ -29,6 +30,7 @@ export const useItemOperations = ({
   onShowError,
   onShowInfo,
   onPlaySound,
+  onShowExpiryModal,
 }: UseItemOperationsProps) => {
   
   /**
@@ -120,18 +122,41 @@ export const useItemOperations = ({
         throw createBusinessError.noItemsToPurchase()
       }
       
-      // Mark all cart items as purchased
-      cartItems.forEach(item => {
-        onUpdateItemWithExpiry(item.id, undefined)
-      })
-      
-      onPlaySound('purchase')
-      onShowSuccess(MESSAGES.SUCCESS.PURCHASE_COMPLETED, `${cartItems.length} מוצרים נקנו`)
+      // Show expiry date modal instead of immediately purchasing
+      if (onShowExpiryModal) {
+        onShowExpiryModal(cartItems)
+      } else {
+        // Fallback: Mark all cart items as purchased without expiry dates
+        cartItems.forEach(item => {
+          onUpdateItemWithExpiry(item.id, undefined)
+        })
+        
+        onPlaySound('purchase')
+        onShowSuccess(MESSAGES.SUCCESS.PURCHASE_COMPLETED, `${cartItems.length} מוצרים נקנו`)
+      }
     } catch (error) {
       const appError = handleError(error)
       onShowError('שגיאה', appError.message)
     }
-  }, [items, onUpdateItemWithExpiry, onPlaySound, onShowSuccess, onShowError])
+  }, [items, onUpdateItemWithExpiry, onPlaySound, onShowSuccess, onShowError, onShowExpiryModal])
+
+  /**
+   * Handle completing purchase with expiry dates
+   */
+  const handleCompletePurchase = useCallback((itemsWithExpiry: Array<{ id: string; expiryDate?: Date }>) => {
+    try {
+      // Mark all items as purchased with their expiry dates
+      itemsWithExpiry.forEach(({ id, expiryDate }) => {
+        onUpdateItemWithExpiry(id, expiryDate)
+      })
+      
+      onPlaySound('purchase')
+      onShowSuccess(MESSAGES.SUCCESS.PURCHASE_COMPLETED, `${itemsWithExpiry.length} מוצרים נקנו`)
+    } catch (error) {
+      const appError = handleError(error)
+      onShowError('שגיאה', appError.message)
+    }
+  }, [onUpdateItemWithExpiry, onPlaySound, onShowSuccess, onShowError])
 
   /**
    * Get items grouped by status
@@ -150,6 +175,7 @@ export const useItemOperations = ({
     handleClearPurchased,
     handleClearCart,
     handleCheckout,
+    handleCompletePurchase,
     getItemsByStatus,
   }
 }

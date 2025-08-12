@@ -3,7 +3,7 @@ import { Category, ShoppingItem } from '../../types'
 import { generateSmartSuggestions, suggestCategoryForProduct } from '../../utils/smartSuggestions'
 import { useFormField } from '../../hooks/useFormState'
 import { validateProductName } from '../../utils/validation'
-import { useAddShoppingItem } from '../../hooks/useShoppingItems'
+import { useShoppingListContext } from '../../providers'
 
 interface UseAddItemFormLogicProps {
   purchaseHistory: ShoppingItem[]
@@ -18,7 +18,7 @@ export const useAddItemFormLogic = ({
   purchaseHistory, 
   currentItems 
 }: UseAddItemFormLogicProps) => {
-  const addItemMutation = useAddShoppingItem()
+  const { addItem, showSuccess, showError } = useShoppingListContext()
   
   // Form field with validation
   const itemName = useFormField({
@@ -37,7 +37,9 @@ export const useAddItemFormLogic = ({
 
   // Smart suggestions based on category and history
   const suggestions = useMemo(() => {
-    return generateSmartSuggestions(newItemCategory, purchaseHistory, currentItems)
+    const generated = generateSmartSuggestions(newItemCategory, purchaseHistory, currentItems)
+    console.log('🔮 Generated suggestions for category', newItemCategory, ':', generated)
+    return generated
   }, [newItemCategory, purchaseHistory, currentItems])
 
   // Auto-suggest category based on product name
@@ -66,29 +68,29 @@ export const useAddItemFormLogic = ({
   }, [itemName.value, newItemCategory, autoChangedCategory])
 
   // Event handlers
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (itemName.isValid && itemName.value.trim()) {
-      addItemMutation.mutate({
-        name: itemName.value.trim(),
-        category: newItemCategory,
-        isInCart: false,
-        isPurchased: false,
-      })
-      itemName.reset()
-      setAutoChangedCategory(false)
+      try {
+        await addItem(itemName.value.trim(), newItemCategory)
+        showSuccess(`${itemName.value.trim()} נוסף לרשימה`)
+        itemName.reset()
+        setAutoChangedCategory(false)
+      } catch (error) {
+        showError('שגיאה בהוספת הפריט')
+      }
     }
   }
 
-  const handleAutoCompleteSelect = (selectedItem: string) => {
-    addItemMutation.mutate({
-      name: selectedItem,
-      category: newItemCategory,
-      isInCart: false,
-      isPurchased: false,
-    })
-    itemName.reset()
-    setAutoChangedCategory(false)
+  const handleAutoCompleteSelect = async (selectedItem: string) => {
+    try {
+      await addItem(selectedItem, newItemCategory)
+      showSuccess(`${selectedItem} נוסף לרשימה`)
+      itemName.reset()
+      setAutoChangedCategory(false)
+    } catch (error) {
+      showError('שגיאה בהוספת הפריט')
+    }
   }
 
   const handleNameChange = (name: string) => {
@@ -111,7 +113,7 @@ export const useAddItemFormLogic = ({
   }
 
   // Computed values
-  const isSubmitDisabled = !itemName.isValid || !itemName.value.trim() || addItemMutation.isPending
+  const isSubmitDisabled = !itemName.isValid || !itemName.value.trim()
 
   return {
     // Form data
@@ -124,9 +126,6 @@ export const useAddItemFormLogic = ({
     showCategorySuggestion,
     suggestedCategory,
     isSubmitDisabled,
-    
-    // Mutation state
-    isLoading: addItemMutation.isPending,
     
     // Event handlers
     handleSubmit,

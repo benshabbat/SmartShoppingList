@@ -36,10 +36,12 @@ export const AutoComplete = ({
   
   // Memoize filtered suggestions to prevent infinite loops
   const filteredSuggestions = useMemo(() => {
-    if (value || suggestions.length > 0) {
-      return searchWithPopularity(value, suggestions, purchaseHistory)
+    // Show all suggestions when no text is entered
+    if (!value.trim()) {
+      return suggestions.slice(0, 8) // Show first 8 suggestions
     }
-    return []
+    // Filter suggestions based on input
+    return searchWithPopularity(value, suggestions, purchaseHistory)
   }, [value, suggestions, purchaseHistory, purchaseHistoryLength])
 
   // Define callbacks with useCallback to prevent re-renders
@@ -68,17 +70,19 @@ export const AutoComplete = ({
 
   // Separate effect for managing isOpen state
   useEffect(() => {
-    if (!value.trim()) {
+    // Don't automatically close when empty - let user see suggestions
+    // Only close if there are no suggestions at all
+    if (filteredSuggestions.length === 0) {
       setIsOpen(false)
     }
-  }, [value])
+  }, [filteredSuggestions.length])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value
     onChange(newValue)
     
-    // Open dropdown when user starts typing
-    if (newValue.trim()) {
+    // Open dropdown when user starts typing or if there are suggestions
+    if (filteredSuggestions.length > 0) {
       setIsOpen(true)
     }
   }
@@ -93,7 +97,7 @@ export const AutoComplete = ({
   }
 
   const handleFocus = () => {
-    if (filteredSuggestions.length > 0 && value.trim()) {
+    if (filteredSuggestions.length > 0) {
       setIsOpen(true)
     }
   }

@@ -1,7 +1,7 @@
 // Enhanced Shopping List Context with better state management
 'use client'
 
-import { createContext, useContext, ReactNode } from 'react'
+import { createContext, useContext, ReactNode, useState } from 'react'
 import { useShoppingList, useItemOperations, useAnalytics } from '../hooks'
 import { useToasts } from '../components/Toast'
 import { useTutorial } from '../components/Tutorial'
@@ -16,6 +16,12 @@ interface ShoppingListContextValue {
   pantryItems: ShoppingItem[]
   expiringItems: ExpiringItem[]
   analytics: ReturnType<typeof useAnalytics>
+
+  // Modal State
+  showReceiptScanner: boolean
+  showExpiryModal: boolean
+  showDataImportModal: boolean
+  checkoutItems: ShoppingItem[]
 
   // Actions
   addItem: (itemName: string, category: string) => Promise<string | undefined>
@@ -58,6 +64,27 @@ interface ShoppingListContextValue {
     purchased: ShoppingItem[]
   }
 
+  // Modal Actions
+  openReceiptScanner: () => void
+  closeReceiptScanner: () => void
+  openExpiryModal: (items: ShoppingItem[]) => void
+  closeExpiryModal: () => void
+  openDataImportModal: () => void
+  closeDataImportModal: () => void
+  
+  // Complex Actions
+  handleCreateQuickList: (items: Array<{name: string, category: string}>) => Promise<void>
+  handleReceiptProcessed: (receiptItems: ShoppingItem[], storeName: string) => void
+  handleExpiryModalSubmit: (itemsWithExpiry: Array<{ id: string; expiryDate?: Date }>) => void
+  handleAddExpiringItem: (itemName: string) => Promise<void>
+  handleCheckoutWithExpiry: () => void
+
+  // Helper functions
+  hasExpiringItems: boolean
+  hasPurchaseHistory: boolean
+  isPantryEmpty: boolean
+  hasItemsInCart: boolean
+
   // Guest data
   hasGuestData: () => boolean
 }
@@ -97,6 +124,16 @@ export function ShoppingListProvider({ children }: ShoppingListProviderProps) {
   const { showTutorial, closeTutorial, openTutorial } = useTutorial()
   const { playAddToCart, playRemoveFromCart, playPurchase, playDelete } = useSoundManager()
 
+  // Modal state management
+  const [showReceiptScanner, setShowReceiptScanner] = useState(false)
+  const [showExpiryModal, setShowExpiryModal] = useState(false)
+  const [showDataImportModal, setShowDataImportModal] = useState(false)
+  const [checkoutItems, setCheckoutItems] = useState<ShoppingItem[]>([])
+
+  // Helper computed values
+  const hasExpiringItems = expiringItems.length > 0
+  const hasPurchaseHistory = purchaseHistory.length > 0
+
   // Item operations
   const {
     handleToggleCart,
@@ -126,6 +163,59 @@ export function ShoppingListProvider({ children }: ShoppingListProviderProps) {
     onShowExpiryModal: () => {}, // Will be handled by individual components
   })
 
+  // Modal Actions
+  const openReceiptScanner = () => setShowReceiptScanner(true)
+  const closeReceiptScanner = () => setShowReceiptScanner(false)
+  const openExpiryModal = (items: ShoppingItem[]) => {
+    setCheckoutItems(items)
+    setShowExpiryModal(true)
+  }
+  const closeExpiryModal = () => {
+    setShowExpiryModal(false)
+    setCheckoutItems([])
+  }
+  const openDataImportModal = () => setShowDataImportModal(true)
+  const closeDataImportModal = () => setShowDataImportModal(false)
+
+  // Complex Actions
+  const handleCreateQuickList = async (items: Array<{name: string, category: string}>) => {
+    for (const item of items) {
+      await addItem(item.name, item.category)
+    }
+    showSuccess(`נוספו ${items.length} פריטים לרשימה`)
+  }
+
+  const handleReceiptProcessed = (receiptItems: ShoppingItem[], storeName: string) => {
+    addItemsFromReceipt(receiptItems)
+    closeReceiptScanner()
+    showSuccess(`נוספו ${receiptItems.length} פריטים מ${storeName}`)
+  }
+
+  const handleExpiryModalSubmit = (itemsWithExpiry: Array<{ id: string; expiryDate?: Date }>) => {
+    // Process items with expiry dates
+    itemsWithExpiry.forEach(({ id, expiryDate }) => {
+      if (expiryDate) {
+        updateItemWithExpiry(id, expiryDate)
+      }
+    })
+    closeExpiryModal()
+    showSuccess('פריטים נשמרו עם תאריכי תפוגה')
+  }
+
+  const handleAddExpiringItem = async (itemName: string) => {
+    await addItem(itemName, 'אחר')
+    showSuccess(`${itemName} נוסף לרשימה`)
+  }
+
+  const handleCheckoutWithExpiry = () => {
+    const { inCart } = getItemsByStatus()
+    openExpiryModal(inCart)
+  }
+
+  // Helper computed values
+  const isPantryEmpty = pantryItems.length === 0
+  const hasItemsInCart = getItemsByStatus().inCart.length > 0
+
   const contextValue: ShoppingListContextValue = {
     // Data
     items,
@@ -134,6 +224,33 @@ export function ShoppingListProvider({ children }: ShoppingListProviderProps) {
     pantryItems,
     expiringItems,
     analytics,
+
+    // Modal State
+    showReceiptScanner,
+    showExpiryModal,
+    showDataImportModal,
+    checkoutItems,
+
+    // Modal Actions
+    openReceiptScanner,
+    closeReceiptScanner,
+    openExpiryModal,
+    closeExpiryModal,
+    openDataImportModal,
+    closeDataImportModal,
+
+    // Complex Actions
+    handleCreateQuickList,
+    handleReceiptProcessed,
+    handleExpiryModalSubmit,
+    handleAddExpiringItem,
+    handleCheckoutWithExpiry,
+
+    // Helper computed values
+    isPantryEmpty,
+    hasItemsInCart,
+    hasExpiringItems,
+    hasPurchaseHistory,
 
     // Actions
     addItem,

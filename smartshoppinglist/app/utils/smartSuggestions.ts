@@ -11,6 +11,8 @@ export const generateSmartSuggestions = (
   purchaseHistory: ShoppingItem[],
   currentItems: ShoppingItem[]
 ): string[] => {
+  console.log('📝 Generating suggestions for:', { category, historyCount: purchaseHistory.length, currentCount: currentItems.length })
+  
   // מוצרים שנקנו בעבר באותה קטגוריה
   const historyItems = purchaseHistory
     .filter(item => item.category === category)
@@ -22,6 +24,7 @@ export const generateSmartSuggestions = (
 
   // מוצרים נפוצים בקטגוריה
   const commonItems = COMMON_PRODUCTS[category as keyof typeof COMMON_PRODUCTS] || []
+  console.log('🏪 Common items for category', category, ':', commonItems.slice(0, 5))
 
   // ספירת תדירות של מוצרים בהיסטוריה
   const frequency: Record<string, number> = {}
@@ -44,9 +47,12 @@ export const generateSmartSuggestions = (
     .filter(item => !currentItemNames.includes(item))
 
   // החזרה עם אותיות ראשיות גדולות
-  return uniqueSuggestions
+  const finalSuggestions = uniqueSuggestions
     .map(item => item.charAt(0).toUpperCase() + item.slice(1))
     .slice(0, 10) // מגביל ל-10 הצעות
+    
+  console.log('✨ Final suggestions:', finalSuggestions)
+  return finalSuggestions
 }
 
 // פונקציה לחיפוש מתקדם עם פופולריות

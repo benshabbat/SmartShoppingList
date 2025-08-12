@@ -25,11 +25,11 @@ export function MainAppContent() {
     hasGuestData,
     importGuestData,
     showSuccess,
+    openDataImportModal,
   } = useShoppingListContext()
   
   // Local UI state
   const [showLoginForm, setShowLoginForm] = useState(false)
-  const [showReceiptScanner, setShowReceiptScanner] = useState(false)
 
   // Show loading state
   if (loading) {
@@ -40,16 +40,26 @@ export function MainAppContent() {
   if (!isAuthenticated && !isGuest && showLoginForm) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <LoginForm onSuccess={() => setShowLoginForm(false)} />
+        <LoginForm onSuccess={() => {
+          setShowLoginForm(false)
+          // Check if there's guest data to import after successful login
+          if (hasGuestData()) {
+            openDataImportModal()
+          }
+        }} />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
       {/* Header */}
       <Header 
-        onOpenReceiptScanner={() => setShowReceiptScanner(true)}
+        onOpenReceiptScanner={() => {
+          if (typeof window !== 'undefined' && (window as any).openReceiptScanner) {
+            (window as any).openReceiptScanner()
+          }
+        }}
       />
 
       {/* Guest Mode Notification */}

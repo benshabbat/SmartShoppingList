@@ -14,21 +14,37 @@ const GUEST_USER = {
 } as User
 
 export function useAuth() {
+  // Initialize state from localStorage to prevent hydration mismatch
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
   const [isGuest, setIsGuest] = useState(false)
+  const [isInitialized, setIsInitialized] = useState(false)
 
+  // Initialize guest state on component mount
   useEffect(() => {
-    // Check if user chose guest mode from localStorage
+    if (typeof window === 'undefined') return
+    
     const guestMode = localStorage.getItem('guest_mode')
-    const hasSupabase = supabase !== null
-
-    // Only auto-enter guest mode if explicitly chosen
     if (guestMode === 'true') {
       setUser(GUEST_USER)
       setIsGuest(true)
       setLoading(false)
+      setIsInitialized(true)
+      return
+    }
+
+    setIsInitialized(true)
+  }, [])
+
+  useEffect(() => {
+    if (!isInitialized) return
+    
+    const guestMode = localStorage.getItem('guest_mode')
+    const hasSupabase = supabase !== null
+
+    // If already in guest mode, don't proceed with Supabase auth
+    if (guestMode === 'true') {
       return
     }
 
@@ -62,6 +78,10 @@ export function useAuth() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event: AuthChangeEvent, session: Session | null) => {
         console.log('Auth event:', event)
+        // Clear guest mode when successfully authenticated
+        if (session?.user && typeof window !== 'undefined') {
+          localStorage.removeItem('guest_mode')
+        }
         setSession(session)
         setUser(session?.user ?? null)
         setIsGuest(false)
@@ -70,13 +90,16 @@ export function useAuth() {
     )
 
     return () => subscription.unsubscribe()
-  }, [])
+  }, [isInitialized])
 
   const signInAsGuest = () => {
-    localStorage.setItem('guest_mode', 'true')
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('guest_mode', 'true')
+    }
     setUser(GUEST_USER)
     setIsGuest(true)
     setSession(null)
+    setLoading(false)
   }
 
   const signOut = async () => {
@@ -84,11 +107,17 @@ export function useAuth() {
       setLoading(true)
       
       if (isGuest) {
-        localStorage.removeItem('guest_mode')
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('guest_mode')
+          localStorage.removeItem('guest_notification_dismissed')
+          localStorage.removeItem('guest_explanation_seen')
+        }
         setUser(null)
         setIsGuest(false)
       } else if (supabase) {
         await supabase.auth.signOut()
+        setSession(null)
+        setUser(null)
       }
     } catch (error) {
       console.error('Error signing out:', error)
@@ -98,11 +127,14 @@ export function useAuth() {
   }
 
   const switchToAuth = () => {
-    localStorage.setItem('guest_mode', 'false')
-    localStorage.removeItem('guest_notification_dismissed') // Reset notification
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('guest_mode', 'false')
+      localStorage.removeItem('guest_notification_dismissed') // Reset notification
+    }
     setUser(null)
     setIsGuest(false)
     setSession(null)
+    setLoading(false) // Ensure loading is false to show login form
   }
 
   return {

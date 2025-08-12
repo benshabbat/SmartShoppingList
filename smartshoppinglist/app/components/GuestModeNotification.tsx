@@ -13,9 +13,11 @@ export function GuestModeNotification({ onSwitchToAuth }: GuestModeNotificationP
 
   useEffect(() => {
     // Check if user has already dismissed this notification
-    const dismissed = localStorage.getItem('guest_notification_dismissed')
-    if (dismissed === 'true') {
-      setIsDismissed(true)
+    if (typeof window !== 'undefined') {
+      const dismissed = localStorage.getItem('guest_notification_dismissed')
+      if (dismissed === 'true') {
+        setIsDismissed(true)
+      }
     }
     
     // Auto-minimize after 30 seconds
@@ -28,7 +30,9 @@ export function GuestModeNotification({ onSwitchToAuth }: GuestModeNotificationP
 
   const handleDismiss = () => {
     setIsDismissed(true)
-    localStorage.setItem('guest_notification_dismissed', 'true')
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('guest_notification_dismissed', 'true')
+    }
   }
 
   if (!isGuest || isDismissed) return null
@@ -67,10 +71,20 @@ export function GuestModeNotification({ onSwitchToAuth }: GuestModeNotificationP
             <div className="flex gap-1">
               <button
                 onClick={() => {
-                  if (onSwitchToAuth) {
-                    onSwitchToAuth()
-                  } else {
-                    switchToAuth()
+                  const confirmSwitch = confirm(
+                    '⚠️ הודעה חשובה!\n\n' +
+                    'כאשר תעבור למצב התחברות עם חשבון, הנתונים הנוכחיים שנשמרו במכשיר זה לא יימחקו, ' +
+                    'אבל הם גם לא יסונכרנו אוטומטית לחשבון החדש.\n\n' +
+                    'אם יש לך נתונים חשובים, וודא שאתה זוכר אותם או תעשה צילום מסך לפני המעבר.\n\n' +
+                    'האם אתה בטוח שברצונך להמשיך להתחברות?'
+                  )
+                  
+                  if (confirmSwitch) {
+                    if (onSwitchToAuth) {
+                      onSwitchToAuth()
+                    } else {
+                      switchToAuth()
+                    }
                   }
                 }}
                 className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-full transition-colors"

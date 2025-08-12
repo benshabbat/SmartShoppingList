@@ -17,6 +17,7 @@ import { ReceiptScanner } from './components/ReceiptScanner'
 import { ExpiryDateModal } from './components/ExpiryDateModal'
 import { ExpiryNotification } from './components/ExpiryNotification'
 import { GuestModeNotification } from './components/GuestModeNotification'
+import { DataImportModal } from './components/DataImportModal'
 import { LoginForm } from './components/LoginForm'
 
 // Hooks and Utils
@@ -36,6 +37,7 @@ export default function ShoppingListApp() {
   const [showLoginForm, setShowLoginForm] = useState(false)
   const [showReceiptScanner, setShowReceiptScanner] = useState(false)
   const [showExpiryModal, setShowExpiryModal] = useState(false)
+  const [showDataImportModal, setShowDataImportModal] = useState(false)
   const [checkoutItems, setCheckoutItems] = useState<ShoppingItem[]>([])
 
   // Main shopping list functionality - hooks must be called unconditionally
@@ -53,7 +55,9 @@ export default function ShoppingListApp() {
     updateItemWithExpiry,
     addItemsFromReceipt,
     removeFromPantry,
-    setExpiringItems
+    setExpiringItems,
+    importGuestData,
+    hasGuestData
   } = useShoppingList()
 
   // Tutorial hook
@@ -162,6 +166,10 @@ export default function ShoppingListApp() {
       <LoginForm 
         onSuccess={() => {
           setShowLoginForm(false)
+          // Check if there's guest data to import after successful login
+          if (hasGuestData()) {
+            setShowDataImportModal(true)
+          }
         }} 
       />
     )
@@ -183,7 +191,7 @@ export default function ShoppingListApp() {
         <GuestModeNotification onSwitchToAuth={() => setShowLoginForm(true)} />
         
         {/* First-time guest explanation */}
-        {isGuest && !localStorage.getItem('guest_explanation_seen') && (
+        {isGuest && typeof window !== 'undefined' && !localStorage.getItem('guest_explanation_seen') && (
           <div className="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl p-4 mb-6 border border-indigo-200">
             <div className="flex items-start gap-3">
               <div className="bg-indigo-100 rounded-full p-2 mt-1">
@@ -200,8 +208,10 @@ export default function ShoppingListApp() {
                 <div className="flex gap-2">
                   <button
                     onClick={() => {
-                      localStorage.setItem('guest_explanation_seen', 'true')
-                      location.reload()
+                      if (typeof window !== 'undefined') {
+                        localStorage.setItem('guest_explanation_seen', 'true')
+                        location.reload()
+                      }
                     }}
                     className="text-sm bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-lg transition-colors"
                   >
@@ -365,6 +375,19 @@ export default function ShoppingListApp() {
             isOpen={showExpiryModal}
             onClose={handleExpiryModalClose}
             onSubmit={handleExpiryModalSubmit}
+          />
+        )}
+
+        {/* Data Import Modal */}
+        {showDataImportModal && (
+          <DataImportModal
+            isOpen={showDataImportModal}
+            onClose={() => setShowDataImportModal(false)}
+            onImportGuestData={async () => {
+              await importGuestData()
+              showSuccess('נתונים יובאו בהצלחה!', 'הנתונים ממצב האורח נוספו לחשבון שלך')
+            }}
+            hasGuestData={hasGuestData()}
           />
         )}
       </div>

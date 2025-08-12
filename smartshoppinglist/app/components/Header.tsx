@@ -61,7 +61,19 @@ export const Header = ({ onOpenTutorial, onOpenReceiptScanner }: HeaderProps) =>
             </span>
             {isGuest && (
               <button
-                onClick={switchToAuth}
+                onClick={() => {
+                  const confirmSwitch = confirm(
+                    '⚠️ הודעה חשובה!\n\n' +
+                    'כאשר תעבור למצב התחברות עם חשבון, הנתונים הנוכחיים שנשמרו במכשיר זה לא יימחקו, ' +
+                    'אבל הם גם לא יסונכרנו אוטומטית לחשבון החדש.\n\n' +
+                    'אם יש לך נתונים חשובים, וודא שאתה זוכר אותם או תעשה צילום מסך לפני המעבר.\n\n' +
+                    'האם אתה בטוח שברצונך להמשיך להתחברות?'
+                  )
+                  
+                  if (confirmSwitch) {
+                    switchToAuth()
+                  }
+                }}
                 className="text-xs text-blue-600 hover:text-blue-800 underline"
                 title="התחבר עם חשבון"
               >

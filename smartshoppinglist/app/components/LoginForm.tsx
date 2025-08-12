@@ -38,7 +38,22 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
         setMessage('נרשמת בהצלחה! בדוק את המייל שלך לאימות החשבון.')
       }
     } catch (err: unknown) {
-      setError((err as Error).message || 'אירעה שגיאה')
+      const errorMessage = (err as Error).message || 'אירעה שגיאה'
+      
+      // Handle specific Supabase errors with Hebrew messages
+      if (errorMessage.includes('Invalid login credentials')) {
+        setError('פרטי התחברות שגויים. אנא בדוק את המייל והסיסמה')
+      } else if (errorMessage.includes('Email not confirmed')) {
+        setError('המייל לא אומת. אנא בדוק את תיבת המייל שלך ולחץ על הלינק לאימות')
+      } else if (errorMessage.includes('User already registered')) {
+        setError('המשתמש כבר רשום במערכת. נסה להתחבר במקום')
+      } else if (errorMessage.includes('Password should be at least')) {
+        setError('הסיסמה חייבת להכיל לפחות 6 תווים')
+      } else if (errorMessage.includes('Unable to validate email address')) {
+        setError('כתובת המייל לא תקינה')
+      } else {
+        setError(errorMessage)
+      }
     } finally {
       setLoading(false)
     }

@@ -487,6 +487,82 @@ export function useShoppingList() {
     return { pending, inCart, purchased }
   }
 
+  // Import guest data to authenticated user
+  const importGuestData = async () => {
+    if (typeof window === 'undefined' || isGuest) return
+
+    try {
+      const savedItems = localStorage.getItem(STORAGE_KEYS.SHOPPING_LIST)
+      const savedHistory = localStorage.getItem(STORAGE_KEYS.PURCHASE_HISTORY)
+      const savedPantry = localStorage.getItem(STORAGE_KEYS.PANTRY_ITEMS)
+      
+      if (savedItems) {
+        const guestItems = parseDatesInItems(JSON.parse(savedItems))
+        const newItems = guestItems.filter(guestItem => 
+          !items.some(item => item.name.toLowerCase() === guestItem.name.toLowerCase())
+        )
+        
+        if (newItems.length > 0) {
+          const updatedItems = [...items, ...newItems]
+          setItems(updatedItems)
+          await saveToDatabase(updatedItems, 'items')
+        }
+      }
+      
+      if (savedHistory) {
+        const guestHistory = parseDatesInItems(JSON.parse(savedHistory))
+        const newHistory = guestHistory.filter(historyItem => 
+          !purchaseHistory.some(item => 
+            item.name.toLowerCase() === historyItem.name.toLowerCase() && 
+            item.purchasedAt?.getTime() === historyItem.purchasedAt?.getTime()
+          )
+        )
+        
+        if (newHistory.length > 0) {
+          const updatedHistory = [...purchaseHistory, ...newHistory]
+          setPurchaseHistory(updatedHistory)
+          await saveToDatabase(updatedHistory, 'history')
+        }
+      }
+      
+      if (savedPantry) {
+        const guestPantry = parseDatesInItems(JSON.parse(savedPantry))
+        const newPantry = guestPantry.filter(pantryItem => 
+          !pantryItems.some(item => item.name.toLowerCase() === pantryItem.name.toLowerCase())
+        )
+        
+        if (newPantry.length > 0) {
+          const updatedPantry = [...pantryItems, ...newPantry]
+          setPantryItems(updatedPantry)
+          await saveToDatabase(updatedPantry, 'pantry')
+        }
+      }
+      
+      // Clear guest data after successful import
+      localStorage.removeItem(STORAGE_KEYS.SHOPPING_LIST)
+      localStorage.removeItem(STORAGE_KEYS.PURCHASE_HISTORY)
+      localStorage.removeItem(STORAGE_KEYS.PANTRY_ITEMS)
+      localStorage.removeItem('guest_mode')
+      localStorage.removeItem('guest_notification_dismissed')
+      localStorage.removeItem('guest_explanation_seen')
+      
+    } catch (error) {
+      console.error('Error importing guest data:', error)
+      throw new Error('שגיאה בייבוא הנתונים')
+    }
+  }
+
+  // Check if there's guest data to import
+  const hasGuestData = () => {
+    if (typeof window === 'undefined' || isGuest) return false
+    
+    return !!(
+      localStorage.getItem(STORAGE_KEYS.SHOPPING_LIST) ||
+      localStorage.getItem(STORAGE_KEYS.PURCHASE_HISTORY) ||
+      localStorage.getItem(STORAGE_KEYS.PANTRY_ITEMS)
+    )
+  }
+
   return {
     items,
     suggestions,
@@ -505,6 +581,8 @@ export function useShoppingList() {
     getItemsByStatus,
     setExpiringItems,
     updateItemWithExpiry,
-    addItemsFromReceipt
+    addItemsFromReceipt,
+    importGuestData,
+    hasGuestData
   }
 }

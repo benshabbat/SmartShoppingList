@@ -1,4 +1,3 @@
-import React from 'react'
 import { LeftActions, RightActions, BrandSection } from './components'
 import { useHeaderLogic } from './useHeaderLogic'
 import { HEADER_STYLES } from './constants'
@@ -26,23 +25,11 @@ export const Header = () => {
 
   return (
     <div className={HEADER_STYLES.CONTAINER}>
-      {/* Left Actions */}
-      <LeftActions
-        soundEnabled={soundEnabled}
-        isStatisticsPage={isStatisticsPage}
-        onOpenTutorial={openTutorial}
-        onToggleSound={toggleSound}
-        onOpenReceiptScanner={openReceiptScanner}
-      />
+      {/* Left Actions - ZERO PROPS DRILLING */}
+      <LeftActions />
 
-      {/* Right Actions */}
-      <RightActions
-        user={user}
-        isGuest={isGuest}
-        isStatisticsPage={isStatisticsPage}
-        onSwitchToAuth={handleSwitchToAuth}
-        onSignOut={handleSignOut}
-      />
+      {/* Right Actions - ZERO PROPS DRILLING */}
+      <RightActions />
 
       {/* Brand Section */}
       <BrandSection />

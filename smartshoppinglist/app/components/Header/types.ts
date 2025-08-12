@@ -1,6 +1,10 @@
 /**
  * Header Component Types
  * Centralized type definitions for better type safety
+ * 
+ * ZERO PROPS DRILLING ARCHITECTURE:
+ * - Only data types (User, HeaderState, HeaderActions) remain
+ * - All component prop interfaces removed - components use context!
  */
 
 export interface User {
@@ -23,35 +27,4 @@ export interface HeaderActions {
   toggleSound: () => void
   handleSignOut: () => void
   handleSwitchToAuth: () => void
-}
-
-export interface LeftActionsProps {
-  soundEnabled: boolean
-  isStatisticsPage: boolean
-  onOpenTutorial: () => void
-  onToggleSound: () => void
-  onOpenReceiptScanner: () => void
-}
-
-export interface RightActionsProps {
-  user: User | null
-  isGuest: boolean
-  isStatisticsPage: boolean
-  onSwitchToAuth: () => void
-  onSignOut: () => void
-}
-
-export interface UserMenuProps {
-  user: User | null
-  isGuest: boolean
-  onSwitchToAuth: () => void
-  onSignOut: () => void
-}
-
-export interface NavigationButtonProps {
-  isStatisticsPage: boolean
-}
-
-export interface BrandSectionProps {
-  className?: string
 }

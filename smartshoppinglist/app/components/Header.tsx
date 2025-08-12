@@ -11,7 +11,7 @@ interface HeaderProps {
 
 export const Header = ({ onOpenTutorial, onOpenReceiptScanner }: HeaderProps) => {
   const { soundEnabled, toggleSound } = useSoundManager()
-  const { user, signOut, isAuthenticated } = useAuth()
+  const { user, signOut, isAuthenticated, isGuest, switchToAuth } = useAuth()
   const pathname = usePathname()
   const isStatisticsPage = pathname === '/statistics'
 
@@ -56,11 +56,22 @@ export const Header = ({ onOpenTutorial, onOpenReceiptScanner }: HeaderProps) =>
         {isAuthenticated && (
           <div className="flex items-center gap-2 bg-white rounded-full px-3 py-1 shadow-sm border">
             <User className="w-4 h-4 text-gray-600" />
-            <span className="text-sm text-gray-700">{user?.email}</span>
+            <span className="text-sm text-gray-700">
+              {isGuest ? 'אורח' : user?.email}
+            </span>
+            {isGuest && (
+              <button
+                onClick={switchToAuth}
+                className="text-xs text-blue-600 hover:text-blue-800 underline"
+                title="התחבר עם חשבון"
+              >
+                התחבר
+              </button>
+            )}
             <button
               onClick={signOut}
               className="p-1 hover:bg-red-100 rounded-full transition-colors"
-              title="התנתק"
+              title={isGuest ? 'צא ממצב אורח' : 'התנתק'}
             >
               <LogOut className="w-4 h-4 text-red-600" />
             </button>

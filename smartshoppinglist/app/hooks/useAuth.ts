@@ -2,20 +2,58 @@ import { useState, useEffect } from 'react'
 import { User, AuthChangeEvent, Session } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 
+// Guest user object
+const GUEST_USER = {
+  id: 'guest-user',
+  email: 'guest@smartshopping.local',
+  user_metadata: { full_name: 'אורח' },
+  app_metadata: {},
+  aud: 'authenticated',
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString()
+} as User
+
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
+  const [isGuest, setIsGuest] = useState(false)
 
   useEffect(() => {
+    // Check if user chose guest mode from localStorage
+    const guestMode = localStorage.getItem('guest_mode')
+    const hasSupabase = supabase !== null
+
+    if (guestMode === 'true') {
+      setUser(GUEST_USER)
+      setIsGuest(true)
+      setLoading(false)
+      return
+    }
+
+    if (!hasSupabase) {
+      // If no Supabase, default to guest mode
+      setUser(GUEST_USER)
+      setIsGuest(true)
+      setLoading(false)
+      return
+    }
+
     // Get initial session
     const getSession = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession()
-      if (error) {
-        console.error('Error getting session:', error)
-      } else {
-        setSession(session)
-        setUser(session?.user ?? null)
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession()
+        if (error) {
+          console.error('Error getting session:', error)
+        } else {
+          setSession(session)
+          setUser(session?.user ?? null)
+        }
+      } catch (error) {
+        console.error('Supabase connection error:', error)
+        // Fallback to guest mode if Supabase is not available
+        setUser(GUEST_USER)
+        setIsGuest(true)
       }
       setLoading(false)
     }
@@ -28,6 +66,7 @@ export function useAuth() {
         console.log('Auth event:', event)
         setSession(session)
         setUser(session?.user ?? null)
+        setIsGuest(false)
         setLoading(false)
       }
     )
@@ -35,10 +74,24 @@ export function useAuth() {
     return () => subscription.unsubscribe()
   }, [])
 
+  const signInAsGuest = () => {
+    localStorage.setItem('guest_mode', 'true')
+    setUser(GUEST_USER)
+    setIsGuest(true)
+    setSession(null)
+  }
+
   const signOut = async () => {
     try {
       setLoading(true)
-      await supabase.auth.signOut()
+      
+      if (isGuest) {
+        localStorage.removeItem('guest_mode')
+        setUser(null)
+        setIsGuest(false)
+      } else if (supabase) {
+        await supabase.auth.signOut()
+      }
     } catch (error) {
       console.error('Error signing out:', error)
     } finally {
@@ -46,11 +99,21 @@ export function useAuth() {
     }
   }
 
+  const switchToAuth = () => {
+    localStorage.removeItem('guest_mode')
+    setUser(null)
+    setIsGuest(false)
+    setSession(null)
+  }
+
   return {
     user,
     session,
     loading,
+    isGuest,
     signOut,
+    signInAsGuest,
+    switchToAuth,
     isAuthenticated: !!user
   }
 }

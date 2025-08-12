@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { UserService } from '@/lib/services/userService'
+import { useAuth } from '@/app/hooks/useAuth'
 import { Card } from './Card'
 
 interface LoginFormProps {
@@ -7,6 +8,7 @@ interface LoginFormProps {
 }
 
 export function LoginForm({ onSuccess }: LoginFormProps) {
+  const { signInAsGuest } = useAuth()
   const [isLogin, setIsLogin] = useState(true)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -14,6 +16,11 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [message, setMessage] = useState<string | null>(null)
+
+  const handleGuestLogin = () => {
+    signInAsGuest()
+    onSuccess?.()
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -131,6 +138,30 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
             {loading ? 'מתבצע...' : isLogin ? 'התחבר' : 'הירשם'}
           </button>
         </form>
+
+        {/* Guest Login Option */}
+        <div className="mt-4">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">או</span>
+            </div>
+          </div>
+          
+          <button
+            type="button"
+            onClick={handleGuestLogin}
+            className="mt-4 w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors border border-gray-300"
+          >
+            🚀 המשך כאורח
+          </button>
+          
+          <p className="mt-2 text-xs text-gray-500 text-center">
+            כאורח, הנתונים יישמרו במכשיר זה בלבד
+          </p>
+        </div>
 
         <div className="mt-6 text-center space-y-2">
           {isLogin && (

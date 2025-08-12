@@ -56,7 +56,7 @@ export class ConstantsService {
       
       acc[setting.setting_key] = value
       return acc
-    }, {} as Record<string, any>)
+    }, {} as Record<string, unknown>)
   }
 
   // Get specific setting

@@ -3,9 +3,9 @@ import { ConstantsService } from '@/lib/services/constantsService'
 
 export function useConstants() {
   const [messages, setMessages] = useState<Record<string, Record<string, string>>>({})
-  const [settings, setSettings] = useState<Record<string, any>>({})
-  const [popularItems, setPopularItems] = useState<any[]>([])
-  const [seasonalItems, setSeasonalItems] = useState<any[]>([])
+  const [settings, setSettings] = useState<Record<string, unknown>>({})
+  const [popularItems, setPopularItems] = useState<unknown[]>([])
+  const [seasonalItems, setSeasonalItems] = useState<unknown[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -61,7 +61,7 @@ export function useConstants() {
     return messages[category]?.[key] || fallback || key
   }
 
-  const getSetting = (key: string, fallback?: any) => {
+  const getSetting = (key: string, fallback?: unknown) => {
     return settings[key] !== undefined ? settings[key] : fallback
   }
 

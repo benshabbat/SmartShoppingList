@@ -1,6 +1,6 @@
 import { History, TrendingUp, Package, Target, ShoppingCart, Clock, Award, ChevronDown, ChevronUp, BarChart3, PieChart } from 'lucide-react'
 import { ShoppingItem, ItemSuggestion } from '../types'
-import { formatDate } from '../utils/helpers'
+import { formatDate } from '../utils/dateUtils'
 import { useState } from 'react'
 
 interface StatisticsProps {

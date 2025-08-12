@@ -1,13 +1,5 @@
 import { ShoppingItem, ItemSuggestion, ExpiringItem } from '../types'
 
-export const formatDate = (date: Date) => {
-  return new Intl.DateTimeFormat('he-IL', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
-  }).format(date)
-}
-
 export const getExpiryColor = (daysUntilExpiry: number) => {
   if (daysUntilExpiry < 0) return 'text-red-600 bg-red-50'
   if (daysUntilExpiry <= 1) return 'text-orange-600 bg-orange-50'

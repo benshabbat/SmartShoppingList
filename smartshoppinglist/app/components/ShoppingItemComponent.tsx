@@ -1,7 +1,7 @@
 import { Calendar } from 'lucide-react'
 import { ShoppingItem } from '../types'
 import { ItemActions } from './ItemActions'
-import { formatDate } from '../utils/helpers'
+import { formatDate } from '../utils/dateUtils'
 import { itemContainerStyles, cn } from '../utils/classNames'
 
 interface ShoppingItemComponentProps {

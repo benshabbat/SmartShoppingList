@@ -5,6 +5,17 @@
 import { TIME_CONSTANTS } from './appConstants'
 
 /**
+ * Format date in Hebrew locale
+ */
+export const formatDate = (date: Date) => {
+  return new Intl.DateTimeFormat('he-IL', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  }).format(date)
+}
+
+/**
  * Get date N days ago from today
  */
 export const getDaysAgo = (days: number): Date => {

@@ -196,7 +196,7 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
 
       // Move all cart items back to pending
       for (const item of computedValues.cartItems) {
-        await itemsStore.toggleItemInCart(item.id, user?.id)
+        await itemsStore.toggleItemInCart(item.id)
       }
       
       playDelete()

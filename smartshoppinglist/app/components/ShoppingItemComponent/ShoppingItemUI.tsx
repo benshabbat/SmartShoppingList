@@ -3,28 +3,29 @@ import { ShoppingItem } from '../../types'
 import { ItemActions } from '../ItemActions'
 import { formatDate } from '../../utils/dateUtils'
 import { itemContainerStyles, cn } from '../../utils/classNames'
+import { useShoppingItemLogic } from './useShoppingItemLogic'
 
 interface ShoppingItemUIProps {
   item: ShoppingItem
-  variant: 'pending' | 'inCart' | 'purchased'
-  textStyle: string
-  showExpiryDate: boolean
-  onToggleCart: () => void
-  onRemove: () => void
+  variant?: 'pending' | 'inCart' | 'purchased'
 }
 
 /**
- * Pure UI component for ShoppingItem
- * Contains only rendering logic, no business logic
+ * UI component for ShoppingItem
+ * Zero Props Drilling - gets all actions and logic from context!
  */
 export const ShoppingItemUI = ({
   item,
-  variant,
-  textStyle,
-  showExpiryDate,
-  onToggleCart,
-  onRemove,
+  variant = 'pending'
 }: ShoppingItemUIProps) => {
+  // Get everything from logic hook - no props drilling!
+  const {
+    textStyle,
+    showExpiryDate,
+    handleToggleCart,
+    handleRemove
+  } = useShoppingItemLogic({ item, variant })
+
   return (
     <div className={cn(
       'flex items-center gap-4 p-4 rounded-xl transition-all duration-200',
@@ -32,8 +33,8 @@ export const ShoppingItemUI = ({
     )}>
       <ItemActions
         variant={variant}
-        onToggleCart={onToggleCart}
-        onRemove={onRemove}
+        onToggleCart={handleToggleCart}
+        onRemove={handleRemove}
       />
       
       <div className="flex-1 text-right">

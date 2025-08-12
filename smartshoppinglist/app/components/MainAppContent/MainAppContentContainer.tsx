@@ -1,6 +1,6 @@
 /**
  * Main App Content Container
- * Combines logic and UI with clean separation of concerns
+ * Zero Props Drilling - UI components get everything from context
  */
 
 'use client'
@@ -10,25 +10,13 @@ import { useMainAppLogic } from './useMainAppLogic'
 import { MainAppUI } from './MainAppUI'
 
 export const MainAppContent = () => {
-  const {
-    renderState,
-    shouldShowGuestNotification,
-    handleLoginSuccess,
-    handleGuestDataImport,
-    initializeApp
-  } = useMainAppLogic()
+  const { initializeApp } = useMainAppLogic()
 
   // Initialize app on mount
   useEffect(() => {
     initializeApp()
   }, [initializeApp])
 
-  return (
-    <MainAppUI
-      renderState={renderState}
-      shouldShowGuestNotification={shouldShowGuestNotification}
-      onLoginSuccess={handleLoginSuccess}
-      onGuestDataImport={handleGuestDataImport}
-    />
-  )
+  // No props passed to UI - everything from context!
+  return <MainAppUI />
 }

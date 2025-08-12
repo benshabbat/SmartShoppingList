@@ -1,9 +1,10 @@
 /**
  * Main App UI Component
- * Pure presentational component for the main app layout
+ * Zero Props Drilling - gets everything from context directly
  */
 
-import { ReactNode } from 'react'
+'use client'
+
 import { Header } from '../Header'
 import { LoginForm } from '../LoginForm'
 import { MainShoppingView } from '../MainShoppingView'
@@ -11,25 +12,16 @@ import { ToastContainer } from '../Toast'
 import { Tutorial } from '../Tutorial'
 import { LoadingOverlay } from '../LoadingOverlay'
 import { GuestModeNotification } from '../GuestModeNotification'
+import { useMainAppLogic } from './useMainAppLogic'
 
-interface MainAppUIProps {
-  // Render state
-  renderState: 'loading' | 'login' | 'main'
-  
-  // Guest notification
-  shouldShowGuestNotification: boolean
-  
-  // Event handlers
-  onLoginSuccess: () => void
-  onGuestDataImport: () => void
-}
+export const MainAppUI = () => {
+  const {
+    renderState,
+    shouldShowGuestNotification,
+    handleLoginSuccess,
+    handleGuestDataImport
+  } = useMainAppLogic()
 
-export const MainAppUI = ({
-  renderState,
-  shouldShowGuestNotification,
-  onLoginSuccess,
-  onGuestDataImport
-}: MainAppUIProps) => {
   // Loading state
   if (renderState === 'loading') {
     return <LoadingOverlay message="טוען..." />
@@ -39,7 +31,7 @@ export const MainAppUI = ({
   if (renderState === 'login') {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <LoginForm onSuccess={onLoginSuccess} />
+        <LoginForm onSuccess={handleLoginSuccess} />
       </div>
     )
   }
@@ -53,7 +45,7 @@ export const MainAppUI = ({
       {/* Guest Mode Notification */}
       {shouldShowGuestNotification && (
         <GuestModeNotification
-          onDismiss={onGuestDataImport}
+          onDismiss={handleGuestDataImport}
         />
       )}
 

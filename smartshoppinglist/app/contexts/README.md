@@ -190,6 +190,33 @@ const SmartAddItem = () => {
 }
 ```
 
+### דוגמה 4: רכיב מלא ללא props drilling
+
+```typescript
+import { ZeroPropsDrillingDemo } from '../components/examples'
+
+// רכיב שמציג הכל - ללא props!
+const MyPage = () => {
+  return (
+    <div>
+      <h1>דף הדגמה</h1>
+      <ZeroPropsDrillingDemo />  {/* לא מעביר שום props! */}
+    </div>
+  )
+}
+```
+
+### דוגמה 5: השוואה לפני ואחרי
+
+```typescript
+import { PropsDrillingComparison } from '../components/examples'
+
+// מציג השוואה ויזואלית
+const ComparisonPage = () => {
+  return <PropsDrillingComparison />
+}
+```
+
 ## 🎉 יתרונות הארכיטקטורה החדשה
 
 ### 1. **Zero Props Drilling**

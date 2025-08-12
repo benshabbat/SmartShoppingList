@@ -1,7 +1,7 @@
 import React from 'react'
-import { LeftActions, RightActions, BrandSection } from './Header/components'
-import { useHeaderLogic } from './Header/useHeaderLogic'
-import { HEADER_STYLES } from './Header/constants'
+import { LeftActions, RightActions, BrandSection } from './components'
+import { useHeaderLogic } from './useHeaderLogic'
+import { HEADER_STYLES } from './constants'
 
 /**
  * Header Component

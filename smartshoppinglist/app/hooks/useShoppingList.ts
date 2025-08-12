@@ -169,7 +169,7 @@ export function useShoppingList() {
     }
 
     loadData()
-  }, [user, isGuest, loadFromDatabase, loadFromLocalStorage])
+  }, [user?.id, isGuest]) // Remove function dependencies to prevent infinite loop
 
   // Save to appropriate storage when data changes
   useEffect(() => {

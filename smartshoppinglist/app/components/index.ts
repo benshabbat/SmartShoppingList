@@ -17,6 +17,13 @@ export { SuggestionItem } from './SuggestionItem'
 export { ActionButton, ActionButtonGroup } from './ActionButton'
 export { Card, CardHeader, CardBody, CardFooter } from './Card'
 
+// New separated components
+export { MainShoppingView } from './MainShoppingView'
+export { QuickStatsCards } from './QuickStatsCards'
+export { GuestWelcomeMessage } from './GuestWelcomeMessage'
+export { ShoppingListSections } from './ShoppingListSections'
+export { ModalsContainer } from './ModalsContainer'
+
 // Re-export existing components
 export { FadeIn, SlideUp } from './Animations'
 export { CategoryHeader } from './InteractiveEmoji'
@@ -27,3 +34,6 @@ export { QuickAddButtons } from './QuickAddButtons'
 export { QuickListCreator } from './QuickListCreator'
 export { SmartSuggestions } from './SmartSuggestions'
 export { Tutorial } from './Tutorial'
+
+// State Management Example
+export { StateManagementExample } from './StateManagementExample'

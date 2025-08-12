@@ -6,7 +6,7 @@ import { User, Session } from '@supabase/supabase-js'
 
 interface AuthContextType {
   user: User | null
-  session: Session | null
+  session: Session | null | undefined
   loading: boolean
   isGuest: boolean
   signOut: () => Promise<void>

@@ -2,7 +2,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
 import { useAuthStore } from '../stores/authStore'
 import { useUIStore } from '../stores/uiStore'
-import type { User } from '@supabase/supabase-js'
 
 // Query Keys
 export const authKeys = {
@@ -167,7 +166,7 @@ export function useSignUp() {
 
       return data
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       // Invalidate auth queries
       queryClient.invalidateQueries({ queryKey: authKeys.all })
       
@@ -225,6 +224,68 @@ export function useLogout() {
   })
 }
 
+// Password reset mutation
+export function usePasswordReset() {
+  const addToast = useUIStore((state) => state.addToast)
+
+  return useMutation({
+    mutationFn: async (email: string) => {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/reset-password`,
+      })
+
+      if (error) {
+        throw new Error(error.message)
+      }
+    },
+    onSuccess: () => {
+      addToast({
+        message: 'Password reset email sent! Check your inbox.',
+        type: 'success',
+        duration: 5000,
+      })
+    },
+    onError: (error: Error) => {
+      addToast({
+        message: error.message || 'Failed to send password reset email',
+        type: 'error',
+        duration: 5000,
+      })
+    },
+  })
+}
+
+// Update password mutation
+export function useUpdatePassword() {
+  const addToast = useUIStore((state) => state.addToast)
+
+  return useMutation({
+    mutationFn: async (newPassword: string) => {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
+      })
+
+      if (error) {
+        throw new Error(error.message)
+      }
+    },
+    onSuccess: () => {
+      addToast({
+        message: 'Password updated successfully!',
+        type: 'success',
+        duration: 3000,
+      })
+    },
+    onError: (error: Error) => {
+      addToast({
+        message: error.message || 'Failed to update password',
+        type: 'error',
+        duration: 5000,
+      })
+    },
+  })
+}
+
 // Guest mode hook
 export function useGuestMode() {
   const switchToGuestMode = useAuthStore((state) => state.switchToGuestMode)
@@ -233,6 +294,7 @@ export function useGuestMode() {
 
   return useMutation({
     mutationFn: async () => {
+      // Just switch to guest mode - no async operation needed
       return Promise.resolve()
     },
     onSuccess: () => {
@@ -245,7 +307,7 @@ export function useGuestMode() {
         duration: 5000,
       })
     },
-    onError: (error: Error) => {
+    onError: () => {
       addToast({
         message: 'Failed to switch to guest mode',
         type: 'error',
@@ -253,63 +315,4 @@ export function useGuestMode() {
       })
     },
   })
-}
-
-// Legacy useAuth hook for backward compatibility (keeping the original structure)
-export function useAuth() {
-  const user = useAuthStore((state) => state.user)
-  const isLoading = useAuthStore((state) => state.isLoading)
-  const isInitialized = useAuthStore((state) => state.isInitialized)
-  const logout = useAuthStore((state) => state.logout)
-  const switchToGuestMode = useAuthStore((state) => state.switchToGuestMode)
-
-  const { data: session } = useSession()
-
-  // Legacy functions for backward compatibility
-  const signOut = async () => {
-    logout()
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('guest_mode')
-      localStorage.removeItem('guest_notification_dismissed')
-      localStorage.removeItem('guest_explanation_seen')
-    }
-    const { error } = await supabase.auth.signOut()
-    if (error) {
-      console.error('Error signing out:', error)
-    }
-  }
-
-  const signInAsGuest = () => {
-    switchToGuestMode()
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('guest_mode', 'true')
-    }
-  }
-
-  const switchToAuth = () => {
-    logout()
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('guest_mode', 'false')
-      localStorage.removeItem('guest_notification_dismissed')
-    }
-  }
-
-  return {
-    user: user ? {
-      id: user.id,
-      email: user.email,
-      user_metadata: { full_name: user.isGuest ? 'אורח' : '' },
-      app_metadata: {},
-      aud: 'authenticated',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    } as User : null,
-    session,
-    loading: isLoading,
-    isGuest: user?.isGuest || false,
-    isAuthenticated: !!user,
-    signOut,
-    signInAsGuest,
-    switchToAuth,
-  }
 }

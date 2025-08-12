@@ -52,8 +52,6 @@ const CategoryItems: React.FC<{
       <FadeIn key={item.id} delay={(categoryIndex * 100) + (itemIndex * 50)}>
         <ShoppingItemComponent
           item={item}
-          onToggleCart={onToggleCart}
-          onRemove={onRemove}
           variant={variant}
         />
       </FadeIn>

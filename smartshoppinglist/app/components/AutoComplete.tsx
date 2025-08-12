@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { ChevronDown, Search } from 'lucide-react'
 import { ShoppingItem } from '../types'
 import { searchWithPopularity } from '../utils/smartSuggestions'
@@ -28,38 +28,59 @@ export const AutoComplete = ({
   autoChangedCategory = false
 }: AutoCompleteProps) => {
   const [isOpen, setIsOpen] = useState(false)
-  const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([])
   const inputRef = useRef<HTMLInputElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
+
+  // Memoize purchase history length to prevent unnecessary recalculations
+  const purchaseHistoryLength = useMemo(() => purchaseHistory.length, [purchaseHistory.length])
+  
+  // Memoize filtered suggestions to prevent infinite loops
+  const filteredSuggestions = useMemo(() => {
+    if (value || suggestions.length > 0) {
+      return searchWithPopularity(value, suggestions, purchaseHistory)
+    }
+    return []
+  }, [value, suggestions, purchaseHistory, purchaseHistoryLength])
+
+  // Define callbacks with useCallback to prevent re-renders
+  const handleSelect = useCallback((suggestion: string) => {
+    onSelect(suggestion)
+    setIsOpen(false)
+  }, [onSelect])
+
+  const handleClose = useCallback(() => {
+    setIsOpen(false)
+    inputRef.current?.blur()
+  }, [])
+
+  const handleSelectByIndex = useCallback((index: number) => {
+    if (filteredSuggestions[index]) {
+      handleSelect(filteredSuggestions[index])
+    }
+  }, [filteredSuggestions, handleSelect])
 
   const { selectedIndex } = useKeyboardNavigation({
     itemCount: filteredSuggestions.length,
     isOpen,
-    onSelect: (index) => handleSelect(filteredSuggestions[index]),
-    onClose: () => {
-      setIsOpen(false)
-      inputRef.current?.blur()
-    }
+    onSelect: handleSelectByIndex,
+    onClose: handleClose
   })
 
+  // Separate effect for managing isOpen state
   useEffect(() => {
-    if (value || isOpen) {
-      const filtered = searchWithPopularity(value, suggestions, purchaseHistory)
-      setFilteredSuggestions(filtered)
-      setIsOpen(filtered.length > 0)
-    } else {
-      setFilteredSuggestions([])
+    if (!value.trim()) {
       setIsOpen(false)
     }
-  }, [value, suggestions, purchaseHistory, isOpen])
+  }, [value])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onChange(e.target.value)
-  }
-
-  const handleSelect = (suggestion: string) => {
-    onSelect(suggestion)
-    setIsOpen(false)
+    const newValue = e.target.value
+    onChange(newValue)
+    
+    // Open dropdown when user starts typing
+    if (newValue.trim()) {
+      setIsOpen(true)
+    }
   }
 
   const handleBlur = (e: React.FocusEvent) => {
@@ -72,10 +93,8 @@ export const AutoComplete = ({
   }
 
   const handleFocus = () => {
-    if (value.trim() || suggestions.length > 0) {
-      const filtered = searchWithPopularity(value, suggestions, purchaseHistory)
-      setFilteredSuggestions(filtered)
-      setIsOpen(filtered.length > 0)
+    if (filteredSuggestions.length > 0 && value.trim()) {
+      setIsOpen(true)
     }
   }
 

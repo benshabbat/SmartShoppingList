@@ -4,9 +4,10 @@ import { useAuth } from '@/app/hooks/useAuth'
 
 interface GuestModeNotificationProps {
   onSwitchToAuth?: () => void
+  onDismiss?: () => void
 }
 
-export function GuestModeNotification({ onSwitchToAuth }: GuestModeNotificationProps) {
+export function GuestModeNotification({ onSwitchToAuth, onDismiss }: GuestModeNotificationProps) {
   const { isGuest, switchToAuth } = useAuth()
   const [isDismissed, setIsDismissed] = useState(false)
   const [showMinimized, setShowMinimized] = useState(false)

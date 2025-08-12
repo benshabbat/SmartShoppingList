@@ -1,5 +1,6 @@
 import './globals.css'
 import { AuthProvider } from './hooks/useAuthContext'
+import { QueryProvider } from './providers/QueryProvider'
 
 export const metadata = {
   title: 'רשימת קניות חכמה',
@@ -14,9 +15,11 @@ export default function RootLayout({
   return (
     <html lang="he" dir="rtl">
       <body>
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+        <QueryProvider>
+          <AuthProvider>
+            {children}
+          </AuthProvider>
+        </QueryProvider>
       </body>
     </html>
   )

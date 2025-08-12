@@ -8,13 +8,15 @@ export interface ItemActionsProps {
   onToggleCart: () => void
   onRemove: () => void
   className?: string
+  disabled?: boolean
 }
 
 export const ItemActions: React.FC<ItemActionsProps> = ({
   variant,
   onToggleCart,
   onRemove,
-  className = ''
+  className = '',
+  disabled = false
 }) => {
   const getActionConfig = () => {
     switch (variant) {
@@ -52,6 +54,7 @@ export const ItemActions: React.FC<ItemActionsProps> = ({
       <button
         onClick={onToggleCart}
         className={config.toggleButton.className}
+        disabled={disabled}
       >
         {config.toggleButton.icon}
         <span className="text-sm font-medium">{config.toggleButton.text}</span>
@@ -61,6 +64,7 @@ export const ItemActions: React.FC<ItemActionsProps> = ({
         onClick={onRemove}
         className="text-red-500 hover:text-red-700 transition-colors p-2 rounded-lg hover:bg-red-50"
         title="הסר מוצר"
+        disabled={disabled}
       >
         <X className="w-5 h-5" />
       </button>

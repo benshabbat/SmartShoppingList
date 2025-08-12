@@ -1,88 +1,52 @@
-'use client'
+import { ShoppingItem } from '../../types'
+import { Card } from '../Card'
 
-import { useState } from 'react'
-import { ShoppingItem } from '../types'
-import { Card } from './Card'
-
-interface ExpiryDateModalProps {
+interface ExpiryDateModalUIProps {
   items: ShoppingItem[]
   isOpen: boolean
+  
+  // State
+  expiryDates: Record<string, string>
+  skippedItems: Set<string>
+  
+  // Computed values
+  today: string
+  quickDateOptions: Array<{ label: string; days: number }>
+  hasAnyDates: boolean
+  allItemsProcessed: boolean
+  
+  // Event handlers
   onClose: () => void
-  onSubmit: (itemsWithExpiry: Array<{ id: string; expiryDate?: Date }>) => void
+  onExpiryDateChange: (itemId: string, date: string) => void
+  onSkipItem: (itemId: string) => void
+  onSubmit: () => void
+  onSkip: () => void
+  onQuickDateSet: (itemId: string, days: number) => void
+  onSetAllDates: (days: number) => void
 }
 
-export function ExpiryDateModal({ items, isOpen, onClose, onSubmit }: ExpiryDateModalProps) {
-  const [expiryDates, setExpiryDates] = useState<Record<string, string>>({})
-  const [skippedItems, setSkippedItems] = useState<Set<string>>(new Set())
-
+/**
+ * Pure UI component for ExpiryDateModal
+ * Contains only rendering logic, no business logic
+ */
+export const ExpiryDateModalUI = ({
+  items,
+  isOpen,
+  expiryDates,
+  skippedItems,
+  today,
+  quickDateOptions,
+  hasAnyDates,
+  allItemsProcessed,
+  onClose,
+  onExpiryDateChange,
+  onSkipItem,
+  onSubmit,
+  onSkip,
+  onQuickDateSet,
+  onSetAllDates,
+}: ExpiryDateModalUIProps) => {
   if (!isOpen) return null
-
-  const handleExpiryDateChange = (itemId: string, date: string) => {
-    setExpiryDates(prev => ({
-      ...prev,
-      [itemId]: date
-    }))
-  }
-
-  const handleSkipItem = (itemId: string) => {
-    const newSkipped = new Set(skippedItems)
-    if (skippedItems.has(itemId)) {
-      newSkipped.delete(itemId)
-    } else {
-      newSkipped.add(itemId)
-      // Remove expiry date if item is skipped
-      const newDates = { ...expiryDates }
-      delete newDates[itemId]
-      setExpiryDates(newDates)
-    }
-    setSkippedItems(newSkipped)
-  }
-
-  const handleSubmit = () => {
-    const itemsWithExpiry = items.map(item => ({
-      id: item.id,
-      expiryDate: skippedItems.has(item.id) ? undefined : 
-                  expiryDates[item.id] ? new Date(expiryDates[item.id]) : undefined
-    }))
-    
-    onSubmit(itemsWithExpiry)
-    setExpiryDates({})
-    setSkippedItems(new Set())
-    onClose()
-  }
-
-  const handleSkip = () => {
-    const itemsWithoutExpiry = items.map(item => ({
-      id: item.id,
-      expiryDate: undefined
-    }))
-    
-    onSubmit(itemsWithoutExpiry)
-    setExpiryDates({})
-    setSkippedItems(new Set())
-    onClose()
-  }
-
-  // Get today's date in YYYY-MM-DD format
-  const today = new Date().toISOString().split('T')[0]
-  
-  // Quick date options
-  const getQuickDate = (days: number) => {
-    const date = new Date()
-    date.setDate(date.getDate() + days)
-    return date.toISOString().split('T')[0]
-  }
-
-  const quickDateOptions = [
-    { label: 'מחר', days: 1 },
-    { label: 'בעוד 3 ימים', days: 3 },
-    { label: 'בעוד שבוע', days: 7 },
-    { label: 'בעוד חודש', days: 30 }
-  ]
-
-  const setQuickDate = (itemId: string, days: number) => {
-    handleExpiryDateChange(itemId, getQuickDate(days))
-  }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -104,6 +68,23 @@ export function ExpiryDateModal({ items, isOpen, onClose, onSubmit }: ExpiryDate
             האם תרצה להוסיף תאריכי פג תוקף למוצרים שקנית? זה יעזור לך לעקוב אחר המוצרים במטבח ולקבל התראות כשמוצרים מתקרבים לפג תוקף.
           </p>
 
+          {/* Bulk actions */}
+          <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+            <h3 className="font-semibold text-blue-900 mb-2">פעולות מהירות לכל המוצרים:</h3>
+            <div className="flex gap-2 flex-wrap">
+              {quickDateOptions.map((option) => (
+                <button
+                  key={option.days}
+                  type="button"
+                  onClick={() => onSetAllDates(option.days)}
+                  className="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition-colors"
+                >
+                  הגדר לכל: {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="space-y-4 mb-6">
             {items.map(item => (
               <div key={item.id} className={`p-4 rounded-lg border-2 transition-all ${
@@ -124,7 +105,7 @@ export function ExpiryDateModal({ items, isOpen, onClose, onSubmit }: ExpiryDate
                   
                   <div className="flex items-center gap-3">
                     <button
-                      onClick={() => handleSkipItem(item.id)}
+                      onClick={() => onSkipItem(item.id)}
                       className={`px-3 py-1 text-sm rounded-lg transition-colors ${
                         skippedItems.has(item.id)
                           ? 'bg-green-500 text-white hover:bg-green-600'
@@ -140,7 +121,7 @@ export function ExpiryDateModal({ items, isOpen, onClose, onSubmit }: ExpiryDate
                           type="date"
                           min={today}
                           value={expiryDates[item.id] || ''}
-                          onChange={(e) => handleExpiryDateChange(item.id, e.target.value)}
+                          onChange={(e) => onExpiryDateChange(item.id, e.target.value)}
                           className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           placeholder="תאריך פג תוקף"
                         />
@@ -149,7 +130,7 @@ export function ExpiryDateModal({ items, isOpen, onClose, onSubmit }: ExpiryDate
                             <button
                               key={option.days}
                               type="button"
-                              onClick={() => setQuickDate(item.id, option.days)}
+                              onClick={() => onQuickDateSet(item.id, option.days)}
                               className="text-xs px-2 py-1 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-colors"
                             >
                               {option.label}
@@ -172,13 +153,13 @@ export function ExpiryDateModal({ items, isOpen, onClose, onSubmit }: ExpiryDate
 
           <div className="flex gap-3 justify-end">
             <button
-              onClick={handleSkip}
+              onClick={onSkip}
               className="px-6 py-3 text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-all duration-200 font-medium"
             >
               דלג על הכל
             </button>
             <button
-              onClick={handleSubmit}
+              onClick={onSubmit}
               className="px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 font-bold shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center gap-2"
             >
               <span>סיים רכישה</span>

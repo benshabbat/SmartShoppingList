@@ -264,7 +264,6 @@ export default function ShoppingListApp() {
 
         {/* Add Item Form */}
         <AddItemForm 
-          onAddItem={handleAddItem}
           purchaseHistory={purchaseHistory}
           currentItems={items}
         />

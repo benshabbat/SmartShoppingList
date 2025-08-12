@@ -27,10 +27,6 @@ export function GuestModeNotification() {
     localStorage.setItem('guest_notification_dismissed', 'true')
   }
 
-  const handleTemporaryHide = () => {
-    setShowMinimized(true)
-  }
-
   if (!isGuest || isDismissed) return null
 
   // Minimized version

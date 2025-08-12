@@ -7,6 +7,19 @@ import { generateSuggestions, checkExpiringItems } from '../utils/helpers'
 import { useAuth } from './useAuth'
 import { ShoppingItemService } from '@/lib/services/shoppingItemService'
 
+interface DbShoppingItem {
+  id: string
+  name: string
+  category: string
+  is_in_cart: boolean
+  is_purchased: boolean
+  added_at: string
+  purchased_at?: string
+  expiry_date?: string
+  purchase_location?: string
+  price?: number
+}
+
 // Helper function to convert date strings back to Date objects
 const parseDatesInItems = (items: ShoppingItem[]): ShoppingItem[] => {
   return items.map(item => ({
@@ -17,7 +30,7 @@ const parseDatesInItems = (items: ShoppingItem[]): ShoppingItem[] => {
   }))
 }
 
-export const useShoppingList = () => {
+export function useShoppingList() {
   const { user, isGuest } = useAuth()
   const [items, setItems] = useState<ShoppingItem[]>([])
   const [suggestions, setSuggestions] = useState<ItemSuggestion[]>([])
@@ -113,7 +126,7 @@ export const useShoppingList = () => {
     }
   }
 
-  const convertDbItemToShoppingItem = (dbItem: any): ShoppingItem => ({
+  const convertDbItemToShoppingItem = (dbItem: DbShoppingItem): ShoppingItem => ({
     id: dbItem.id,
     name: dbItem.name,
     category: dbItem.category,

@@ -89,6 +89,42 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
             </p>
           </div>
 
+          {/* Guest Mode Explanation */}
+          <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+            <div className="text-center mb-4">
+              <div className="text-2xl mb-2">🚀</div>
+              <h3 className="font-bold text-blue-900 mb-2">מצב אורח - התחל מיד!</h3>
+              <p className="text-sm text-blue-700 leading-relaxed">
+                התחל לנהל את רשימת הקניות שלך מיד ללא רישום. הנתונים יישמרו במכשיר זה באופן מקומי.
+              </p>
+            </div>
+            
+            <button
+              type="button"
+              onClick={handleGuestLogin}
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center gap-2"
+            >
+              <span className="text-xl">🛒</span>
+              התחל כאורח - ללא רישום!
+            </button>
+            
+            <div className="mt-3 text-xs text-blue-600 text-center space-y-1">
+              <div>✅ התחלה מיידית ללא רישום</div>
+              <div>✅ שמירה מקומית במכשיר</div>
+              <div>✅ אפשרות להירשם מאוחר יותר</div>
+            </div>
+          </div>
+
+          {/* Or Separator */}
+          <div className="relative mb-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-3 bg-white text-gray-500">או התחבר עם חשבון</span>
+            </div>
+          </div>
+
         <form onSubmit={handleSubmit} className="space-y-4">
           {!isLogin && (
             <div>
@@ -147,39 +183,18 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:transform-none"
+            className="w-full bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 text-gray-700 font-semibold py-3 px-4 rounded-xl transition-all duration-200 border border-gray-300 shadow-md hover:shadow-lg transform hover:scale-105"
           >
-            {loading ? '⏳ מתבצע...' : isLogin ? '🚀 התחבר' : '✨ הירשם'}
+            {loading ? '⏳ מתבצע...' : isLogin ? '� התחבר עם חשבון' : '✨ הירשם עם חשבון'}
           </button>
-        </form>
 
-        {/* Guest Login Option */}
-        <div className="mt-6">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-3 bg-white text-gray-500">או</span>
-            </div>
-          </div>
-          
-          <button
-            type="button"
-            onClick={handleGuestLogin}
-            className="mt-6 w-full bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 text-gray-700 font-semibold py-3 px-4 rounded-xl transition-all duration-200 border border-gray-300 shadow-md hover:shadow-lg transform hover:scale-105 flex items-center justify-center gap-2"
-          >
-            <span className="text-xl">🚀</span>
-            התחל כאורח - ללא רישום!
-          </button>
-          
-          <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
-            <p className="text-xs text-blue-700 text-center leading-relaxed">
-              💡 <strong>מצב אורח:</strong> התחל מיד ללא רישום! הנתונים יישמרו במכשיר זה בלבד.
-              תוכל להירשם מאוחר יותר כדי לסנכרן בין מכשירים.
+          {/* Account Benefits */}
+          <div className="mt-4 p-3 bg-green-50 rounded-lg border border-green-200">
+            <p className="text-xs text-green-700 text-center leading-relaxed">
+              <strong>🌟 יתרונות החשבון:</strong> סנכרון בין מכשירים • גיבוי ענן • שיתוף רשימות • סטטיסטיקות מתקדמות
             </p>
           </div>
-        </div>
+        </form>
 
         <div className="mt-6 text-center space-y-2">
           {isLogin && (

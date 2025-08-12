@@ -49,23 +49,28 @@ export function GuestModeNotification() {
   }
 
   return (
-    <div className="bg-gradient-to-r from-blue-50/90 to-indigo-50/90 backdrop-blur-sm border border-blue-200 rounded-xl p-4 mb-6 shadow-lg animate-slide-in-top" data-guest-notification>
-      <div className="flex items-start gap-3">
+    <div className="bg-gradient-to-r from-blue-50/70 to-indigo-50/70 backdrop-blur-sm border border-blue-200/50 rounded-lg p-3 mb-4 shadow-md animate-slide-in-top" data-guest-notification>
+      <div className="flex items-center gap-3">
         <div className="bg-blue-100 rounded-full p-2">
-          <User className="w-5 h-5 text-blue-600" />
+          <User className="w-4 h-4 text-blue-600" />
         </div>
         <div className="flex-1">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-semibold text-blue-900">
-              🚀 ברוך הבא למצב אורח!
-            </h3>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-medium text-blue-900">
+                מצב אורח פעיל
+              </h3>
+              <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
+                שמירה מקומית
+              </span>
+            </div>
             <div className="flex gap-1">
               <button
-                onClick={handleTemporaryHide}
-                className="p-1 hover:bg-blue-100 rounded-full transition-colors"
-                title="הסתר זמנית"
+                onClick={switchToAuth}
+                className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-full transition-colors"
+                title="התחבר עם חשבון"
               >
-                <span className="text-blue-600 text-xs">_</span>
+                � התחבר
               </button>
               <button
                 onClick={handleDismiss}
@@ -75,24 +80,6 @@ export function GuestModeNotification() {
                 <X className="w-4 h-4 text-blue-600" />
               </button>
             </div>
-          </div>
-          <p className="text-sm text-blue-700 mb-3 leading-relaxed">
-            התחל לנהל את רשימת הקניות שלך מיד! הנתונים נשמרים באופן מקומי במכשיר זה. 
-            כדי לסנכרן בין מכשירים ולגבות נתונים, רק התחבר עם חשבון.
-          </p>
-          <div className="flex gap-2">
-            <button
-              onClick={switchToAuth}
-              className="text-sm bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105"
-            >
-              📱 התחבר עם חשבון
-            </button>
-            <button
-              onClick={handleDismiss}
-              className="text-sm bg-white hover:bg-gray-50 text-blue-600 px-4 py-2 rounded-lg border border-blue-300 transition-all duration-200 hover:border-blue-400"
-            >
-              ✓ המשך כאורח
-            </button>
           </div>
         </div>
       </div>

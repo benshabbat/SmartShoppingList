@@ -24,37 +24,34 @@ export function useAuth() {
     const guestMode = localStorage.getItem('guest_mode')
     const hasSupabase = supabase !== null
 
-    // Default to guest mode unless explicitly disabled
-    if (guestMode !== 'false' && (guestMode === 'true' || !hasSupabase)) {
+    // Only auto-enter guest mode if explicitly chosen
+    if (guestMode === 'true') {
       setUser(GUEST_USER)
       setIsGuest(true)
       setLoading(false)
       return
     }
 
-    // Get initial session only if guest mode is explicitly disabled
+    // If Supabase is not available and no explicit choice made, show login form
+    if (!hasSupabase && guestMode !== 'false') {
+      setLoading(false)
+      return
+    }
+
+    // Get initial session only if guest mode is not explicitly chosen
     const getSession = async () => {
       try {
         const { data: { session }, error } = await supabase.auth.getSession()
         if (error) {
           console.error('Error getting session:', error)
-          // Fallback to guest mode on error
-          setUser(GUEST_USER)
-          setIsGuest(true)
+          // Don't fallback to guest mode automatically - let user choose
         } else {
           setSession(session)
           setUser(session?.user ?? null)
-          // If no session and not explicitly in auth mode, go to guest
-          if (!session?.user) {
-            setUser(GUEST_USER)
-            setIsGuest(true)
-          }
         }
       } catch (error) {
         console.error('Supabase connection error:', error)
-        // Fallback to guest mode if Supabase is not available
-        setUser(GUEST_USER)
-        setIsGuest(true)
+        // Don't fallback to guest mode automatically - let user choose
       }
       setLoading(false)
     }

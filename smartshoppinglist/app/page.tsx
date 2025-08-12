@@ -17,6 +17,7 @@ import { ReceiptScanner } from './components/ReceiptScanner'
 import { ExpiryDateModal } from './components/ExpiryDateModal'
 import { ExpiryNotification } from './components/ExpiryNotification'
 import { GuestModeNotification } from './components/GuestModeNotification'
+import { LoginForm } from './components/LoginForm'
 
 // Hooks and Utils
 import { 
@@ -31,11 +32,29 @@ import { useSoundManager } from './utils/soundManager'
 import { MESSAGES } from './utils'
 
 export default function ShoppingListApp() {
-  const { loading } = useAuth()
+  const { loading, isAuthenticated, isGuest } = useAuth()
   const [showReceiptScanner, setShowReceiptScanner] = useState(false)
   const [showExpiryModal, setShowExpiryModal] = useState(false)
   const [checkoutItems, setCheckoutItems] = useState<ShoppingItem[]>([])
 
+  // Show loading spinner while checking authentication
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">טוען...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Show login form if user is not authenticated (not logged in and not in guest mode)
+  if (!isAuthenticated) {
+    return <LoginForm />
+  }
+
+  // Main shopping list functionality - only available after authentication/guest mode
   const {
     items,
     suggestions,
@@ -141,18 +160,6 @@ export default function ShoppingListApp() {
 
   const { pending, inCart, purchased } = getItemsByStatus()
 
-  // Show loading spinner while checking authentication
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">טוען...</p>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
       <ToastContainer />
@@ -165,8 +172,39 @@ export default function ShoppingListApp() {
           onOpenReceiptScanner={() => setShowReceiptScanner(true)}
         />
         
-        {/* Guest Mode Notification */}
+        {/* Guest Mode Notification - More subtle version after authentication */}
         <GuestModeNotification />
+        
+        {/* First-time guest explanation */}
+        {isGuest && !localStorage.getItem('guest_explanation_seen') && (
+          <div className="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl p-4 mb-6 border border-indigo-200">
+            <div className="flex items-start gap-3">
+              <div className="bg-indigo-100 rounded-full p-2 mt-1">
+                <span className="text-indigo-600">ℹ️</span>
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold text-indigo-900 mb-2">
+                  🎉 ברוך הבא למצב אורח!
+                </h3>
+                <p className="text-sm text-indigo-700 mb-3 leading-relaxed">
+                  אתה כעת במצב אורח - כל הנתונים שלך נשמרים באופן מקומי במכשיר זה ולא נשלחים לשום שרת. 
+                  זה אומר פרטיות מלאה, אבל גם שהנתונים זמינים רק במכשיר הזה.
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      localStorage.setItem('guest_explanation_seen', 'true')
+                      location.reload()
+                    }}
+                    className="text-sm bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-lg transition-colors"
+                  >
+                    הבנתי
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         
         {/* Expiry Notifications */}
         {expiringItems.length > 0 && (

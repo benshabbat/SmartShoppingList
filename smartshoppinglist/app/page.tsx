@@ -16,12 +16,14 @@ import { Card, CardHeader } from './components/Card'
 import { ReceiptScanner } from './components/ReceiptScanner'
 import { ExpiryDateModal } from './components/ExpiryDateModal'
 import { ExpiryNotification } from './components/ExpiryNotification'
+import { LoginForm } from './components/LoginForm'
 
 // Hooks and Utils
 import { 
   useShoppingList, 
   useItemOperations,
-  useStatistics 
+  useStatistics,
+  useAuth
 } from './hooks'
 import { ShoppingItem } from './types'
 import { getPopularItems } from './utils/smartSuggestions'
@@ -29,6 +31,7 @@ import { useSoundManager } from './utils/soundManager'
 import { MESSAGES } from './utils'
 
 export default function ShoppingListApp() {
+  const { isAuthenticated, loading } = useAuth()
   const [showReceiptScanner, setShowReceiptScanner] = useState(false)
   const [showExpiryModal, setShowExpiryModal] = useState(false)
   const [checkoutItems, setCheckoutItems] = useState<ShoppingItem[]>([])
@@ -46,7 +49,6 @@ export default function ShoppingListApp() {
     addSuggestedItem,
     updateItemWithExpiry,
     addItemsFromReceipt,
-    addExpiringItemToList,
     removeFromPantry,
     setExpiringItems
   } = useShoppingList()
@@ -138,6 +140,23 @@ export default function ShoppingListApp() {
   }
 
   const { pending, inCart, purchased } = getItemsByStatus()
+
+  // Show loading spinner while checking authentication
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">טוען...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Show login form if not authenticated
+  if (!isAuthenticated) {
+    return <LoginForm />
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">

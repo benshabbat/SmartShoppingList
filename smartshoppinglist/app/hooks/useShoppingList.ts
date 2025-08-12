@@ -6,7 +6,7 @@ import { STORAGE_KEYS } from '../utils/constants'
 import { generateSuggestions, checkExpiringItems } from '../utils/helpers'
 
 // Helper function to convert date strings back to Date objects
-const parseDatesInItems = (items: any[]): ShoppingItem[] => {
+const parseDatesInItems = (items: ShoppingItem[]): ShoppingItem[] => {
   return items.map(item => ({
     ...item,
     addedAt: item.addedAt ? new Date(item.addedAt) : new Date(),

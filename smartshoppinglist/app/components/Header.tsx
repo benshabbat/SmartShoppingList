@@ -1,5 +1,6 @@
-import { ShoppingCart, HelpCircle, Volume2, VolumeX, BarChart3, Receipt } from 'lucide-react'
+import { ShoppingCart, HelpCircle, Volume2, VolumeX, BarChart3, Receipt, LogOut, User } from 'lucide-react'
 import { useSoundManager } from '../utils/soundManager'
+import { useAuth } from '../hooks/useAuth'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
@@ -10,6 +11,7 @@ interface HeaderProps {
 
 export const Header = ({ onOpenTutorial, onOpenReceiptScanner }: HeaderProps) => {
   const { soundEnabled, toggleSound } = useSoundManager()
+  const { user, signOut, isAuthenticated } = useAuth()
   const pathname = usePathname()
   const isStatisticsPage = pathname === '/statistics'
 
@@ -49,8 +51,22 @@ export const Header = ({ onOpenTutorial, onOpenReceiptScanner }: HeaderProps) =>
         )}
       </div>
 
-      {/* Statistics Link - positioned on the right */}
-      <div className="absolute top-0 right-0">
+      {/* Statistics Link and User Menu - positioned on the right */}
+      <div className="absolute top-0 right-0 flex gap-2">
+        {isAuthenticated && (
+          <div className="flex items-center gap-2 bg-white rounded-full px-3 py-1 shadow-sm border">
+            <User className="w-4 h-4 text-gray-600" />
+            <span className="text-sm text-gray-700">{user?.email}</span>
+            <button
+              onClick={signOut}
+              className="p-1 hover:bg-red-100 rounded-full transition-colors"
+              title="התנתק"
+            >
+              <LogOut className="w-4 h-4 text-red-600" />
+            </button>
+          </div>
+        )}
+        
         {!isStatisticsPage ? (
           <Link 
             href="/statistics"

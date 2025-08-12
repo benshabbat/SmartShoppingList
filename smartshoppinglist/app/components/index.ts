@@ -23,7 +23,6 @@ export { Header } from './Header'
 export { QuickStatsCards } from './QuickStatsCards'
 export { GuestWelcomeMessage } from './GuestWelcomeMessage'
 export { ShoppingListSections } from './ShoppingListSections'
-export { ModalsContainer } from './ModalsContainer'
 
 // Re-export existing components
 export { FadeIn, SlideUp } from './Animations'

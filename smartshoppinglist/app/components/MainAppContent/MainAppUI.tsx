@@ -8,7 +8,7 @@
 import { Header } from '../Header'
 import { LoginForm } from '../LoginForm'
 import { MainShoppingView } from '../MainShoppingView'
-import { ModalsContainer } from '../ModalsContainer'
+import { ModalsContainer } from '../MainShoppingView/components/ModalsContainer'
 import { ToastContainer } from '../Toast'
 import { Tutorial } from '../Tutorial'
 import { LoadingOverlay } from '../LoadingOverlay'

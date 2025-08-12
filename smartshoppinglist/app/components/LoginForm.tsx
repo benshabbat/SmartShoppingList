@@ -64,16 +64,30 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50 p-4">
-      <Card className="w-full max-w-md">
-        <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            {isLogin ? 'התחברות' : 'הרשמה'}
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-4">
+      <div className="w-full max-w-md">
+        {/* Logo and Welcome */}
+        <div className="text-center mb-8">
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-full p-4 shadow-lg mx-auto mb-4 w-20 h-20 flex items-center justify-center">
+            <span className="text-white text-3xl">🛒</span>
+          </div>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+            רשימת קניות חכמה
           </h1>
-          <p className="text-gray-600">
-            {isLogin ? 'ברוכים השבים!' : 'צרו חשבון חדש'}
+          <p className="text-gray-600 text-sm">
+            נהל את הקניות שלך בקלות ויעילות
           </p>
         </div>
+
+        <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-0">
+          <div className="text-center mb-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-2">
+              {isLogin ? '🔐 התחברות' : '📝 הרשמה'}
+            </h2>
+            <p className="text-gray-600 text-sm">
+              {isLogin ? 'ברוכים השבים לרשימת הקניות החכמה!' : 'הצטרפו למשפחת הקונים החכמים'}
+            </p>
+          </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {!isLogin && (
@@ -133,34 +147,38 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:transform-none"
           >
-            {loading ? 'מתבצע...' : isLogin ? 'התחבר' : 'הירשם'}
+            {loading ? '⏳ מתבצע...' : isLogin ? '🚀 התחבר' : '✨ הירשם'}
           </button>
         </form>
 
         {/* Guest Login Option */}
-        <div className="mt-4">
+        <div className="mt-6">
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-300" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">או</span>
+              <span className="px-3 bg-white text-gray-500">או</span>
             </div>
           </div>
           
           <button
             type="button"
             onClick={handleGuestLogin}
-            className="mt-4 w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors border border-gray-300"
+            className="mt-6 w-full bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 text-gray-700 font-semibold py-3 px-4 rounded-xl transition-all duration-200 border border-gray-300 shadow-md hover:shadow-lg transform hover:scale-105 flex items-center justify-center gap-2"
           >
-            🚀 המשך כאורח
+            <span className="text-xl">🚀</span>
+            התחל כאורח - ללא רישום!
           </button>
           
-          <p className="mt-2 text-xs text-gray-500 text-center">
-            כאורח, הנתונים יישמרו במכשיר זה בלבד
-          </p>
+          <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+            <p className="text-xs text-blue-700 text-center leading-relaxed">
+              💡 <strong>מצב אורח:</strong> התחל מיד ללא רישום! הנתונים יישמרו במכשיר זה בלבד.
+              תוכל להירשם מאוחר יותר כדי לסנכרן בין מכשירים.
+            </p>
+          </div>
         </div>
 
         <div className="mt-6 text-center space-y-2">
@@ -190,6 +208,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
           </div>
         </div>
       </Card>
+      </div>
     </div>
   )
 }

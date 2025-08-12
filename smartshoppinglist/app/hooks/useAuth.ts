@@ -24,30 +24,31 @@ export function useAuth() {
     const guestMode = localStorage.getItem('guest_mode')
     const hasSupabase = supabase !== null
 
-    if (guestMode === 'true') {
+    // Default to guest mode unless explicitly disabled
+    if (guestMode !== 'false' && (guestMode === 'true' || !hasSupabase)) {
       setUser(GUEST_USER)
       setIsGuest(true)
       setLoading(false)
       return
     }
 
-    if (!hasSupabase) {
-      // If no Supabase, default to guest mode
-      setUser(GUEST_USER)
-      setIsGuest(true)
-      setLoading(false)
-      return
-    }
-
-    // Get initial session
+    // Get initial session only if guest mode is explicitly disabled
     const getSession = async () => {
       try {
         const { data: { session }, error } = await supabase.auth.getSession()
         if (error) {
           console.error('Error getting session:', error)
+          // Fallback to guest mode on error
+          setUser(GUEST_USER)
+          setIsGuest(true)
         } else {
           setSession(session)
           setUser(session?.user ?? null)
+          // If no session and not explicitly in auth mode, go to guest
+          if (!session?.user) {
+            setUser(GUEST_USER)
+            setIsGuest(true)
+          }
         }
       } catch (error) {
         console.error('Supabase connection error:', error)
@@ -100,7 +101,8 @@ export function useAuth() {
   }
 
   const switchToAuth = () => {
-    localStorage.removeItem('guest_mode')
+    localStorage.setItem('guest_mode', 'false')
+    localStorage.removeItem('guest_notification_dismissed') // Reset notification
     setUser(null)
     setIsGuest(false)
     setSession(null)

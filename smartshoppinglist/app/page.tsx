@@ -16,7 +16,7 @@ import { Card, CardHeader } from './components/Card'
 import { ReceiptScanner } from './components/ReceiptScanner'
 import { ExpiryDateModal } from './components/ExpiryDateModal'
 import { ExpiryNotification } from './components/ExpiryNotification'
-import { LoginForm } from './components/LoginForm'
+import { GuestModeNotification } from './components/GuestModeNotification'
 
 // Hooks and Utils
 import { 
@@ -31,7 +31,7 @@ import { useSoundManager } from './utils/soundManager'
 import { MESSAGES } from './utils'
 
 export default function ShoppingListApp() {
-  const { isAuthenticated, loading } = useAuth()
+  const { loading } = useAuth()
   const [showReceiptScanner, setShowReceiptScanner] = useState(false)
   const [showExpiryModal, setShowExpiryModal] = useState(false)
   const [checkoutItems, setCheckoutItems] = useState<ShoppingItem[]>([])
@@ -153,13 +153,8 @@ export default function ShoppingListApp() {
     )
   }
 
-  // Show login form if not authenticated
-  if (!isAuthenticated) {
-    return <LoginForm />
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
       <ToastContainer />
       
       {showTutorial && <Tutorial isOpen={showTutorial} onClose={closeTutorial} />}
@@ -169,6 +164,9 @@ export default function ShoppingListApp() {
           onOpenTutorial={openTutorial} 
           onOpenReceiptScanner={() => setShowReceiptScanner(true)}
         />
+        
+        {/* Guest Mode Notification */}
+        <GuestModeNotification />
         
         {/* Expiry Notifications */}
         {expiringItems.length > 0 && (
@@ -181,19 +179,19 @@ export default function ShoppingListApp() {
         )}
         
         {/* Quick Stats */}
-        <Card className="mb-6">
+        <Card className="mb-6 bg-white/80 backdrop-blur-sm shadow-lg border-0">
           <div className="grid grid-cols-3 gap-2 sm:gap-4">
-            <div className="bg-white rounded-lg p-2 sm:p-4 text-center shadow-md">
-              <div className="text-lg sm:text-2xl font-bold text-blue-600">{pending.length}</div>
-              <div className="text-xs sm:text-sm text-gray-600">לקנות</div>
+            <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-2 sm:p-4 text-center shadow-md text-white">
+              <div className="text-lg sm:text-2xl font-bold">{pending.length}</div>
+              <div className="text-xs sm:text-sm opacity-90">לקנות</div>
             </div>
-            <div className="bg-white rounded-lg p-2 sm:p-4 text-center shadow-md">
-              <div className="text-lg sm:text-2xl font-bold text-orange-600">{inCart.length}</div>
-              <div className="text-xs sm:text-sm text-gray-600">בסל</div>
+            <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl p-2 sm:p-4 text-center shadow-md text-white">
+              <div className="text-lg sm:text-2xl font-bold">{inCart.length}</div>
+              <div className="text-xs sm:text-sm opacity-90">בסל</div>
             </div>
-            <div className="bg-white rounded-lg p-2 sm:p-4 text-center shadow-md">
-              <div className="text-lg sm:text-2xl font-bold text-green-600">{purchased.length}</div>
-              <div className="text-xs sm:text-sm text-gray-600">נקנו</div>
+            <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-2 sm:p-4 text-center shadow-md text-white">
+              <div className="text-lg sm:text-2xl font-bold">{purchased.length}</div>
+              <div className="text-xs sm:text-sm opacity-90">נקנו</div>
             </div>
           </div>
         </Card>
@@ -233,18 +231,21 @@ export default function ShoppingListApp() {
               onRemove={handleRemoveItem}
             />
           ) : (
-            <Card className="text-center">
-              <div className="text-6xl mb-4">📝</div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">הרשימה ריקה</h3>
-              <p className="text-gray-600">התחל להוסיף מוצרים או צור רשימה מהירה</p>
+            <Card className="text-center bg-white/80 backdrop-blur-sm shadow-lg border-0">
+              <div className="py-8">
+                <div className="text-6xl mb-4">�</div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-2">הרשימה ריקה</h3>
+                <p className="text-gray-600 mb-4">התחל להוסיף מוצרים או צור רשימה מהירה</p>
+                <div className="text-2xl">✨</div>
+              </div>
             </Card>
           )}
 
           {inCart.length > 0 && (
-            <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200">
+            <Card className="bg-gradient-to-r from-blue-50/80 to-indigo-50/80 backdrop-blur-sm border-2 border-blue-200 shadow-lg">
               <CardHeader
-                title="בסל הקניות"
-                icon={<div className="text-2xl">🛒</div>}
+                title="🛒 בסל הקניות"
+                icon={<div className="text-2xl">�️</div>}
                 action={
                   <div className="flex gap-2">
                     <button

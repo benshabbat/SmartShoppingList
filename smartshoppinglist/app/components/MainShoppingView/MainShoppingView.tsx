@@ -1,6 +1,4 @@
-'use client'
 
-import React from 'react'
 import { useMainShoppingViewLogic } from './useMainShoppingViewLogic'
 import { 
   GuestSection,
@@ -14,6 +12,7 @@ import { QuickStatsCards } from '../QuickStatsCards'
 import { QuickListCreator } from '../QuickListCreator'
 import { QuickAddButtons } from '../QuickAddButtons'
 import { ShoppingListSections } from '../ShoppingListSections'
+import { ShoppingCartSection } from '../ShoppingCartSection'
 import { MAIN_VIEW_STYLES } from './constants'
 
 /**
@@ -45,6 +44,9 @@ export function MainShoppingView() {
 
       {/* Quick Add Buttons */}
       <QuickAddButtons />
+
+      {/* Shopping Cart Section */}
+      <ShoppingCartSection />
 
       {/* Expiry Notifications */}
       <ExpiryNotificationSection />

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { UserService } from '../../../lib/services/userService'
 import { useAuth } from '../../hooks/useAuth'
+import { useGlobalShopping } from '../../contexts/GlobalShoppingContext'
 import { useMainAppLogic } from '../MainAppContent/useMainAppLogic'
 import { AuthErrorHandler, FormValidator } from './utils'
 import { FORM_VALIDATION } from './constants'
@@ -11,6 +12,7 @@ import { FORM_VALIDATION } from './constants'
  */
 export const useLoginFormLogic = () => {
   const { signInAsGuest } = useAuth()
+  const { showWelcome } = useGlobalShopping()
   const { handleLoginSuccess } = useMainAppLogic()
   
   // Form state
@@ -40,8 +42,14 @@ export const useLoginFormLogic = () => {
 
     try {
       if (isLogin) {
-        await UserService.signIn(email, password)
+        const result = await UserService.signIn(email, password)
         setMessage('התחברת בהצלחה!')
+        
+        // Show welcome message for successful login
+        if (result?.user) {
+          showWelcome(result.user.user_metadata?.full_name || result.user.email)
+        }
+        
         handleLoginSuccess()
       } else {
         await UserService.signUp(email, password, fullName)

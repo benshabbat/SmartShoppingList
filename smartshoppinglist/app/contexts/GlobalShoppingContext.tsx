@@ -25,6 +25,8 @@ interface GlobalShoppingContextValue {
   showExpiryModal: boolean
   showDataImportModal: boolean
   showTutorial: boolean
+  showWelcomeMessage: boolean
+  welcomeUserName: string | null
   checkoutItems: ShoppingItem[]
   
   // === CORE ACTIONS (no props needed) ===
@@ -42,6 +44,8 @@ interface GlobalShoppingContextValue {
   closeDataImportModal: () => void
   openTutorial: () => void
   closeTutorial: () => void
+  showWelcome: (userName?: string) => void
+  closeWelcome: () => void
   
   // === COMPLEX OPERATIONS (no props needed) ===
   handleCheckout: () => void

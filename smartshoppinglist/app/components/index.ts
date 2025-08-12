@@ -14,6 +14,8 @@ export { NotificationBanner } from './NotificationBanner'
 export { ReceiptScanner } from './ReceiptScanner'
 export { ShoppingItemComponent } from './ShoppingItemComponent'
 export { SuggestionItem } from './SuggestionItem'
+export { WelcomeMessage } from './WelcomeMessage'
+export { ShoppingCartSection } from './ShoppingCartSection'
 export { ActionButton, ActionButtonGroup } from './ActionButton'
 export { Card, CardHeader, CardBody, CardFooter } from './Card'
 

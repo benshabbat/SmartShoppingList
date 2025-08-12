@@ -13,6 +13,7 @@ import { ToastContainer } from '../Toast'
 import { Tutorial } from '../Tutorial'
 import { LoadingOverlay } from '../LoadingOverlay'
 import { GuestModeNotification } from '../GuestModeNotification'
+import { WelcomeMessage } from '../WelcomeMessage'
 import { useMainAppLogic } from './useMainAppLogic'
 
 export const MainAppUI = () => {
@@ -40,6 +41,9 @@ export const MainAppUI = () => {
 
       {/* Guest Mode Notification - No props needed! */}
       {shouldShowGuestNotification && <GuestModeNotification />}
+
+      {/* Welcome Message - Zero Props Drilling */}
+      <WelcomeMessage />
 
       {/* Main Content */}
       <MainShoppingView />

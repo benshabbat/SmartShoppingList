@@ -48,6 +48,8 @@ export interface EnhancedGlobalShoppingContextValue extends ShoppingState, Shopp
   showExpiryModal: boolean
   showDataImportModal: boolean
   showTutorial: boolean
+  showWelcomeMessage: boolean
+  welcomeUserName: string | null
   checkoutItems: ShoppingItem[]
   
   // === CORE ACTIONS ===
@@ -65,6 +67,8 @@ export interface EnhancedGlobalShoppingContextValue extends ShoppingState, Shopp
   closeDataImportModal: () => void
   openTutorial: () => void
   closeTutorial: () => void
+  showWelcome: (userName?: string) => void
+  closeWelcome: () => void
   
   // === COMPLEX OPERATIONS ===
   handleCheckout: () => void

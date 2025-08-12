@@ -1,22 +1,18 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { CheckCircle, User, ArrowRight } from 'lucide-react'
+import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
 
-interface WelcomeMessageProps {
-  show: boolean
-  userName?: string
-  onClose: () => void
-}
-
-export function WelcomeMessage({ show, userName, onClose }: WelcomeMessageProps) {
+export function WelcomeMessage() {
+  const { showWelcomeMessage, welcomeUserName, closeWelcome } = useGlobalShopping()
   const [isVisible, setIsVisible] = useState(false)
 
   const handleClose = useCallback(() => {
     setIsVisible(false)
-    setTimeout(onClose, 300) // Wait for animation to complete
-  }, [onClose])
+    setTimeout(closeWelcome, 300) // Wait for animation to complete
+  }, [closeWelcome])
 
   useEffect(() => {
-    if (show) {
+    if (showWelcomeMessage) {
       setIsVisible(true)
       const timer = setTimeout(() => {
         handleClose()
@@ -24,9 +20,9 @@ export function WelcomeMessage({ show, userName, onClose }: WelcomeMessageProps)
 
       return () => clearTimeout(timer)
     }
-  }, [show, handleClose])
+  }, [showWelcomeMessage, handleClose])
 
-  if (!show) return null
+  if (!showWelcomeMessage) return null
 
   return (
     <div className={`fixed top-4 right-4 z-50 max-w-sm transition-all duration-300 ${
@@ -44,7 +40,7 @@ export function WelcomeMessage({ show, userName, onClose }: WelcomeMessageProps)
               </h3>
             </div>
             <p className="text-sm text-green-700 mb-3 leading-relaxed">
-              {userName ? `שלום ${userName}!` : 'נחמד להכיר!'} עברת בהצלחה ממצב אורח למשתמש רשום.
+              {welcomeUserName ? `שלום ${welcomeUserName}!` : 'נחמד להכיר!'} עברת בהצלחה ממצב אורח למשתמש רשום.
               כעת הנתונים שלך יסונכרנו בין כל המכשירים שלך.
             </p>
             <div className="flex items-center gap-2 text-xs text-green-600">

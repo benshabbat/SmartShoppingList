@@ -41,6 +41,15 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
     initializeApp()
   }, [user?.id, itemsStore.loadItems])
 
+  // Show welcome message when user transitions from guest to logged in
+  useEffect(() => {
+    if (user && !isGuest && user.user_metadata) {
+      // Only show welcome for real users (not guests)
+      const userName = user.user_metadata.full_name || user.email
+      uiStore.showWelcome(userName)
+    }
+  }, [user, isGuest, uiStore.showWelcome])
+
   // Advanced computed values with memoization
   const computedValues = useMemo(() => {
     const itemsByStatus = itemsStore.getItemsByStatus()
@@ -305,6 +314,8 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
     showExpiryModal: uiStore.showExpiryModal,
     showDataImportModal: uiStore.showDataImportModal,
     showTutorial: uiStore.showTutorial,
+    showWelcomeMessage: uiStore.showWelcomeMessage,
+    welcomeUserName: uiStore.welcomeUserName,
     checkoutItems: uiStore.checkoutItems,
     
     // Enhanced computed values
@@ -325,6 +336,8 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
     closeDataImportModal: uiStore.closeDataImportModal,
     openTutorial: uiStore.openTutorial,
     closeTutorial: uiStore.closeTutorial,
+    showWelcome: uiStore.showWelcome,
+    closeWelcome: uiStore.closeWelcome,
     
     // Complex Operations
     handleCheckout,

@@ -38,6 +38,8 @@ interface UIState {
   showExpiryModal: boolean
   showDataImportModal: boolean
   showTutorial: boolean
+  showWelcomeMessage: boolean
+  welcomeUserName: string | null
   checkoutItems: ShoppingItem[]
   
   // === LOADING STATES ===
@@ -82,6 +84,8 @@ interface UIActions {
   closeDataImportModal: () => void
   openTutorial: () => void
   closeTutorial: () => void
+  showWelcome: (userName?: string) => void
+  closeWelcome: () => void
   
   // === LOADING ACTIONS ===
   setGlobalLoading: (loading: boolean) => void
@@ -130,6 +134,8 @@ const initialState: UIState = {
   showExpiryModal: false,
   showDataImportModal: false,
   showTutorial: false,
+  showWelcomeMessage: false,
+  welcomeUserName: null,
   checkoutItems: [],
   
   // Loading States
@@ -246,6 +252,18 @@ export const useUIStore = create<UIStore>()(
         closeTutorial: () =>
           set((state) => {
             state.showTutorial = false
+          }),
+
+        showWelcome: (userName?: string) =>
+          set((state) => {
+            state.showWelcomeMessage = true
+            state.welcomeUserName = userName || null
+          }),
+
+        closeWelcome: () =>
+          set((state) => {
+            state.showWelcomeMessage = false
+            state.welcomeUserName = null
           }),
 
         // === LOADING ACTIONS ===
@@ -380,6 +398,8 @@ export const useUISelectors = {
     showExpiryModal: state.showExpiryModal,
     showDataImportModal: state.showDataImportModal,
     showTutorial: state.showTutorial,
+    showWelcomeMessage: state.showWelcomeMessage,
+    welcomeUserName: state.welcomeUserName,
   })),
   loading: () => useUIStore((state) => ({
     globalLoading: state.globalLoading,

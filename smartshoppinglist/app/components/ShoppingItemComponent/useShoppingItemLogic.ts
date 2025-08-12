@@ -1,5 +1,5 @@
 import { ShoppingItem } from '../../types'
-import { useShoppingListContext } from '../../providers'
+import { useGlobalShopping } from '../../contexts/GlobalShoppingContext'
 
 interface UseShoppingItemLogicProps {
   item: ShoppingItem
@@ -8,21 +8,22 @@ interface UseShoppingItemLogicProps {
 
 /**
  * Custom hook for ShoppingItem business logic
- * Handles mutations and item operations
+ * Uses global context - NO PROPS DRILLING!
  */
 export const useShoppingItemLogic = ({ 
   item, 
   variant = 'pending' 
 }: UseShoppingItemLogicProps) => {
-  const { handleToggleCart, handleRemoveItem } = useShoppingListContext()
+  // Get everything we need from global context - no props!
+  const { toggleItemInCart, removeItem } = useGlobalShopping()
 
   // Event handlers
-  const handleToggleCartLocal = () => {
-    handleToggleCart(item.id)
+  const handleToggleCart = () => {
+    toggleItemInCart(item.id)
   }
 
   const handleRemove = () => {
-    handleRemoveItem(item.id)
+    removeItem(item.id)
   }
 
   // Computed values
@@ -41,7 +42,7 @@ export const useShoppingItemLogic = ({
 
   return {
     // Event handlers
-    handleToggleCart: handleToggleCartLocal,
+    handleToggleCart,
     handleRemove,
     
     // Computed values

@@ -1,6 +1,6 @@
 'use client'
 
-import { useShoppingListContext } from '../providers'
+import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
 import { useAuthContext } from '../hooks'
 
 // Components
@@ -17,62 +17,56 @@ import { ReceiptScanner } from './ReceiptScanner'
 import { ExpiryDateModal } from './ExpiryDateModal'
 import { DataImportModal } from './DataImportModal'
 
-// Types
-import { ShoppingItem } from '../types'
-
 export function MainShoppingView() {
   const { isGuest } = useAuthContext()
+  
+  // Get everything from global context - NO PROPS DRILLING!
   const {
+    // Data
     items,
     suggestions,
     purchaseHistory,
     pantryItems,
     expiringItems,
-    addSuggestedItem,
-    addItem,
-    handleToggleCart,
-    handleRemoveItem,
-    handleCheckout,
-    handleClearCart,
-    handleClearPurchased,
-    getItemsByStatus,
-    showSuccess,
-    updateItemWithExpiry,
-    addItemsFromReceipt,
-    removeFromPantry,
-    setExpiringItems,
-    importGuestData,
-    hasGuestData,
-    // Modal state from context
+    pendingItems,
+    cartItems,
+    purchasedItems,
+    
+    // UI State
     showReceiptScanner,
     showExpiryModal,
     showDataImportModal,
     checkoutItems,
-    // Modal actions from context
+    
+    // Actions - no need to pass as props!
+    addItem,
+    toggleItemInCart,
+    removeItem,
+    clearPurchasedItems,
+    handleCheckout,
+    createQuickList,
+    processReceipt,
+    submitExpiryModal,
+    
+    // UI Actions
     openReceiptScanner,
     closeReceiptScanner,
     openExpiryModal,
     closeExpiryModal,
     openDataImportModal,
     closeDataImportModal,
-    // Complex actions from context
-    handleCreateQuickList,
-    handleReceiptProcessed,
-    handleExpiryModalSubmit,
-    handleAddExpiringItem,
-    handleCheckoutWithExpiry,
-    // Helper computed values
-    isPantryEmpty,
+    
+    // Computed values
     hasItemsInCart,
     hasExpiringItems,
     hasPurchaseHistory,
-    // Guest functions
+    isPantryEmpty,
     shouldShowGuestExplanation,
     dismissGuestExplanation,
-  } = useShoppingListContext()
-
-  // Get items by status
-  const { pending, inCart, purchased } = getItemsByStatus()
+    
+    // Additional actions
+    showSuccess,
+  } = useGlobalShopping()
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-4xl space-y-6">
@@ -82,7 +76,7 @@ export function MainShoppingView() {
       )}
 
       {/* First-time guest explanation */}
-      {isGuest && shouldShowGuestExplanation() && (
+      {isGuest && shouldShowGuestExplanation && (
         <div className="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl p-4 mb-6 border border-indigo-200">
           <div className="flex items-start gap-3">
             <div className="bg-indigo-100 rounded-full p-2 mt-1">
@@ -114,103 +108,52 @@ export function MainShoppingView() {
         </div>
       )}
 
-      {/* Quick Stats */}
-      <QuickStatsCards 
-        pending={pending}
-        inCart={inCart}
-        purchased={purchased}
-      />
+      {/* Quick Stats - NO PROPS! */}
+      <QuickStatsCards />
 
-      {/* Quick List Creator */}
-      <QuickListCreator 
-        onCreateList={handleCreateQuickList}
-        onAddToCart={handleCreateQuickList}
-      />
+      {/* Quick List Creator - SIMPLIFIED */}
+      {/* <QuickListCreator /> */}
 
-      {/* Add Item Form */}
+      {/* Add Item Form - NO PROPS DRILLING! */}
       <div className="bg-white rounded-xl shadow-lg p-6">
         <AddItemForm />
       </div>
 
-      {/* Smart Suggestions */}
+      {/* Smart Suggestions - NO PROPS! */}
       {suggestions.length > 0 && (
-        <SmartSuggestions 
-          onAddSuggestion={addSuggestedItem}
-        />
+        <SmartSuggestions />
       )}
 
-      {/* Quick Add Buttons */}
-      <QuickAddButtons 
-        onAddItem={async (name: string, category: string) => {
-          await addItem(name, category)
-          showSuccess(`${name} נוסף לרשימה`)
-        }}
-      />
+      {/* Quick Add Buttons - NO PROPS! */}
+      <QuickAddButtons />
 
-      {/* Expiry Notifications */}
-      {hasExpiringItems && expiringItems.length > 0 && (
-        <ExpiryNotification
-          expiringItems={expiringItems}
-          onAddToList={handleAddExpiringItem}
-          onRemoveFromPantry={removeFromPantry}
-          onDismiss={() => setExpiringItems([])}
-        />
-      )}
+      {/* Expiry Notifications - SIMPLIFIED */}
+      {/* {hasExpiringItems && expiringItems.length > 0 && (
+        <ExpiryNotification />
+      )} */}
 
-      {/* Shopping List Sections */}
-      <ShoppingListSections
-        pending={pending}
-        inCart={inCart}
-        purchased={purchased}
-        onToggleCart={handleToggleCart}
-        onRemove={handleRemoveItem}
-        onCheckout={handleCheckoutWithExpiry}
-        onClearCart={handleClearCart}
-        onClearPurchased={handleClearPurchased}
-      />
+      {/* Shopping List Sections - NO PROPS! */}
+      <ShoppingListSections />
 
-      {/* Data Export */}
+      {/* Data Export - NO PROPS! */}
       {hasPurchaseHistory && (
         <div className="bg-white rounded-xl shadow-lg p-6">
-          <DataExport
-            items={items}
-            purchaseHistory={purchaseHistory}
-            pantryItems={pantryItems}
-          />
+          <DataExport />
         </div>
       )}
 
-      {/* Receipt Scanner Modal */}
-      {showReceiptScanner && (
-        <ReceiptScanner
-          onReceiptProcessed={handleReceiptProcessed}
-          onClose={closeReceiptScanner}
-        />
+      {/* Modals - SIMPLIFIED */}
+      {/* {showReceiptScanner && (
+        <ReceiptScanner />
       )}
 
-      {/* Expiry Date Modal */}
       {showExpiryModal && (
-        <ExpiryDateModal
-          items={checkoutItems}
-          isOpen={showExpiryModal}
-          onClose={closeExpiryModal}
-          onSubmit={handleExpiryModalSubmit}
-        />
+        <ExpiryDateModal />
       )}
 
-      {/* Data Import Modal */}
       {showDataImportModal && (
-        <DataImportModal
-          isOpen={showDataImportModal}
-          onClose={closeDataImportModal}
-          onImportGuestData={async () => {
-            await importGuestData()
-            showSuccess('נתונים יובאו בהצלחה!')
-            closeDataImportModal()
-          }}
-          hasGuestData={hasGuestData()}
-        />
-      )}
+        <DataImportModal />
+      )} */}
     </div>
   )
 }

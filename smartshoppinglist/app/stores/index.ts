@@ -3,6 +3,8 @@ export * from './authStore'
 export * from './shoppingListStore'
 export * from './uiStore'
 export * from './analyticsStore'
+export * from './shoppingItemsStore'
+export * from './uiStateStore'
 
 // Store utilities and helpers
 export { create } from 'zustand'

@@ -1,18 +1,26 @@
 import { ShoppingBag, Zap, Star } from 'lucide-react'
 import { CATEGORY_EMOJIS } from '../utils/constants'
 import { FadeIn } from './Animations'
+import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
 import { usePopularItems } from '../stores/analyticsStore'
 
-interface QuickAddButtonsProps {
-  onAddItem: (name: string, category: string) => void
-}
-
-export const QuickAddButtons = ({ onAddItem }: QuickAddButtonsProps) => {
+export const QuickAddButtons = () => {
+  // Get everything from global context - NO PROPS!
+  const { addItem, showSuccess } = useGlobalShopping()
   const popularItems = usePopularItems()
   
   if (popularItems.length === 0) return null
 
   const topItems = popularItems.slice(0, 6) // 6 הכי פופולריים
+
+  const handleAddItem = async (name: string, category: string) => {
+    try {
+      await addItem(name, category)
+      showSuccess(`${name} נוסף לרשימה`)
+    } catch (error) {
+      // Error already handled in global context
+    }
+  }
 
   return (
     <FadeIn delay={200}>
@@ -29,7 +37,7 @@ export const QuickAddButtons = ({ onAddItem }: QuickAddButtonsProps) => {
           {topItems.map((item, index) => (
             <FadeIn key={index} delay={300 + (index * 100)}>
               <button
-                onClick={() => onAddItem(item.name, item.category)}
+                onClick={() => handleAddItem(item.name, item.category)}
                 className="p-3 bg-white border border-purple-200 rounded-xl hover:bg-purple-50 hover:border-purple-300 transition-all text-right group hover:shadow-md transform hover:scale-105 duration-200"
               >
                 <div className="flex items-center justify-between">

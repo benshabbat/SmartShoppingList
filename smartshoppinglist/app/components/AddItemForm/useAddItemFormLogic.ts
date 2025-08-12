@@ -3,22 +3,22 @@ import { Category, ShoppingItem } from '../../types'
 import { generateSmartSuggestions, suggestCategoryForProduct } from '../../utils/smartSuggestions'
 import { useFormField } from '../../hooks/useFormState'
 import { validateProductName } from '../../utils/validation'
-import { useShoppingListContext } from '../../providers'
-
-interface UseAddItemFormLogicProps {
-  purchaseHistory: ShoppingItem[]
-  currentItems: ShoppingItem[]
-}
+import { useGlobalShopping } from '../../contexts/GlobalShoppingContext'
 
 /**
  * Custom hook for AddItemForm business logic
- * Handles form state, validation, suggestions, and mutations
+ * NO PROPS DRILLING - gets everything from global context!
  */
-export const useAddItemFormLogic = ({ 
-  purchaseHistory, 
-  currentItems 
-}: UseAddItemFormLogicProps) => {
-  const { addItem, showSuccess, showError } = useShoppingListContext()
+export const useAddItemFormLogic = () => {
+  // Get everything from global context - no props needed!
+  const { 
+    addItem, 
+    suggestions: globalSuggestions, 
+    purchaseHistory, 
+    items: currentItems,
+    showSuccess,
+    showError
+  } = useGlobalShopping()
   
   // Form field with validation
   const itemName = useFormField({
@@ -36,7 +36,7 @@ export const useAddItemFormLogic = ({
   const [autoChangedCategory, setAutoChangedCategory] = useState(false)
 
   // Smart suggestions based on category and history
-  const suggestions = useMemo(() => {
+  const smartSuggestions = useMemo(() => {
     const generated = generateSmartSuggestions(newItemCategory, purchaseHistory, currentItems)
     console.log('🔮 Generated suggestions for category', newItemCategory, ':', generated)
     return generated
@@ -119,7 +119,7 @@ export const useAddItemFormLogic = ({
     // Form data
     itemName,
     newItemCategory,
-    suggestions,
+    suggestions: smartSuggestions,
     
     // UI state
     autoChangedCategory,

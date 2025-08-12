@@ -1,14 +1,20 @@
 import { Lightbulb, Sparkles } from 'lucide-react'
-import { useSmartSuggestions } from '../stores/analyticsStore'
+import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
 
-interface SmartSuggestionsProps {
-  onAddSuggestion: (name: string) => void
-}
-
-export const SmartSuggestions = ({ onAddSuggestion }: SmartSuggestionsProps) => {
-  const suggestions = useSmartSuggestions()
+export const SmartSuggestions = () => {
+  // Get everything from global context - NO PROPS!
+  const { suggestions, addItem, showSuccess } = useGlobalShopping()
 
   if (suggestions.length === 0) return null
+
+  const handleAddSuggestion = async (name: string) => {
+    try {
+      await addItem(name, 'כלל') // Default category
+      showSuccess(`${name} נוסף לרשימה`)
+    } catch (error) {
+      // Error already handled in global context
+    }
+  }
 
   return (
     <div className="bg-gradient-to-br from-amber-50 to-orange-100 rounded-2xl shadow-lg p-6 mb-6 border border-amber-200">
@@ -28,7 +34,7 @@ export const SmartSuggestions = ({ onAddSuggestion }: SmartSuggestionsProps) => 
         {suggestions.map((suggestion, index) => (
           <div key={index} className="flex items-center justify-between bg-white rounded-xl p-4 shadow-sm border border-amber-100 hover:shadow-md transition-all">
             <button
-              onClick={() => onAddSuggestion(suggestion.name)}
+              onClick={() => handleAddSuggestion(suggestion.name)}
               className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg hover:from-amber-600 hover:to-orange-600 transition-all duration-200 font-medium shadow-md hover:shadow-lg transform hover:scale-105"
             >
               הוסף

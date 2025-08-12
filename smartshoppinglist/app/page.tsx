@@ -1,15 +1,16 @@
-// Enhanced main page with improved state management and separation of concerns
+// Zero Props Drilling Architecture - Everything via Global Context
 'use client'
 
-import { QueryProvider, ShoppingListProvider } from './providers'
+import { QueryProvider } from './providers'
+import { GlobalShoppingProvider } from './contexts/GlobalShoppingContext'
 import { MainAppContent } from './components/MainAppContent'
 
 export default function ShoppingListApp() {
   return (
     <QueryProvider>
-      <ShoppingListProvider>
+      <GlobalShoppingProvider>
         <MainAppContent />
-      </ShoppingListProvider>
+      </GlobalShoppingProvider>
     </QueryProvider>
   )
 }

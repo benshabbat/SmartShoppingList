@@ -1,24 +1,13 @@
-import { ShoppingItem } from '../../types'
 import { useAddItemFormLogic } from './useAddItemFormLogic'
 import { AddItemFormUI } from './AddItemFormUI'
 
-interface AddItemFormProps {
-  purchaseHistory?: ShoppingItem[]
-  currentItems?: ShoppingItem[]
-}
-
 /**
  * Container component that combines logic and UI
- * Follows the Container/Presentational pattern
+ * NO PROPS DRILLING - everything comes from global context!
  */
-export const AddItemForm = ({ 
-  purchaseHistory = [], 
-  currentItems = [] 
-}: AddItemFormProps) => {
-  const logic = useAddItemFormLogic({
-    purchaseHistory,
-    currentItems
-  })
+export const AddItemForm = () => {
+  // No props needed - everything from global context!
+  const logic = useAddItemFormLogic()
 
   return (
     <AddItemFormUI

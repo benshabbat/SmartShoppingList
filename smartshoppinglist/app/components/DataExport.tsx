@@ -2,15 +2,12 @@
 
 import { useState } from 'react'
 import { Download, FileText, Share2, Copy, Check } from 'lucide-react'
-import { ShoppingItem } from '../types'
+import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
 
-interface DataExportProps {
-  items: ShoppingItem[]
-  purchaseHistory: ShoppingItem[]
-  pantryItems: ShoppingItem[]
-}
-
-export const DataExport: React.FC<DataExportProps> = ({ items, purchaseHistory, pantryItems }) => {
+export const DataExport: React.FC = () => {
+  // Get data from global context - NO PROPS!
+  const { items, purchaseHistory, pantryItems } = useGlobalShopping()
+  
   const [isOpen, setIsOpen] = useState(false)
   const [copied, setCopied] = useState(false)
   const [exportFormat, setExportFormat] = useState<'simple' | 'detailed' | 'shopping'>('simple')

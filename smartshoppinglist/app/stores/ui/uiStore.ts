@@ -398,3 +398,6 @@ export const useUISelectors = {
   })),
   checkout: () => useUIStore((state) => state.checkoutItems),
 }
+
+// Convenience hooks for specific UI concerns
+export const useSoundEnabled = () => useUIStore((state) => state.soundEnabled)

@@ -12,7 +12,8 @@ export {
 // === UI STORES ===
 export { 
   useUIStore, 
-  useUISelectors 
+  useUISelectors,
+  useSoundEnabled 
 } from './ui/uiStore'
 
 // === DATA STORES ===

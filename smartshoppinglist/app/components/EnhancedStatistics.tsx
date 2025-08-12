@@ -4,11 +4,8 @@ import { formatDate } from '../utils/dateUtils'
 import { useState, useEffect } from 'react'
 import { 
   useAnalyticsStore, 
-  useCategoryStats, 
-  useWeeklyStats, 
-  useExpiringItems,
-  useAnalyticsLoading 
-} from '../stores/analyticsStore'
+  useAnalyticsSelectors 
+} from '../stores/data/analyticsStore'
 
 interface StatisticsProps {
   purchaseHistory: ShoppingItem[]
@@ -39,13 +36,13 @@ export const EnhancedStatistics = ({
   
   // Analytics store hooks
   const refreshAnalytics = useAnalyticsStore(state => state.refreshAnalytics)
-  const categoryStats = useCategoryStats()
-  const weeklyStats = useWeeklyStats()
-  const expiringItemsCount = useExpiringItems()
-  const isAnalyzing = useAnalyticsLoading()
+  const categoryStats = useAnalyticsSelectors.categoryStats()
+  const isAnalyzing = useAnalyticsSelectors.isAnalyzing()
   const totalPurchased = useAnalyticsStore(state => state.totalPurchased)
   const totalPantryItems = useAnalyticsStore(state => state.totalPantryItems)
-  const topCategory = useAnalyticsStore(state => state.topCategory)
+  const topCategory = useAnalyticsSelectors.topCategory()
+  const expiringItemsCount = useAnalyticsStore(state => state.expiringItemsCount)
+  const weeklyTrends = useAnalyticsSelectors.trends()
   
   // Refresh analytics when data changes
   useEffect(() => {
@@ -76,10 +73,14 @@ export const EnhancedStatistics = ({
   const weeksOfData = Math.max(1, Math.ceil(totalPurchased / 7))
   const avgPerWeek = Math.round(totalPurchased / weeksOfData)
 
-  // מגמת קניות
-  const trend = weeklyStats.growth > 0 ? 'up' : 
-                weeklyStats.growth < 0 ? 'down' : 'stable'
-  const trendValue = weeklyStats.growth
+  // מגמת קניות - חישוב מהנתונים הקיימים
+  const thisWeekPurchases = useAnalyticsStore(state => state.purchasedThisWeek)
+  const lastWeekPurchases = useAnalyticsStore(state => state.purchasedLastWeek)
+  const growthValue = lastWeekPurchases > 0 ? 
+    ((thisWeekPurchases - lastWeekPurchases) / lastWeekPurchases) * 100 : 0
+  const trend = growthValue > 0 ? 'up' : 
+                growthValue < 0 ? 'down' : 'stable'
+  const trendValue = Math.round(growthValue)
 
   // כרטיסי סטטיסטיקה עיקריים
   const mainStats: StatCard[] = [
@@ -132,7 +133,7 @@ export const EnhancedStatistics = ({
       color: 'from-rose-500 to-red-600',
       bgColor: 'bg-gradient-to-br from-rose-50 to-red-100',
       textColor: 'text-rose-700',
-      subtext: `${categoryStats.find(c => c.category === topCategory)?.count || 0} מוצרים`,
+      subtext: `${categoryStats.find((c: any) => c.category === topCategory)?.count || 0} מוצרים`,
       isText: true
     },
     {

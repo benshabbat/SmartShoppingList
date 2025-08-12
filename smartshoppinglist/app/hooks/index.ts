@@ -13,8 +13,7 @@ export * from './useAnalytics'
 // Re-export existing hooks
 export { useShoppingList } from './useShoppingList'
 
-// Export new TanStack Query hooks
-export * from './useAuthQueries'
+// Export shopping items hooks
 export * from './useShoppingItems'
 
 // Export stores

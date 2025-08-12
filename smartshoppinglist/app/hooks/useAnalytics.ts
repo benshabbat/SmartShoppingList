@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useAnalyticsStore } from '../stores/analyticsStore'
+import { useAnalyticsStore } from '../stores/data/analyticsStore'
 import { ShoppingItem } from '../types'
 
 /**

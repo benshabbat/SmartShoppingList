@@ -2,12 +2,12 @@ import { ShoppingBag, Zap, Star } from 'lucide-react'
 import { CATEGORY_EMOJIS } from '../utils/constants'
 import { FadeIn } from './Animations'
 import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
-import { usePopularItems } from '../stores/analyticsStore'
+import { useAnalyticsSelectors } from '../stores/data/analyticsStore'
 
 export const QuickAddButtons = () => {
   // Get everything from global context - NO PROPS!
   const { addItem, showSuccess } = useGlobalShopping()
-  const popularItems = usePopularItems()
+  const popularItems = useAnalyticsSelectors.popularItems()
   
   if (popularItems.length === 0) return null
 

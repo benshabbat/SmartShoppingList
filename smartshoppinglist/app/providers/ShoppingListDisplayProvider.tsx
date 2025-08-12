@@ -7,8 +7,8 @@
 'use client'
 
 import { createContext, useContext, ReactNode, useEffect } from 'react'
-import { useShoppingItemsStore } from '../stores/shoppingItemsStore'
-import { useUIStore } from '../stores/uiStateStore'
+import { useShoppingDataStore } from '../stores/data/shoppingDataStore'
+import { useUIStore } from '../stores/ui/uiStore'
 import { useAuth } from '../hooks/useAuth'
 import { useToasts } from '../components/Toast'
 import { useSoundManager } from '../utils/soundManager'
@@ -105,7 +105,7 @@ export const ShoppingListDisplayProvider = ({ children }: ShoppingListDisplayPro
     hasExpiringItems,
     hasPurchaseHistory,
     isPantryEmpty,
-  } = useShoppingItemsStore()
+  } = useShoppingDataStore()
   
   const {
     showReceiptScanner,

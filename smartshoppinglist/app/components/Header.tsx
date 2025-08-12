@@ -1,6 +1,6 @@
 import { ShoppingCart, HelpCircle, Volume2, VolumeX, BarChart3, Receipt, LogOut, User } from 'lucide-react'
-import { useAuthStore, useUIStore, useSoundEnabled } from '../stores'
-import { useLogout, useGuestMode } from '../hooks/useAuthQueries'
+import { useAuthStore, useUIStore } from '../stores'
+import { useAuth } from '../hooks/useAuth'
 import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -9,21 +9,18 @@ export const Header = () => {
   // Get functions from global context - NO PROPS DRILLING!
   const { openTutorial, openReceiptScanner } = useGlobalShopping()
   
-  const soundEnabled = useSoundEnabled()
+  const soundEnabled = useUIStore((state) => state.soundEnabled)
   const toggleSound = useUIStore((state) => state.toggleSound)
   
-  const user = useAuthStore((state) => state.user)
-  const logoutMutation = useLogout()
-  const guestModeMutation = useGuestMode()
+  const { user, signOut, isGuest } = useAuth()
   
   const pathname = usePathname()
   const isStatisticsPage = pathname === '/statistics'
   
   const isAuthenticated = !!user
-  const isGuest = user?.isGuest || false
 
   const handleSignOut = () => {
-    logoutMutation.mutate()
+    signOut()
   }
 
   const handleSwitchToAuth = () => {
@@ -38,7 +35,7 @@ export const Header = () => {
     if (confirmSwitch) {
       // For switching from guest to auth, we'll need to implement this
       // For now, just logout
-      logoutMutation.mutate()
+      signOut()
     }
   }
 

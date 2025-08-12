@@ -2,10 +2,11 @@
 
 import React, { createContext, useContext, ReactNode } from 'react'
 import { useAuth } from './useAuth'
+import { User, Session } from '@supabase/supabase-js'
 
 interface AuthContextType {
-  user: any
-  session: any
+  user: User | null
+  session: Session | null
   loading: boolean
   isGuest: boolean
   signOut: () => Promise<void>

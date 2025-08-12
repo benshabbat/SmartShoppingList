@@ -33,7 +33,7 @@ import { useSoundManager } from './utils/soundManager'
 import { MESSAGES } from './utils'
 
 export default function ShoppingListApp() {
-  const { loading, isAuthenticated, isGuest, switchToAuth } = useAuthContext()
+  const { loading, isAuthenticated, isGuest } = useAuthContext()
   const [showLoginForm, setShowLoginForm] = useState(false)
   const [showReceiptScanner, setShowReceiptScanner] = useState(false)
   const [showExpiryModal, setShowExpiryModal] = useState(false)

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { ShoppingItem, ItemSuggestion, ExpiringItem } from '../types'
 import { STORAGE_KEYS } from '../utils/constants'
 import { generateSuggestions, checkExpiringItems } from '../utils/helpers'
@@ -39,33 +39,20 @@ export function useShoppingList() {
   const [pantryItems, setPantryItems] = useState<ShoppingItem[]>([])
   const [loading, setLoading] = useState(false)
 
-  // Load data from database or localStorage based on user type
-  useEffect(() => {
-    if (!user) return
+  const convertDbItemToShoppingItem = useCallback((dbItem: DbShoppingItem): ShoppingItem => ({
+    id: dbItem.id,
+    name: dbItem.name,
+    category: dbItem.category,
+    isInCart: dbItem.is_in_cart,
+    isPurchased: dbItem.is_purchased,
+    addedAt: new Date(dbItem.added_at),
+    purchasedAt: dbItem.purchased_at ? new Date(dbItem.purchased_at) : undefined,
+    expiryDate: dbItem.expiry_date ? new Date(dbItem.expiry_date) : undefined,
+    purchaseLocation: dbItem.purchase_location,
+    price: dbItem.price
+  }), [])
 
-    const loadData = async () => {
-      setLoading(true)
-      try {
-        if (isGuest) {
-          // Load from localStorage for guest users
-          loadFromLocalStorage()
-        } else {
-          // Load from database for authenticated users
-          await loadFromDatabase()
-        }
-      } catch (error) {
-        console.error('Error loading data:', error)
-        // Fallback to localStorage on error
-        loadFromLocalStorage()
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    loadData()
-  }, [user, isGuest])
-
-  const loadFromLocalStorage = () => {
+  const loadFromLocalStorage = useCallback(() => {
     if (typeof window === 'undefined') return
     
     const savedItems = localStorage.getItem(STORAGE_KEYS.SHOPPING_LIST)
@@ -101,9 +88,9 @@ export function useShoppingList() {
     }
 
     localStorage.setItem(STORAGE_KEYS.LAST_VISIT, new Date().toISOString())
-  }
+  }, [])
 
-  const loadFromDatabase = async () => {
+  const loadFromDatabase = useCallback(async () => {
     if (!user?.id) return
 
     try {
@@ -124,20 +111,65 @@ export function useShoppingList() {
       console.error('Error loading from database:', error)
       throw error
     }
-  }
+  }, [user, convertDbItemToShoppingItem])
 
-  const convertDbItemToShoppingItem = (dbItem: DbShoppingItem): ShoppingItem => ({
-    id: dbItem.id,
-    name: dbItem.name,
-    category: dbItem.category,
-    isInCart: dbItem.is_in_cart,
-    isPurchased: dbItem.is_purchased,
-    addedAt: new Date(dbItem.added_at),
-    purchasedAt: dbItem.purchased_at ? new Date(dbItem.purchased_at) : undefined,
-    expiryDate: dbItem.expiry_date ? new Date(dbItem.expiry_date) : undefined,
-    purchaseLocation: dbItem.purchase_location,
-    price: dbItem.price
-  })
+  const saveToDatabase = useCallback(async (items: ShoppingItem[], type: 'items' | 'history' | 'pantry') => {
+    if (!user?.id || isGuest) return
+
+    try {
+      for (const item of items) {
+        const dbItem = {
+          id: item.id,
+          name: item.name,
+          category: item.category,
+          is_in_cart: item.isInCart,
+          is_purchased: item.isPurchased,
+          added_at: item.addedAt.toISOString(),
+          purchased_at: item.purchasedAt?.toISOString() || null,
+          expiry_date: item.expiryDate?.toISOString() || null,
+          purchase_location: item.purchaseLocation || null,
+          price: item.price || null,
+          user_id: user.id
+        }
+        
+        try {
+          // Try to update first, if it fails, create new item
+          await ShoppingItemService.updateShoppingItem(item.id, dbItem)
+        } catch (updateError) {
+          // If update fails, create new item
+          await ShoppingItemService.createShoppingItem(dbItem)
+        }
+      }
+    } catch (error) {
+      console.error(`Error saving ${type} to database:`, error)
+    }
+  }, [user, isGuest])
+
+  // Load data from database or localStorage based on user type
+  useEffect(() => {
+    if (!user) return
+
+    const loadData = async () => {
+      setLoading(true)
+      try {
+        if (isGuest) {
+          // Load from localStorage for guest users
+          loadFromLocalStorage()
+        } else {
+          // Load from database for authenticated users
+          await loadFromDatabase()
+        }
+      } catch (error) {
+        console.error('Error loading data:', error)
+        // Fallback to localStorage on error
+        loadFromLocalStorage()
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadData()
+  }, [user, isGuest, loadFromDatabase, loadFromLocalStorage])
 
   // Save to appropriate storage when data changes
   useEffect(() => {

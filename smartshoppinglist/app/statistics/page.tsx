@@ -1,51 +1,21 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { ArrowRight, Home } from 'lucide-react'
 import { EnhancedStatistics } from '../components/EnhancedStatistics'
 import { Header } from '../components/Header'
 import { ToastContainer } from '../components/Toast'
-import { ShoppingItem, ItemSuggestion } from '../types'
 
+/**
+ * Statistics Page - Zero Props Drilling!
+ * All data comes from GlobalShoppingContext
+ */
 export default function StatisticsPage() {
-  const [purchaseHistory, setPurchaseHistory] = useState<ShoppingItem[]>([])
-  const [suggestions, setSuggestions] = useState<ItemSuggestion[]>([])
-  const [pantryItems, setPantryItems] = useState<ShoppingItem[]>([])
-
-  // טעינת נתונים מ-localStorage
-  useEffect(() => {
-    const loadData = () => {
-      try {
-        const storedPurchaseHistory = localStorage.getItem('purchaseHistory')
-        if (storedPurchaseHistory) {
-          setPurchaseHistory(JSON.parse(storedPurchaseHistory))
-        }
-
-        const storedSuggestions = localStorage.getItem('suggestions')
-        if (storedSuggestions) {
-          setSuggestions(JSON.parse(storedSuggestions))
-        }
-
-        const storedPantryItems = localStorage.getItem('pantryItems')
-        if (storedPantryItems) {
-          setPantryItems(JSON.parse(storedPantryItems))
-        }
-      } catch (error) {
-        console.error('Error loading data:', error)
-      }
-    }
-
-    loadData()
-  }, [])
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       <div className="container mx-auto px-4 py-6 max-w-7xl">
         {/* Header */}
-        <Header
-          onOpenTutorial={() => {}}
-        />
+        <Header />
 
         {/* Breadcrumb Navigation */}
         <nav className="mb-6 mt-4">
@@ -81,12 +51,9 @@ export default function StatisticsPage() {
           </div>
         </div>
 
-        {/* Statistics Content */}
+        {/* Statistics Content - NO PROPS DRILLING! */}
         <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
-          <EnhancedStatistics 
-            purchaseHistory={purchaseHistory}
-            pantryItems={pantryItems}
-          />
+          <EnhancedStatistics />
         </div>
 
         {/* Additional Information Card */}

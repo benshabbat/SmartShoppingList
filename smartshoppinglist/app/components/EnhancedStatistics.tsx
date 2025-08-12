@@ -6,11 +6,7 @@ import {
   useAnalyticsStore, 
   useAnalyticsSelectors 
 } from '../stores/data/analyticsStore'
-
-interface StatisticsProps {
-  purchaseHistory: ShoppingItem[]
-  pantryItems: ShoppingItem[]
-}
+import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
 
 import { LucideIcon } from 'lucide-react'
 
@@ -27,10 +23,13 @@ interface StatCard {
   trendValue?: number
 }
 
-export const EnhancedStatistics = ({ 
-  purchaseHistory, 
-  pantryItems 
-}: StatisticsProps) => {
+/**
+ * Enhanced Statistics Component - ZERO PROPS DRILLING
+ * Gets all data from global context
+ */
+export const EnhancedStatistics = () => {
+  // Get data from global context - NO PROPS!
+  const { purchaseHistory, pantryItems } = useGlobalShopping()
   const [showDetails, setShowDetails] = useState(false)
   const [activeTab, setActiveTab] = useState<'overview' | 'trends' | 'categories'>('overview')
   
@@ -133,7 +132,7 @@ export const EnhancedStatistics = ({
       color: 'from-rose-500 to-red-600',
       bgColor: 'bg-gradient-to-br from-rose-50 to-red-100',
       textColor: 'text-rose-700',
-      subtext: `${categoryStats.find((c: any) => c.category === topCategory)?.count || 0} מוצרים`,
+      subtext: `${categoryStats.find((c: { category: string; count: number }) => c.category === topCategory)?.count || 0} מוצרים`,
       isText: true
     },
     {

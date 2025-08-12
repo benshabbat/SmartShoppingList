@@ -15,14 +15,15 @@ export function ExpiryDateModal() {
     checkoutItems 
   } = useGlobalShopping()
   
-  // Don't render if not open
-  if (!showExpiryModal) return null
-  
+  // Always call hooks - React rule!
   const logic = useExpiryDateModalLogic({
     items: checkoutItems,
     onSubmit: submitExpiryModal,
     onClose: closeExpiryModal
   })
+  
+  // Don't render if not open
+  if (!showExpiryModal) return null
 
   return (
     <ExpiryDateModalUI

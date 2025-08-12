@@ -1,33 +1,37 @@
 import React from 'react'
 import { Card } from '../Card'
-
-interface LoginFormUIProps {
-  // Form state
-  isLogin: boolean
-  email: string
-  password: string
-  fullName: string
-  
-  // UI state
-  loading: boolean
-  error: string | null
-  message: string | null
-  
-  // Validation
-  isFormValid: boolean
-  
-  // Event handlers
-  onGuestLogin: () => void
-  onSubmit: (e: React.FormEvent) => void
-  onForgotPassword: () => void
-  onToggleMode: () => void
-  onClearMessages: () => void
-  onEmailChange: (email: string) => void
-  onPasswordChange: (password: string) => void
-  onFullNameChange: (fullName: string) => void
-}
+import { useLoginFormLogic } from './useLoginFormLogic'
 
 /**
+ * Login Form UI Component
+ * Zero Props Drilling - gets everything from context
+ */
+export function LoginFormUI() {
+  const {
+    // Form state
+    isLogin,
+    email,
+    password,
+    fullName,
+    
+    // UI state
+    loading,
+    error,
+    message,
+    
+    // Validation
+    isFormValid,
+    
+    // Event handlers
+    handleGuestLogin,
+    handleSubmit,
+    handleForgotPassword,
+    toggleMode,
+    clearMessages,
+    setEmail,
+    setPassword,
+    setFullName
+  } = useLoginFormLogic()
  * Pure UI component for LoginForm
  * Contains only rendering logic, no business logic
  */

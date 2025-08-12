@@ -1,8 +1,6 @@
-// Zero Props Drilling Architecture - Everything via Global Context
-'use client'
+import { MainAppUI } from "./components/MainAppContent";
 
-import { MainAppContent } from './components/MainAppContent'
 
 export default function ShoppingListApp() {
-  return <MainAppContent />
+  return <MainAppUI/>
 }

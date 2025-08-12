@@ -44,20 +44,25 @@ export const useAddItemFormLogic = ({
   useEffect(() => {
     if (itemName.value.trim().length >= 2) {
       const suggested = suggestCategoryForProduct(itemName.value)
-      if (suggested !== newItemCategory && suggested !== 'אחר') {
+      console.log('🔍 Suggested category for', itemName.value, ':', suggested)
+      
+      if (suggested && suggested !== newItemCategory && suggested !== 'אחר') {
+        console.log('✅ Changing category from', newItemCategory, 'to', suggested)
         setNewItemCategory(suggested as Category)
         setAutoChangedCategory(true)
         setShowCategorySuggestion(false)
         
-        // Hide notification after 3 seconds
+        // Hide notification after 4 seconds
         setTimeout(() => {
           setAutoChangedCategory(false)
-        }, 3000)
-      } else {
-        setShowCategorySuggestion(false)
-        setAutoChangedCategory(false)
+        }, 4000)
       }
     } else {
+      // Reset auto-change state when text is too short
+      if (autoChangedCategory) {
+        setAutoChangedCategory(false)
+      }
+    }
       setShowCategorySuggestion(false)
       setAutoChangedCategory(false)
     }

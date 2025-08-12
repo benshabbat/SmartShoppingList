@@ -17,7 +17,7 @@ export const CATEGORIES = {
 
 export type CategoryType = typeof CATEGORIES[keyof typeof CATEGORIES]
 
-// מפה של מילות מפתח לקטגוריות
+// מפה של מילות מפתח לקטגוריות - מורחבת
 export const CATEGORY_KEYWORDS: Record<string, CategoryType> = {
   // מוצרי חלב
   'חלב': CATEGORIES.DAIRY,
@@ -39,6 +39,8 @@ export const CATEGORY_KEYWORDS: Record<string, CategoryType> = {
   'פרמזן': CATEGORIES.DAIRY,
   'ריקוטה': CATEGORIES.DAIRY,
   'קפיר': CATEGORIES.DAIRY,
+  'ביצה': CATEGORIES.DAIRY,
+  'ביצי': CATEGORIES.DAIRY,
   
   // בשר ודגים
   'עוף': CATEGORIES.MEAT_FISH,
@@ -65,6 +67,7 @@ export const CATEGORY_KEYWORDS: Record<string, CategoryType> = {
   'בקלה': CATEGORIES.MEAT_FISH,
   'דניס': CATEGORIES.MEAT_FISH,
   'מוסר': CATEGORIES.MEAT_FISH,
+  'דגים': CATEGORIES.MEAT_FISH,
   
   // ירקות
   'עגבני': CATEGORIES.VEGETABLES,
@@ -88,6 +91,15 @@ export const CATEGORY_KEYWORDS: Record<string, CategoryType> = {
   'סלט': CATEGORIES.VEGETABLES,
   'עדשים': CATEGORIES.VEGETABLES,
   'חומוס גרגירים': CATEGORIES.VEGETABLES,
+  'עגבניות': CATEGORIES.VEGETABLES,
+  'מלפפונים': CATEGORIES.VEGETABLES,
+  'גזרים': CATEGORIES.VEGETABLES,
+  'פלפלים': CATEGORIES.VEGETABLES,
+  'ירקות': CATEGORIES.VEGETABLES,
+  'בטטה': CATEGORIES.VEGETABLES,
+  'בטטות': CATEGORIES.VEGETABLES,
+  'תפו"א': CATEGORIES.VEGETABLES,
+  'תפוחי אדמה': CATEGORIES.VEGETABLES,
   
   // פירות
   'תפוח': CATEGORIES.FRUITS,
@@ -109,6 +121,17 @@ export const CATEGORY_KEYWORDS: Record<string, CategoryType> = {
   'נקטרינה': CATEGORIES.FRUITS,
   'שזיף': CATEGORIES.FRUITS,
   'פרי': CATEGORIES.FRUITS,
+  'תפוחים': CATEGORIES.FRUITS,
+  'בננות': CATEGORIES.FRUITS,
+  'תפוזים': CATEGORIES.FRUITS,
+  'אגסים': CATEGORIES.FRUITS,
+  'פירות': CATEGORIES.FRUITS,
+  'תותים': CATEGORIES.FRUITS,
+  'דובדבן': CATEGORIES.FRUITS,
+  'אפרסקים': CATEGORIES.FRUITS,
+  'שזיפים': CATEGORIES.FRUITS,
+  'קלמנטינה': CATEGORIES.FRUITS,
+  'קלמנטינות': CATEGORIES.FRUITS,
   
   // לחם ומאפים
   'לחם': CATEGORIES.BREAD,

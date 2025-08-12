@@ -19,6 +19,7 @@ export { Card, CardHeader, CardBody, CardFooter } from './Card'
 
 // New separated components
 export { MainShoppingView } from './MainShoppingView'
+export { MainAppContent } from './MainAppContent'
 export { QuickStatsCards } from './QuickStatsCards'
 export { GuestWelcomeMessage } from './GuestWelcomeMessage'
 export { ShoppingListSections } from './ShoppingListSections'
@@ -34,6 +35,3 @@ export { QuickAddButtons } from './QuickAddButtons'
 export { QuickListCreator } from './QuickListCreator'
 export { SmartSuggestions } from './SmartSuggestions'
 export { Tutorial } from './Tutorial'
-
-// State Management Example
-export { StateManagementExample } from './StateManagementExample'

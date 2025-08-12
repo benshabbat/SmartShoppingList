@@ -1,11 +1,17 @@
 import { History, TrendingUp, Package, Target, ShoppingCart, Clock, Award, ChevronDown, ChevronUp, BarChart3, PieChart } from 'lucide-react'
-import { ShoppingItem, ItemSuggestion } from '../types'
+import { ShoppingItem } from '../types'
 import { formatDate } from '../utils/dateUtils'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { 
+  useAnalyticsStore, 
+  useCategoryStats, 
+  useWeeklyStats, 
+  useExpiringItems,
+  useAnalyticsLoading 
+} from '../stores/analyticsStore'
 
 interface StatisticsProps {
   purchaseHistory: ShoppingItem[]
-  suggestions: ItemSuggestion[]
   pantryItems: ShoppingItem[]
 }
 
@@ -26,71 +32,54 @@ interface StatCard {
 
 export const EnhancedStatistics = ({ 
   purchaseHistory, 
-  suggestions, 
   pantryItems 
 }: StatisticsProps) => {
   const [showDetails, setShowDetails] = useState(false)
   const [activeTab, setActiveTab] = useState<'overview' | 'trends' | 'categories'>('overview')
   
-  // חישובי סטטיסטיקות מתקדמות
-  const totalPurchased = purchaseHistory.length
-  const totalSuggestions = suggestions.length
-  const totalPantryItems = pantryItems.length
+  // Analytics store hooks
+  const refreshAnalytics = useAnalyticsStore(state => state.refreshAnalytics)
+  const categoryStats = useCategoryStats()
+  const weeklyStats = useWeeklyStats()
+  const expiringItemsCount = useExpiringItems()
+  const isAnalyzing = useAnalyticsLoading()
+  const totalPurchased = useAnalyticsStore(state => state.totalPurchased)
+  const totalPantryItems = useAnalyticsStore(state => state.totalPantryItems)
+  const topCategory = useAnalyticsStore(state => state.topCategory)
   
-  // מוצרים שנקנו השבוע
+  // Refresh analytics when data changes
+  useEffect(() => {
+    refreshAnalytics(purchaseHistory, pantryItems)
+  }, [purchaseHistory, pantryItems, refreshAnalytics])
+  
+  // Some local calculations still needed for specific UI components
+  const now = new Date()
   const weekAgo = new Date()
   weekAgo.setDate(weekAgo.getDate() - 7)
   const purchasedThisWeek = purchaseHistory.filter(item => 
     item.purchasedAt && new Date(item.purchasedAt) >= weekAgo
   ).length
-
-  // מוצרים שעומדים לפוג בקרוב (3 ימים)
-  const now = new Date()
+  
+  const categoryCount: Record<string, number> = {}
+  purchaseHistory.forEach(item => {
+    categoryCount[item.category] = (categoryCount[item.category] || 0) + 1
+  })
+  
   const expiringShortly = pantryItems.filter(item => {
     if (!item.expiryDate) return false
     const expiryDate = new Date(item.expiryDate)
     const daysUntilExpiry = Math.ceil((expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
     return daysUntilExpiry <= 3 && daysUntilExpiry >= 0
   }).length
-
-  // הקטגוריה הפופולרית ביותר
-  const categoryCount: Record<string, number> = {}
-  purchaseHistory.forEach(item => {
-    categoryCount[item.category] = (categoryCount[item.category] || 0) + 1
-  })
-  const mostPopularCategory = Object.entries(categoryCount)
-    .sort(([,a], [,b]) => b - a)[0]?.[0] || 'אין נתונים'
-
+  
   // ממוצע קניות בשבוע
-  const weeksOfData = Math.max(1, Math.ceil(purchaseHistory.length / 7))
+  const weeksOfData = Math.max(1, Math.ceil(totalPurchased / 7))
   const avgPerWeek = Math.round(totalPurchased / weeksOfData)
 
-  // מגמת קניות (האם עולה או יורדת)
-  const lastTwoWeeks = purchaseHistory.filter(item => {
-    if (!item.purchasedAt) return false
-    const twoWeeksAgo = new Date()
-    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14)
-    return new Date(item.purchasedAt) >= twoWeeksAgo
-  })
-  
-  const lastWeekPurchases = lastTwoWeeks.filter(item => {
-    const oneWeekAgo = new Date()
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
-    return new Date(item.purchasedAt!) >= oneWeekAgo
-  }).length
-  
-  const previousWeekPurchases = lastTwoWeeks.filter(item => {
-    const twoWeeksAgo = new Date()
-    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14)
-    const oneWeekAgo = new Date()
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
-    const purchaseDate = new Date(item.purchasedAt!)
-    return purchaseDate >= twoWeeksAgo && purchaseDate < oneWeekAgo
-  }).length
-
-  const trend = lastWeekPurchases > previousWeekPurchases ? 'up' : 
-                lastWeekPurchases < previousWeekPurchases ? 'down' : 'stable'
-  const trendValue = lastWeekPurchases - previousWeekPurchases
+  // מגמת קניות
+  const trend = weeklyStats.growth > 0 ? 'up' : 
+                weeklyStats.growth < 0 ? 'down' : 'stable'
+  const trendValue = weeklyStats.growth
 
   // כרטיסי סטטיסטיקה עיקריים
   const mainStats: StatCard[] = [
@@ -117,7 +106,7 @@ export const EnhancedStatistics = ({
     },
     {
       label: 'הצעות חכמות',
-      value: totalSuggestions,
+      value: useAnalyticsStore.getState().smartSuggestions.length,
       icon: Target,
       color: 'from-purple-500 to-pink-600',
       bgColor: 'bg-gradient-to-br from-purple-50 to-pink-100',
@@ -131,24 +120,24 @@ export const EnhancedStatistics = ({
       color: 'from-amber-500 to-orange-600',
       bgColor: 'bg-gradient-to-br from-amber-50 to-orange-100',
       textColor: 'text-amber-700',
-      subtext: `${expiringShortly} עומדים לפוג`
+      subtext: `${expiringItemsCount} עומדים לפוג`
     }
   ]
 
   const secondaryStats: StatCard[] = [
     {
       label: 'קטגוריה פופולרית',
-      value: mostPopularCategory,
+      value: topCategory || 'אין נתונים',
       icon: Award,
       color: 'from-rose-500 to-red-600',
       bgColor: 'bg-gradient-to-br from-rose-50 to-red-100',
       textColor: 'text-rose-700',
-      subtext: `${categoryCount[mostPopularCategory] || 0} מוצרים`,
+      subtext: `${categoryStats.find(c => c.category === topCategory)?.count || 0} מוצרים`,
       isText: true
     },
     {
       label: 'עומדים לפוג',
-      value: expiringShortly,
+      value: expiringItemsCount,
       icon: Clock,
       color: 'from-orange-500 to-red-600',
       bgColor: 'bg-gradient-to-br from-orange-50 to-red-100',
@@ -206,6 +195,9 @@ export const EnhancedStatistics = ({
             <h3 className="font-bold text-lg sm:text-xl lg:text-2xl text-gray-800">סטטיסטיקות מתקדמות</h3>
             <p className="text-sm sm:text-base text-gray-600 hidden sm:block">תובנות על הרגלי הקנייה שלך</p>
           </div>
+          {isAnalyzing && (
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-500"></div>
+          )}
         </div>
         
         <button

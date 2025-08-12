@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ShoppingItem } from '../types'
 
 // Components
@@ -24,9 +24,9 @@ import {
   useShoppingList, 
   useItemOperations,
   useStatistics,
-  useAuthContext
+  useAuthContext,
+  useAnalytics
 } from '../hooks'
-import { getPopularItems } from '../utils/smartSuggestions'
 import { useSoundManager } from '../utils/soundManager'
 import { MESSAGES } from '../utils'
 
@@ -57,6 +57,14 @@ export function MainShoppingView() {
     importGuestData,
     hasGuestData
   } = useShoppingList()
+
+  // Analytics functionality
+  const analytics = useAnalytics(purchaseHistory, pantryItems)
+  
+  // Auto-refresh analytics when items change
+  useEffect(() => {
+    analytics.refreshAnalytics()
+  }, [items.length, analytics.refreshAnalytics])
 
   // Tutorial hook
   const { showTutorial, closeTutorial, openTutorial } = useTutorial()
@@ -195,14 +203,12 @@ export function MainShoppingView() {
 
         {/* Smart Suggestions */}
         <SmartSuggestions 
-          suggestions={suggestions}
           onAddSuggestion={addSuggestedItem}
         />
 
         {/* Quick Add Buttons */}
         <QuickAddButtons 
           onAddItem={handleAddItem}
-          popularItems={getPopularItems(purchaseHistory)}
         />
 
         {/* Shopping List Sections */}

@@ -14,8 +14,10 @@ export interface ShoppingItem {
 export interface ItemSuggestion {
   name: string
   frequency: number
-  lastBought: Date
+  lastBought?: Date
   daysSinceLastBought: number
+  category?: string
+  confidence?: number
 }
 
 export interface ExpiringItem {

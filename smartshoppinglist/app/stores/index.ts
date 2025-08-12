@@ -2,6 +2,7 @@
 export * from './authStore'
 export * from './shoppingListStore'
 export * from './uiStore'
+export * from './analyticsStore'
 
 // Store utilities and helpers
 export { create } from 'zustand'

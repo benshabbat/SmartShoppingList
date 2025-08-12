@@ -25,10 +25,10 @@ import {
   useShoppingList, 
   useItemOperations,
   useStatistics,
-  useAuthContext
+  useAuthContext,
+  useAnalytics
 } from './hooks'
 import { ShoppingItem } from './types'
-import { getPopularItems } from './utils/smartSuggestions'
 import { useSoundManager } from './utils/soundManager'
 import { MESSAGES } from './utils'
 
@@ -63,6 +63,9 @@ export default function ShoppingListApp() {
     importGuestData,
     hasGuestData
   } = useShoppingList()
+
+  // Analytics functionality
+  const analytics = useAnalytics(purchaseHistory, pantryItems)
 
   // Tutorial hook
   const { showTutorial, closeTutorial, openTutorial } = useTutorial()
@@ -270,14 +273,12 @@ export default function ShoppingListApp() {
 
         {/* Smart Suggestions */}
         <SmartSuggestions 
-          suggestions={suggestions}
           onAddSuggestion={addSuggestedItem}
         />
 
         {/* Quick Add Buttons */}
         <QuickAddButtons 
           onAddItem={handleAddItem}
-          popularItems={getPopularItems(purchaseHistory)}
         />
 
         {/* Shopping List by Categories */}

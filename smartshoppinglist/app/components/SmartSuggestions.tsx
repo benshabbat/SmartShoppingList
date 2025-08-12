@@ -1,12 +1,13 @@
 import { Lightbulb, Sparkles } from 'lucide-react'
-import { ItemSuggestion } from '../types'
+import { useSmartSuggestions } from '../stores/analyticsStore'
 
 interface SmartSuggestionsProps {
-  suggestions: ItemSuggestion[]
   onAddSuggestion: (name: string) => void
 }
 
-export const SmartSuggestions = ({ suggestions, onAddSuggestion }: SmartSuggestionsProps) => {
+export const SmartSuggestions = ({ onAddSuggestion }: SmartSuggestionsProps) => {
+  const suggestions = useSmartSuggestions()
+
   if (suggestions.length === 0) return null
 
   return (

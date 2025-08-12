@@ -7,6 +7,9 @@ export { useAuth } from './useAuth'
 export { useAuthContext } from './useAuthContext'
 export { useConstants } from './useConstants'
 
+// Analytics hooks
+export * from './useAnalytics'
+
 // Re-export existing hooks
 export { useShoppingList } from './useShoppingList'
 

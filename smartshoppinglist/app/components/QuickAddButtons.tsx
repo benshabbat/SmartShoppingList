@@ -1,13 +1,15 @@
 import { ShoppingBag, Zap, Star } from 'lucide-react'
 import { CATEGORY_EMOJIS } from '../utils/constants'
 import { FadeIn } from './Animations'
+import { usePopularItems } from '../stores/analyticsStore'
 
 interface QuickAddButtonsProps {
   onAddItem: (name: string, category: string) => void
-  popularItems: Array<{ name: string; category: string; count: number }>
 }
 
-export const QuickAddButtons = ({ onAddItem, popularItems }: QuickAddButtonsProps) => {
+export const QuickAddButtons = ({ onAddItem }: QuickAddButtonsProps) => {
+  const popularItems = usePopularItems()
+  
   if (popularItems.length === 0) return null
 
   const topItems = popularItems.slice(0, 6) // 6 הכי פופולריים

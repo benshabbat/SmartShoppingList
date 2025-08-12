@@ -85,7 +85,6 @@ export default function StatisticsPage() {
         <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
           <EnhancedStatistics 
             purchaseHistory={purchaseHistory}
-            suggestions={suggestions}
             pantryItems={pantryItems}
           />
         </div>

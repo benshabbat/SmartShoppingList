@@ -26,11 +26,19 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
   const itemsStore = useShoppingDataStore()
   const uiStore = useUIStore()
   
-  // Load items on mount and when user changes
+  // App initialization and item loading
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      itemsStore.loadItems(user?.id)
+    const initializeApp = () => {
+      // Log app initialization
+      console.log('App initialized for user:', user?.id || 'guest')
+      
+      // Load items for the current user
+      if (typeof window !== 'undefined') {
+        itemsStore.loadItems(user?.id)
+      }
     }
+    
+    initializeApp()
   }, [user?.id, itemsStore.loadItems])
 
   // Advanced computed values with memoization

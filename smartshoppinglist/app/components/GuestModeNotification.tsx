@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react'
 import { User, X } from 'lucide-react'
 import { useAuth } from '@/app/hooks/useAuth'
+import { useMainAppLogic } from './MainAppContent/useMainAppLogic'
 
-interface GuestModeNotificationProps {
-  onSwitchToAuth?: () => void
-  onDismiss?: () => void
-}
-
-export function GuestModeNotification({ onSwitchToAuth, onDismiss }: GuestModeNotificationProps) {
+/**
+ * Guest Mode Notification Component
+ * Zero Props Drilling - gets everything from context
+ */
+export function GuestModeNotification() {
   const { isGuest, switchToAuth } = useAuth()
+  const { handleGuestDataImport } = useMainAppLogic()
   const [isDismissed, setIsDismissed] = useState(false)
   const [showMinimized, setShowMinimized] = useState(false)
 
@@ -34,6 +35,8 @@ export function GuestModeNotification({ onSwitchToAuth, onDismiss }: GuestModeNo
     if (typeof window !== 'undefined') {
       localStorage.setItem('guest_notification_dismissed', 'true')
     }
+    // Call the guest data import handler from context
+    handleGuestDataImport()
   }
 
   if (!isGuest || isDismissed) return null
@@ -81,11 +84,7 @@ export function GuestModeNotification({ onSwitchToAuth, onDismiss }: GuestModeNo
                   )
                   
                   if (confirmSwitch) {
-                    if (onSwitchToAuth) {
-                      onSwitchToAuth()
-                    } else {
-                      switchToAuth()
-                    }
+                    switchToAuth()
                   }
                 }}
                 className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-full transition-colors"

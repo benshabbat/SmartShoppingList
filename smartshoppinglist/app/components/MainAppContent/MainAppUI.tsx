@@ -16,23 +16,18 @@ import { GuestModeNotification } from '../GuestModeNotification'
 import { useMainAppLogic } from './useMainAppLogic'
 
 export const MainAppUI = () => {
-  const {
-    renderState,
-    shouldShowGuestNotification,
-    handleLoginSuccess,
-    handleGuestDataImport
-  } = useMainAppLogic()
+  const { renderState, shouldShowGuestNotification } = useMainAppLogic()
 
   // Loading state
   if (renderState === 'loading') {
     return <LoadingOverlay message="טוען..." />
   }
 
-  // Login state
+  // Login state  
   if (renderState === 'login') {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <LoginForm onSuccess={handleLoginSuccess} />
+        <LoginForm />
       </div>
     )
   }
@@ -43,12 +38,8 @@ export const MainAppUI = () => {
       {/* Header */}
       <Header />
 
-      {/* Guest Mode Notification */}
-      {shouldShowGuestNotification && (
-        <GuestModeNotification
-          onDismiss={handleGuestDataImport}
-        />
-      )}
+      {/* Guest Mode Notification - No props needed! */}
+      {shouldShowGuestNotification && <GuestModeNotification />}
 
       {/* Main Content */}
       <MainShoppingView />

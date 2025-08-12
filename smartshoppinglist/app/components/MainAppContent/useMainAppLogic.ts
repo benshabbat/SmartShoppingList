@@ -74,12 +74,6 @@ export const useMainAppLogic = () => {
     }
   }, [hasGuestData, openDataImportModal, showSuccess])
 
-  // App initialization logic
-  const initializeApp = useCallback(() => {
-    // Any app initialization logic can go here
-    console.log('App initialized for user:', user?.id || 'guest')
-  }, [user?.id])
-
   // Handle app errors
   const handleAppError = useCallback((error: Error) => {
     console.error('App error:', error)
@@ -112,7 +106,6 @@ export const useMainAppLogic = () => {
     // Event handlers
     handleGuestDataImport,
     handleLoginSuccess,
-    initializeApp,
     handleAppError,
     
     // Utilities

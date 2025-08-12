@@ -1,16 +1,12 @@
 import { useLoginFormLogic } from './useLoginFormLogic'
 import { LoginFormUI } from './LoginFormUI'
 
-interface LoginFormProps {
-  onSuccess?: () => void
-}
-
 /**
  * Container component that combines logic and UI
- * Follows the Container/Presentational pattern
+ * Zero Props Drilling - gets everything from context
  */
-export function LoginForm({ onSuccess }: LoginFormProps) {
-  const logic = useLoginFormLogic({ onSuccess })
+export function LoginForm() {
+  const logic = useLoginFormLogic()
 
   return (
     <LoginFormUI

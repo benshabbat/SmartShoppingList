@@ -1,17 +1,15 @@
 import { useState } from 'react'
 import { UserService } from '../../../lib/services/userService'
 import { useAuth } from '../../hooks/useAuth'
-
-interface UseLoginFormLogicProps {
-  onSuccess?: () => void
-}
+import { useMainAppLogic } from '../MainAppContent/useMainAppLogic'
 
 /**
  * Custom hook for LoginForm business logic
- * Handles form state, validation, authentication, and error handling
+ * Zero Props Drilling - gets everything from context
  */
-export const useLoginFormLogic = ({ onSuccess }: UseLoginFormLogicProps) => {
+export const useLoginFormLogic = () => {
   const { signInAsGuest } = useAuth()
+  const { handleLoginSuccess } = useMainAppLogic()
   
   // Form state
   const [isLogin, setIsLogin] = useState(true)
@@ -29,7 +27,7 @@ export const useLoginFormLogic = ({ onSuccess }: UseLoginFormLogicProps) => {
     console.log('🎯 handleGuestLogin called')
     signInAsGuest()
     console.log('🎯 signInAsGuest executed')
-    // Don't call onSuccess for guest login - let the state change trigger re-render naturally
+    // Guest login success is handled by auth state change
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -42,7 +40,7 @@ export const useLoginFormLogic = ({ onSuccess }: UseLoginFormLogicProps) => {
       if (isLogin) {
         await UserService.signIn(email, password)
         setMessage('התחברת בהצלחה!')
-        onSuccess?.()
+        handleLoginSuccess()
       } else {
         await UserService.signUp(email, password, fullName)
         setMessage('נרשמת בהצלחה! בדוק את המייל שלך לאימות החשבון.')

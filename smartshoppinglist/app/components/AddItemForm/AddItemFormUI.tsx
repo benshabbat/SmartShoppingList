@@ -1,59 +1,34 @@
 import { Plus } from 'lucide-react'
 import { CATEGORIES } from '../../utils/constants'
-import { ShoppingItem, Category } from '../../types'
 import { AutoComplete } from '../AutoComplete'
 import { CategorySelector } from '../CategorySelector'
 import { NotificationBanner } from '../NotificationBanner'
 import { getButtonClasses, containerStyles } from '../../utils/classNames'
-
-interface AddItemFormUIProps {
-  // Form data
-  itemName: {
-    value: string
-    error?: string
-    isValid: boolean
-  }
-  newItemCategory: Category
-  suggestions: string[]
-  
-  // UI state
-  autoChangedCategory: boolean
-  showCategorySuggestion: boolean
-  suggestedCategory: Category | null
-  isSubmitDisabled: boolean
-  
-  // Event handlers
-  onSubmit: (e: React.FormEvent) => void
-  onAutoCompleteSelect: (selectedItem: string) => void
-  onNameChange: (name: string) => void
-  onCategorySuggestionAccept: () => void
-  onCategorySuggestionDismiss: () => void
-  onCategoryChange: (category: Category) => void
-  
-  // Props
-  purchaseHistory: ShoppingItem[]
-}
+import { useAddItemFormLogic } from './useAddItemFormLogic'
+import { useGlobalShopping } from '../../contexts/GlobalShoppingContext'
 
 /**
  * Pure UI component for AddItemForm
- * Contains only rendering logic, no business logic
+ * NO PROPS DRILLING - everything comes from global context!
  */
-export const AddItemFormUI = ({
-  itemName,
-  newItemCategory,
-  suggestions,
-  autoChangedCategory,
-  showCategorySuggestion,
-  suggestedCategory,
-  isSubmitDisabled,
-  onSubmit,
-  onAutoCompleteSelect,
-  onNameChange,
-  onCategorySuggestionAccept,
-  onCategorySuggestionDismiss,
-  onCategoryChange,
-  purchaseHistory,
-}: AddItemFormUIProps) => {
+export const AddItemFormUI = () => {
+  // NO PROPS DRILLING! Get everything from global context and hooks
+  const { purchaseHistory } = useGlobalShopping()
+  const {
+    itemName,
+    newItemCategory,
+    suggestions,
+    autoChangedCategory,
+    showCategorySuggestion,
+    suggestedCategory,
+    isSubmitDisabled,
+    handleSubmit,
+    handleAutoCompleteSelect,
+    handleNameChange,
+    handleCategorySuggestionAccept,
+    handleCategorySuggestionDismiss,
+    setNewItemCategory
+  } = useAddItemFormLogic()
   return (
     <div className={containerStyles.section}>
       <NotificationBanner
@@ -69,17 +44,17 @@ export const AddItemFormUI = ({
         message=""
         category={suggestedCategory || undefined}
         productName={itemName.value}
-        onAccept={onCategorySuggestionAccept}
-        onDismiss={onCategorySuggestionDismiss}
+        onAccept={handleCategorySuggestionAccept}
+        onDismiss={handleCategorySuggestionDismiss}
         isVisible={showCategorySuggestion && !!suggestedCategory}
       />
 
-      <form onSubmit={onSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="flex-1">
             <CategorySelector
               value={newItemCategory}
-              onChange={onCategoryChange}
+              onChange={setNewItemCategory}
               categories={CATEGORIES}
               isHighlighted={autoChangedCategory}
             />
@@ -89,8 +64,8 @@ export const AddItemFormUI = ({
         <div className="flex gap-3">
           <AutoComplete
             value={itemName.value}
-            onChange={onNameChange}
-            onSelect={onAutoCompleteSelect}
+            onChange={handleNameChange}
+            onSelect={handleAutoCompleteSelect}
             suggestions={suggestions}
             purchaseHistory={purchaseHistory}
             placeholder={`הוסף ${newItemCategory}...`}

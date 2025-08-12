@@ -322,10 +322,11 @@ const { openTutorial, closeTutorial } = useShoppingUI()
 6. ✅ **ReceiptScanner** - הסרת `onReceiptProcessed` ו-`onClose` props
 7. ✅ **DataImportModal** - הסרת 4 props והחלפה בגלובל קונטקסט
 8. ✅ **ExpiryDateModal** - הסרת 4 props והחלפה בגלובל קונטקסט
+9. ✅ **AddItemForm** - **REFACTOR מלא!** הסרת 13+ props והחלפה בגלובל קונטקסט
 
 ### 🎯 סה"כ הישגים:
-- **24+ props** הוסרו מהאפליקציה
-- **8 קומפוננטים** עודכנו לארכיטקטורה חדשה
+- **37+ props** הוסרו מהאפליקציה (כולל AddItemForm!)
+- **9 קומפוננטים** עודכנו לארכיטקטורה חדשה
 - **0 שגיאות TypeScript** - הכל עובד מושלם
 - **100% Zero Props Drilling** הושג
 

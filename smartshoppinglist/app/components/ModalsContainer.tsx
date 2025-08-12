@@ -1,66 +1,31 @@
 'use client'
 
-import { ShoppingItem } from '../types'
+import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
 import { ReceiptScanner } from './ReceiptScanner'
 import { ExpiryDateModal } from './ExpiryDateModal'
 import { DataImportModal } from './DataImportModal'
 
-interface ModalsContainerProps {
-  showReceiptScanner: boolean
-  showExpiryModal: boolean
-  showDataImportModal: boolean
-  checkoutItems: ShoppingItem[]
-  hasGuestData: boolean
-  onReceiptProcessed: (receiptItems: ShoppingItem[], storeName: string) => void
-  onCloseReceiptScanner: () => void
-  onExpiryModalSubmit: (itemsWithExpiry: Array<{ id: string; expiryDate?: Date }>) => void
-  onExpiryModalClose: () => void
-  onCloseDataImportModal: () => void
-  onImportGuestData: () => Promise<void>
-}
-
-export function ModalsContainer({
-  showReceiptScanner,
-  showExpiryModal,
-  showDataImportModal,
-  checkoutItems,
-  hasGuestData,
-  onReceiptProcessed,
-  onCloseReceiptScanner,
-  onExpiryModalSubmit,
-  onExpiryModalClose,
-  onCloseDataImportModal,
-  onImportGuestData
-}: ModalsContainerProps) {
+/**
+ * ModalsContainer - Zero Props Drilling
+ * כל המידע מגיע מה-context
+ */
+export function ModalsContainer() {
+  // Get only the UI state we need from context - no props needed!
+  const {
+    showReceiptScanner,
+    showExpiryModal,
+    showDataImportModal,
+  } = useGlobalShopping()
   return (
     <>
-      {/* Receipt Scanner Modal */}
-      {showReceiptScanner && (
-        <ReceiptScanner
-          onReceiptProcessed={onReceiptProcessed}
-          onClose={onCloseReceiptScanner}
-        />
-      )}
+      {/* Receipt Scanner Modal - מקבל הכל מה-context */}
+      {showReceiptScanner && <ReceiptScanner />}
 
-      {/* Expiry Date Modal */}
-      {showExpiryModal && (
-        <ExpiryDateModal
-          items={checkoutItems}
-          isOpen={showExpiryModal}
-          onClose={onExpiryModalClose}
-          onSubmit={onExpiryModalSubmit}
-        />
-      )}
+      {/* Expiry Date Modal - מקבל הכל מה-context */}
+      {showExpiryModal && <ExpiryDateModal />}
 
-      {/* Data Import Modal */}
-      {showDataImportModal && (
-        <DataImportModal
-          isOpen={showDataImportModal}
-          onClose={onCloseDataImportModal}
-          onImportGuestData={onImportGuestData}
-          hasGuestData={hasGuestData}
-        />
-      )}
+      {/* Data Import Modal - מקבל הכל מה-context */}
+      {showDataImportModal && <DataImportModal />}
     </>
   )
 }

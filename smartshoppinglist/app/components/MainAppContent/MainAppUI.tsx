@@ -8,6 +8,7 @@
 import { Header } from '../Header'
 import { LoginForm } from '../LoginForm'
 import { MainShoppingView } from '../MainShoppingView'
+import { ModalsContainer } from '../ModalsContainer'
 import { ToastContainer } from '../Toast'
 import { Tutorial } from '../Tutorial'
 import { LoadingOverlay } from '../LoadingOverlay'
@@ -51,6 +52,9 @@ export const MainAppUI = () => {
 
       {/* Main Content */}
       <MainShoppingView />
+
+      {/* Modals - Zero Props Drilling */}
+      <ModalsContainer />
 
       {/* Tutorial */}
       <Tutorial />

@@ -57,7 +57,7 @@ interface ShoppingDataState {
   refreshData: () => Promise<void>
   
   // === ITEMS CRUD ===
-  addItem: (name: string, category: string, expiryDate?: string) => Promise<ShoppingItem | null>
+  addItem: (name: string, category: string, userId: string, expiryDate?: string) => Promise<ShoppingItem | null>
   updateItem: (id: string, updates: Partial<ShoppingItem>) => Promise<void>
   deleteItem: (id: string) => Promise<void>
   
@@ -81,7 +81,7 @@ interface ShoppingDataState {
   
   // === SUGGESTIONS ===
   updateSuggestions: () => void
-  acceptSuggestion: (suggestion: ItemSuggestion) => Promise<void>
+  acceptSuggestion: (suggestion: ItemSuggestion, userId: string) => Promise<void>
   dismissSuggestion: (suggestionId: string) => void
   
   // === HELPERS ===
@@ -192,7 +192,7 @@ export const useShoppingDataStore = create<ShoppingDataState>()(
         },
 
         // === ITEMS CRUD ===
-        addItem: async (name: string, category: string, expiryDate?: string) => {
+        addItem: async (name: string, category: string, userId: string, expiryDate?: string) => {
           set((draft) => {
             draft.isLoading = true
             draft.error = null
@@ -200,6 +200,7 @@ export const useShoppingDataStore = create<ShoppingDataState>()(
 
           try {
             const newDbItem = await ShoppingItemService.createShoppingItem({
+              user_id: userId,
               name,
               category,
               expiry_date: expiryDate || null
@@ -422,8 +423,8 @@ export const useShoppingDataStore = create<ShoppingDataState>()(
           })
         },
 
-        acceptSuggestion: async (suggestion: ItemSuggestion) => {
-          const newItem = await get().addItem(suggestion.name, suggestion.category || 'other')
+        acceptSuggestion: async (suggestion: ItemSuggestion, userId: string) => {
+          const newItem = await get().addItem(suggestion.name, suggestion.category || 'other', userId)
           if (newItem) {
             get().dismissSuggestion(suggestion.id)
           }

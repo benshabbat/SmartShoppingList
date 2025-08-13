@@ -109,7 +109,7 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
         return
       }
 
-      const newItem = await itemsStore.addItem(itemName, category)
+      const newItem = await itemsStore.addItem(itemName, category, user?.id || 'guest')
       
       if (newItem && addToCart) {
         await itemsStore.addToCart(newItem.id)
@@ -242,7 +242,7 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
         if (existingItem) {
           duplicateCount++
         } else {
-          await itemsStore.addItem(item.name, item.category, user?.id)
+          await itemsStore.addItem(item.name, item.category, user?.id || 'guest')
           successCount++
         }
       }
@@ -268,7 +268,7 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
         )
         
         if (!existingItem) {
-          const newItem = await itemsStore.addItem(item.name, item.category)
+          const newItem = await itemsStore.addItem(item.name, item.category, user?.id || 'guest')
           if (newItem) {
             await itemsStore.addToCart(newItem.id)
             successCount++

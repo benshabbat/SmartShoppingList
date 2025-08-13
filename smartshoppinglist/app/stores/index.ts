@@ -1,6 +1,6 @@
 /**
  * Main Store Index
- * Unified exports for all stores with clear organization
+ * Clean exports for all stores - NO COMPLEX COMBINATIONS
  */
 
 // === CORE STORES ===
@@ -18,8 +18,7 @@ export {
 
 // === DATA STORES ===
 export { 
-  useShoppingDataStore, 
-  useShoppingDataSelectors 
+  useShoppingDataStore 
 } from './data/shoppingDataStore'
 
 export { 
@@ -34,5 +33,5 @@ export { immer } from 'zustand/middleware/immer'
 
 /**
  * Store Index - Clean exports only
- * For complex combinations, use the GlobalShoppingContext or stores directly in your components
+ * For complex combinations, use the GlobalShoppingContext directly
  */

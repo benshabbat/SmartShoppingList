@@ -5,30 +5,22 @@
 
 // === MAIN CONTEXT (Recommended for most components) ===
 export { 
-  GlobalAppProvider,
-  useGlobalApp,
-  useAppData,
-  useAppActions,
-  useAppUI,
-  useAppAuth as useContextAuth
-} from '../contexts/GlobalAppContext'
+  GlobalShoppingProvider,
+  useGlobalShopping
+} from '../contexts/GlobalShoppingContext'
 
 // === INDIVIDUAL STORES (For specialized use cases) ===
 export {
   useAuthStore,
   useUIStore,
   useShoppingDataStore,
-  useAnalyticsStore,
-  useAppAuth,
-  useUI,
-  useShoppingData
+  useAnalyticsStore
 } from './index'
 
 // === STORE SELECTORS (For performance optimization) ===
 export {
   useAuthSelectors,
   useUISelectors,
-  useShoppingDataSelectors,
   useAnalyticsSelectors
 } from './index'
 

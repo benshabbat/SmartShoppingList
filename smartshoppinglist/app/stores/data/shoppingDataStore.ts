@@ -20,8 +20,8 @@ interface DbShoppingItem {
   is_in_cart: boolean
   is_purchased: boolean
   added_at: string
-  purchased_at?: string
-  expiry_date?: string
+  purchased_at?: string | null
+  expiry_date?: string | null
   purchase_location?: string
   price?: number
 }
@@ -47,66 +47,50 @@ interface ShoppingDataState {
   searchQuery: string
   
   // === STATE ===
-  loading: boolean
+  isLoading: boolean
+  isInitialized: boolean
   error: string | null
-}
-
-interface ShoppingDataActions {
-  // === DATABASE OPERATIONS ===
-  loadItems: (userId?: string) => Promise<void>
-  addItem: (itemName: string, category: string, userId?: string, isInCart?: boolean) => Promise<string | undefined>
-  updateItem: (id: string, updates: Partial<ShoppingItem>, userId?: string) => Promise<void>
-  deleteItem: (id: string, userId?: string) => Promise<void>
-  toggleItemCart: (id: string, userId?: string) => Promise<void>
-  clearPurchasedItems: (userId?: string) => Promise<void>
+  lastUpdated: string | null
   
-  // === LOCAL STATE OPERATIONS ===
-  setItems: (items: ShoppingItem[]) => void
-  updateLocalItem: (id: string, updates: Partial<ShoppingItem>) => void
-  removeLocalItem: (id: string) => void
-  addLocalItem: (item: ShoppingItem) => void
+  // === CORE ACTIONS ===
+  initializeStore: () => Promise<void>
+  refreshData: () => Promise<void>
+  
+  // === ITEMS CRUD ===
+  addItem: (name: string, category: string, expiryDate?: string) => Promise<ShoppingItem | null>
+  updateItem: (id: string, updates: Partial<ShoppingItem>) => Promise<void>
+  deleteItem: (id: string) => Promise<void>
+  
+  // === CART ACTIONS ===
+  addToCart: (id: string) => Promise<void>
+  removeFromCart: (id: string) => Promise<void>
+  toggleInCart: (id: string) => Promise<void>
+  
+  // === PURCHASE ACTIONS ===
+  markAsPurchased: (id: string, location?: string, price?: number) => Promise<void>
+  markAsUnpurchased: (id: string) => Promise<void>
+  clearPurchased: () => Promise<void>
   
   // === LIST MANAGEMENT ===
-  setSelectedListId: (listId: string | null) => void
+  setSelectedList: (listId: string | null) => void
   
-  // === SUGGESTIONS & ANALYTICS ===
-  setSuggestions: (suggestions: ItemSuggestion[]) => void
-  setExpiringItems: (items: ExpiringItem[]) => void
-  refreshSuggestions: () => void
-  
-  // === FILTERING & SEARCH ===
-  setFilter: (key: keyof ShoppingDataState['filters'], value: unknown) => void
+  // === FILTERS & SEARCH ===
   setSearchQuery: (query: string) => void
+  updateFilters: (updates: Partial<ShoppingDataState['filters']>) => void
   resetFilters: () => void
   
-  // === BULK OPERATIONS ===
-  markAllAsPurchased: () => void
-  clearAllItems: () => void
-  toggleItemInCart: (id: string) => void
-  toggleItemPurchased: (id: string) => void
+  // === SUGGESTIONS ===
+  updateSuggestions: () => void
+  acceptSuggestion: (suggestion: ItemSuggestion) => Promise<void>
+  dismissSuggestion: (suggestionId: string) => void
   
-  // === STATE MANAGEMENT ===
-  setLoading: (loading: boolean) => void
-  setError: (error: string | null) => void
+  // === HELPERS ===
   clearError: () => void
-  
-  // === COMPUTED VALUES ===
-  getItemsByStatus: () => {
-    pending: ShoppingItem[]
-    inCart: ShoppingItem[]
-    purchased: ShoppingItem[]
-  }
-  getFilteredItems: () => ShoppingItem[]
-  hasItemsInCart: () => boolean
-  hasExpiringItems: () => boolean
-  hasPurchaseHistory: () => boolean
-  isPantryEmpty: () => boolean
+  setError: (error: string) => void
 }
 
-type ShoppingDataStore = ShoppingDataState & ShoppingDataActions
-
 // Helper functions
-const convertDbItemToShoppingItem = (dbItem: DbShoppingItem): ShoppingItem => ({
+const mapDbItemToShoppingItem = (dbItem: DbShoppingItem): ShoppingItem => ({
   id: dbItem.id,
   name: dbItem.name,
   category: dbItem.category,
@@ -116,502 +100,366 @@ const convertDbItemToShoppingItem = (dbItem: DbShoppingItem): ShoppingItem => ({
   purchasedAt: dbItem.purchased_at ? new Date(dbItem.purchased_at) : undefined,
   expiryDate: dbItem.expiry_date ? new Date(dbItem.expiry_date) : undefined,
   purchaseLocation: dbItem.purchase_location,
-  price: dbItem.price,
+  price: dbItem.price
 })
 
-const convertShoppingItemToDb = (item: ShoppingItem): Omit<DbShoppingItem, 'id'> => ({
-  name: item.name,
-  category: item.category,
-  is_in_cart: item.isInCart,
-  is_purchased: item.isPurchased,
-  added_at: item.addedAt.toISOString(),
-  purchased_at: item.purchasedAt?.toISOString(),
-  expiry_date: item.expiryDate?.toISOString(),
-  purchase_location: item.purchaseLocation,
-  price: item.price,
-})
-
-const parseDatesInItems = (items: ShoppingItem[]): ShoppingItem[] => {
-  return items.map(item => ({
-    ...item,
-    addedAt: item.addedAt ? new Date(item.addedAt) : new Date(),
-    purchasedAt: item.purchasedAt ? new Date(item.purchasedAt) : undefined,
-    expiryDate: item.expiryDate ? new Date(item.expiryDate) : undefined,
-  }))
-}
-
-// Initial State
-const initialState: ShoppingDataState = {
-  // Core Data
-  items: [],
-  suggestions: [],
-  expiringItems: [],
-  purchaseHistory: [],
-  pantryItems: [],
-  
-  // List Management
-  selectedListId: null,
-  
-  // Filters & Search
-  filters: {
-    category: null,
-    showPurchased: true,
-    sortBy: 'addedAt',
-    sortOrder: 'desc',
-  },
-  searchQuery: '',
-  
-  // State
-  loading: false,
-  error: null,
-}
-
-// Store Implementation
-export const useShoppingDataStore = create<ShoppingDataStore>()(
+export const useShoppingDataStore = create<ShoppingDataState>()(
   devtools(
     persist(
       immer((set, get) => ({
-        ...initialState,
+        // === INITIAL STATE ===
+        items: [],
+        suggestions: [],
+        expiringItems: [],
+        purchaseHistory: [],
+        pantryItems: [],
+        selectedListId: null,
+        filters: {
+          category: null,
+          showPurchased: false,
+          sortBy: 'addedAt',
+          sortOrder: 'desc'
+        },
+        searchQuery: '',
+        isLoading: false,
+        isInitialized: false,
+        error: null,
+        lastUpdated: null,
 
-        // === DATABASE OPERATIONS ===
-        loadItems: async (userId) => {
-          set((state) => {
-            state.loading = true
-            state.error = null
+        // === INITIALIZATION ===
+        initializeStore: async () => {
+          const state = get()
+          if (state.isInitialized) return
+
+          set((draft) => {
+            draft.isLoading = true
+            draft.error = null
           })
 
           try {
-            let items: ShoppingItem[] = []
-            
-            if (userId && userId !== 'guest') {
-              // Load from database for authenticated users
-              const response = await ShoppingItemService.getAllItems(userId)
-              if (response.data) {
-                items = response.data.map(convertDbItemToShoppingItem)
-              } else if (response.error) {
-                throw new Error(response.error.message)
-              }
-            } else {
-              // Load from localStorage for guest users
-              const guestItems = localStorage.getItem(STORAGE_KEYS.GUEST_ITEMS)
-              if (guestItems) {
-                items = parseDatesInItems(JSON.parse(guestItems))
-              }
-            }
+            // Load data from Supabase
+            const dbItems = await ShoppingItemService.getShoppingItems('')
+            const items = dbItems.map(mapDbItemToShoppingItem)
 
-            set((state) => {
-              state.items = items
-              state.purchaseHistory = items.filter(item => item.isPurchased)
-              state.pantryItems = items.filter(item => item.isPurchased && item.expiryDate)
-              state.expiringItems = checkExpiringItems(state.pantryItems)
-              state.loading = false
+            set((draft) => {
+              draft.items = items
+              draft.isInitialized = true
+              draft.lastUpdated = new Date().toISOString()
             })
 
-            // Refresh suggestions after loading items
-            get().refreshSuggestions()
+            // Update derived data
+            get().updateSuggestions()
 
           } catch (error) {
-            set((state) => {
-              state.error = error instanceof Error ? error.message : 'Failed to load items'
-              state.loading = false
+            console.error('Failed to initialize store:', error)
+            set((draft) => {
+              draft.error = 'Failed to load shopping data'
+            })
+          } finally {
+            set((draft) => {
+              draft.isLoading = false
             })
           }
         },
 
-        addItem: async (itemName, category, userId, isInCart = false) => {
-          set((state) => {
-            state.loading = true
-            state.error = null
+        refreshData: async () => {
+          set((draft) => {
+            draft.isLoading = true
+            draft.error = null
           })
 
           try {
-            const newItem: ShoppingItem = {
-              id: Date.now().toString(),
-              name: itemName.trim(),
+            const dbItems = await ShoppingItemService.getShoppingItems('')
+            const items = dbItems.map(mapDbItemToShoppingItem)
+
+            set((draft) => {
+              draft.items = items
+              draft.lastUpdated = new Date().toISOString()
+            })
+
+            get().updateSuggestions()
+
+          } catch (error) {
+            console.error('Failed to refresh data:', error)
+            set((draft) => {
+              draft.error = 'Failed to refresh shopping data'
+            })
+          } finally {
+            set((draft) => {
+              draft.isLoading = false
+            })
+          }
+        },
+
+        // === ITEMS CRUD ===
+        addItem: async (name: string, category: string, expiryDate?: string) => {
+          set((draft) => {
+            draft.isLoading = true
+            draft.error = null
+          })
+
+          try {
+            const newDbItem = await ShoppingItemService.createShoppingItem({
+              name,
               category,
-              isInCart,
-              isPurchased: false,
-              addedAt: new Date(),
-            }
-
-            if (userId && userId !== 'guest') {
-              // Save to database for authenticated users
-              const dbItem = convertShoppingItemToDb(newItem)
-              const response = await ShoppingItemService.createItem(dbItem, userId)
-              
-              if (response.data) {
-                newItem.id = response.data.id
-              } else if (response.error) {
-                throw new Error(response.error.message)
-              }
-            } else {
-              // Save to localStorage for guest users
-              const currentItems = get().items
-              const updatedItems = [...currentItems, newItem]
-              localStorage.setItem(STORAGE_KEYS.GUEST_ITEMS, JSON.stringify(updatedItems))
-            }
-
-            set((state) => {
-              state.items.push(newItem)
-              state.loading = false
+              expiry_date: expiryDate || null
             })
 
-            return newItem.id
+            const newItem = mapDbItemToShoppingItem(newDbItem)
+
+            set((draft) => {
+              draft.items.push(newItem)
+              draft.lastUpdated = new Date().toISOString()
+            })
+
+            get().updateSuggestions()
+            return newItem
 
           } catch (error) {
-            set((state) => {
-              state.error = error instanceof Error ? error.message : 'Failed to add item'
-              state.loading = false
+            console.error('Failed to add item:', error)
+            set((draft) => {
+              draft.error = 'Failed to add item'
             })
-            return undefined
+            return null
+          } finally {
+            set((draft) => {
+              draft.isLoading = false
+            })
           }
         },
 
-        updateItem: async (id, updates, userId) => {
+        updateItem: async (id: string, updates: Partial<ShoppingItem>) => {
+          set((draft) => {
+            draft.isLoading = true
+            draft.error = null
+          })
+
           try {
-            const currentItems = get().items
-            const itemIndex = currentItems.findIndex(item => item.id === id)
-            
-            if (itemIndex === -1) {
-              throw new Error('Item not found')
+            const dbUpdates: Partial<DbShoppingItem> = {}
+
+            if (updates.name !== undefined) dbUpdates.name = updates.name
+            if (updates.category !== undefined) dbUpdates.category = updates.category
+            if (updates.isInCart !== undefined) dbUpdates.is_in_cart = updates.isInCart
+            if (updates.isPurchased !== undefined) dbUpdates.is_purchased = updates.isPurchased
+            if (updates.expiryDate !== undefined) {
+              dbUpdates.expiry_date = updates.expiryDate ? updates.expiryDate.toISOString() : null
+            }
+            if (updates.purchaseLocation !== undefined) dbUpdates.purchase_location = updates.purchaseLocation
+            if (updates.price !== undefined) dbUpdates.price = updates.price
+            if (updates.purchasedAt !== undefined) {
+              dbUpdates.purchased_at = updates.purchasedAt ? updates.purchasedAt.toISOString() : null
             }
 
-            const updatedItem = { ...currentItems[itemIndex], ...updates }
+            await ShoppingItemService.updateShoppingItem(id, dbUpdates)
 
-            if (userId && userId !== 'guest') {
-              // Update in database for authenticated users
-              const dbUpdates = convertShoppingItemToDb(updatedItem)
-              const response = await ShoppingItemService.updateItem(id, dbUpdates, userId)
-              
-              if (response.error) {
-                throw new Error(response.error.message)
+            set((draft) => {
+              const itemIndex = draft.items.findIndex(item => item.id === id)
+              if (itemIndex !== -1) {
+                Object.assign(draft.items[itemIndex], updates)
               }
-            } else {
-              // Update localStorage for guest users
-              const updatedItems = [...currentItems]
-              updatedItems[itemIndex] = updatedItem
-              localStorage.setItem(STORAGE_KEYS.GUEST_ITEMS, JSON.stringify(updatedItems))
-            }
-
-            set((state) => {
-              state.items[itemIndex] = updatedItem
-              if (updatedItem.isPurchased) {
-                state.purchaseHistory = state.items.filter(item => item.isPurchased)
-                state.pantryItems = state.purchaseHistory.filter(item => item.expiryDate)
-                state.expiringItems = checkExpiringItems(state.pantryItems)
-              }
+              draft.lastUpdated = new Date().toISOString()
             })
 
+            get().updateSuggestions()
+
           } catch (error) {
-            set((state) => {
-              state.error = error instanceof Error ? error.message : 'Failed to update item'
+            console.error('Failed to update item:', error)
+            set((draft) => {
+              draft.error = 'Failed to update item'
+            })
+          } finally {
+            set((draft) => {
+              draft.isLoading = false
             })
           }
         },
 
-        deleteItem: async (id, userId) => {
+        deleteItem: async (id: string) => {
+          set((draft) => {
+            draft.isLoading = true
+            draft.error = null
+          })
+
           try {
-            if (userId && userId !== 'guest') {
-              // Delete from database for authenticated users
-              const response = await ShoppingItemService.deleteItem(id, userId)
-              
-              if (response.error) {
-                throw new Error(response.error.message)
-              }
-            } else {
-              // Update localStorage for guest users
-              const currentItems = get().items
-              const updatedItems = currentItems.filter(item => item.id !== id)
-              localStorage.setItem(STORAGE_KEYS.GUEST_ITEMS, JSON.stringify(updatedItems))
-            }
+            await ShoppingItemService.deleteShoppingItem(id)
 
-            set((state) => {
-              state.items = state.items.filter(item => item.id !== id)
-              state.purchaseHistory = state.items.filter(item => item.isPurchased)
-              state.pantryItems = state.purchaseHistory.filter(item => item.expiryDate)
-              state.expiringItems = checkExpiringItems(state.pantryItems)
+            set((draft) => {
+              draft.items = draft.items.filter(item => item.id !== id)
+              draft.lastUpdated = new Date().toISOString()
             })
 
+            get().updateSuggestions()
+
           } catch (error) {
-            set((state) => {
-              state.error = error instanceof Error ? error.message : 'Failed to delete item'
+            console.error('Failed to delete item:', error)
+            set((draft) => {
+              draft.error = 'Failed to delete item'
+            })
+          } finally {
+            set((draft) => {
+              draft.isLoading = false
             })
           }
         },
 
-        toggleItemCart: async (id, userId) => {
+        // === CART ACTIONS ===
+        addToCart: async (id: string) => {
+          await get().updateItem(id, { isInCart: true })
+        },
+
+        removeFromCart: async (id: string) => {
+          await get().updateItem(id, { isInCart: false })
+        },
+
+        toggleInCart: async (id: string) => {
           const item = get().items.find(item => item.id === id)
-          if (!item) return
-
-          await get().updateItem(id, { isInCart: !item.isInCart }, userId)
-        },
-
-        clearPurchasedItems: async (userId) => {
-          const currentItems = get().items
-          const purchasedItems = currentItems.filter(item => item.isPurchased)
-
-          try {
-            if (userId && userId !== 'guest') {
-              // Delete from database for authenticated users
-              for (const item of purchasedItems) {
-                await ShoppingItemService.deleteItem(item.id, userId)
-              }
-            } else {
-              // Update localStorage for guest users
-              const remainingItems = currentItems.filter(item => !item.isPurchased)
-              localStorage.setItem(STORAGE_KEYS.GUEST_ITEMS, JSON.stringify(remainingItems))
-            }
-
-            set((state) => {
-              state.items = state.items.filter(item => !item.isPurchased)
-              state.purchaseHistory = []
-              state.pantryItems = []
-              state.expiringItems = []
-            })
-
-          } catch (error) {
-            set((state) => {
-              state.error = error instanceof Error ? error.message : 'Failed to clear purchased items'
-            })
+          if (item) {
+            await get().updateItem(id, { isInCart: !item.isInCart })
           }
         },
 
-        // === LOCAL STATE OPERATIONS ===
-        setItems: (items) =>
-          set((state) => {
-            state.items = items
-            state.purchaseHistory = items.filter(item => item.isPurchased)
-            state.pantryItems = state.purchaseHistory.filter(item => item.expiryDate)
-            state.expiringItems = checkExpiringItems(state.pantryItems)
-            state.loading = false
-            state.error = null
-          }),
+        // === PURCHASE ACTIONS ===
+        markAsPurchased: async (id: string, location?: string, price?: number) => {
+          const updates: Partial<ShoppingItem> = {
+            isPurchased: true,
+            purchasedAt: new Date(),
+            isInCart: false
+          }
 
-        updateLocalItem: (id, updates) =>
-          set((state) => {
-            const itemIndex = state.items.findIndex(item => item.id === id)
-            if (itemIndex !== -1) {
-              state.items[itemIndex] = { ...state.items[itemIndex], ...updates }
+          if (location) updates.purchaseLocation = location
+          if (price) updates.price = price
+
+          await get().updateItem(id, updates)
+        },
+
+        markAsUnpurchased: async (id: string) => {
+          await get().updateItem(id, {
+            isPurchased: false,
+            purchasedAt: undefined,
+            purchaseLocation: undefined,
+            price: undefined
+          })
+        },
+
+        clearPurchased: async () => {
+          const state = get()
+          const purchasedItems = state.items.filter(item => item.isPurchased)
+
+          if (purchasedItems.length === 0) return
+
+          set((draft) => {
+            draft.isLoading = true
+            draft.error = null
+          })
+
+          try {
+            // Delete all purchased items from database
+            for (const item of purchasedItems) {
+              await ShoppingItemService.deleteShoppingItem(item.id)
             }
-          }),
 
-        removeLocalItem: (id) =>
-          set((state) => {
-            state.items = state.items.filter(item => item.id !== id)
-          }),
+            set((draft) => {
+              draft.items = draft.items.filter(item => !item.isPurchased)
+              draft.lastUpdated = new Date().toISOString()
+            })
 
-        addLocalItem: (item) =>
-          set((state) => {
-            state.items.push(item)
-          }),
+            get().updateSuggestions()
+
+          } catch (error) {
+            console.error('Failed to clear purchased items:', error)
+            set((draft) => {
+              draft.error = 'Failed to clear purchased items'
+            })
+          } finally {
+            set((draft) => {
+              draft.isLoading = false
+            })
+          }
+        },
 
         // === LIST MANAGEMENT ===
-        setSelectedListId: (listId) =>
-          set((state) => {
-            state.selectedListId = listId
-          }),
-
-        // === SUGGESTIONS & ANALYTICS ===
-        setSuggestions: (suggestions) =>
-          set((state) => {
-            state.suggestions = suggestions
-          }),
-
-        setExpiringItems: (items) =>
-          set((state) => {
-            state.expiringItems = items
-          }),
-
-        refreshSuggestions: () => {
-          const { purchaseHistory } = get()
-          const suggestions = generateSuggestions(purchaseHistory)
-          get().setSuggestions(suggestions)
-        },
-
-        // === FILTERING & SEARCH ===
-        setFilter: (key, value) =>
-          set((state) => {
-            ;(state.filters as any)[key] = value
-          }),
-
-        setSearchQuery: (query) =>
-          set((state) => {
-            state.searchQuery = query
-          }),
-
-        resetFilters: () =>
-          set((state) => {
-            state.filters = initialState.filters
-            state.searchQuery = ''
-          }),
-
-        // === BULK OPERATIONS ===
-        markAllAsPurchased: () =>
-          set((state) => {
-            state.items.forEach(item => {
-              if (!item.isPurchased) {
-                item.isPurchased = true
-                item.purchasedAt = new Date()
-              }
-            })
-            state.purchaseHistory = state.items.filter(item => item.isPurchased)
-            state.pantryItems = state.purchaseHistory.filter(item => item.expiryDate)
-            state.expiringItems = checkExpiringItems(state.pantryItems)
-          }),
-
-        clearAllItems: () =>
-          set((state) => {
-            state.items = []
-            state.purchaseHistory = []
-            state.pantryItems = []
-            state.expiringItems = []
-          }),
-
-        toggleItemInCart: (id) =>
-          set((state) => {
-            const item = state.items.find(item => item.id === id)
-            if (item) {
-              item.isInCart = !item.isInCart
-            }
-          }),
-
-        toggleItemPurchased: (id) =>
-          set((state) => {
-            const item = state.items.find(item => item.id === id)
-            if (item) {
-              item.isPurchased = !item.isPurchased
-              item.purchasedAt = item.isPurchased ? new Date() : undefined
-            }
-            state.purchaseHistory = state.items.filter(item => item.isPurchased)
-            state.pantryItems = state.purchaseHistory.filter(item => item.expiryDate)
-            state.expiringItems = checkExpiringItems(state.pantryItems)
-          }),
-
-        // === STATE MANAGEMENT ===
-        setLoading: (loading) =>
-          set((state) => {
-            state.loading = loading
-          }),
-
-        setError: (error) =>
-          set((state) => {
-            state.error = error
-            state.loading = false
-          }),
-
-        clearError: () =>
-          set((state) => {
-            state.error = null
-          }),
-
-        // === COMPUTED VALUES ===
-        getItemsByStatus: () => {
-          const { items } = get()
-          return {
-            pending: items.filter(item => !item.isInCart && !item.isPurchased),
-            inCart: items.filter(item => item.isInCart && !item.isPurchased),
-            purchased: items.filter(item => item.isPurchased),
-          }
-        },
-
-        getFilteredItems: () => {
-          const { items, filters, searchQuery } = get()
-          let filteredItems = [...items]
-
-          // Apply category filter
-          if (filters.category) {
-            filteredItems = filteredItems.filter(item => item.category === filters.category)
-          }
-
-          // Apply purchased filter
-          if (!filters.showPurchased) {
-            filteredItems = filteredItems.filter(item => !item.isPurchased)
-          }
-
-          // Apply search query
-          if (searchQuery) {
-            const query = searchQuery.toLowerCase()
-            filteredItems = filteredItems.filter(item =>
-              item.name.toLowerCase().includes(query) ||
-              item.category.toLowerCase().includes(query)
-            )
-          }
-
-          // Apply sorting
-          filteredItems.sort((a, b) => {
-            const { sortBy, sortOrder } = filters
-            let aValue: any = a[sortBy]
-            let bValue: any = b[sortBy]
-
-            // Handle date sorting
-            if (sortBy === 'addedAt' || sortBy === 'expiryDate') {
-              aValue = aValue ? new Date(aValue).getTime() : 0
-              bValue = bValue ? new Date(bValue).getTime() : 0
-            }
-
-            // Handle string sorting
-            if (typeof aValue === 'string' && typeof bValue === 'string') {
-              aValue = aValue.toLowerCase()
-              bValue = bValue.toLowerCase()
-            }
-
-            if (sortOrder === 'asc') {
-              return aValue > bValue ? 1 : -1
-            } else {
-              return aValue < bValue ? 1 : -1
-            }
+        setSelectedList: (listId: string | null) => {
+          set((draft) => {
+            draft.selectedListId = listId
           })
-
-          return filteredItems
         },
 
-        hasItemsInCart: () => {
-          const { items } = get()
-          return items.some(item => item.isInCart)
+        // === FILTERS & SEARCH ===
+        setSearchQuery: (query: string) => {
+          set((draft) => {
+            draft.searchQuery = query
+          })
         },
 
-        hasExpiringItems: () => {
-          const { expiringItems } = get()
-          return expiringItems.length > 0
+        updateFilters: (updates: Partial<ShoppingDataState['filters']>) => {
+          set((draft) => {
+            Object.assign(draft.filters, updates)
+          })
         },
 
-        hasPurchaseHistory: () => {
-          const { purchaseHistory } = get()
-          return purchaseHistory.length > 0
+        resetFilters: () => {
+          set((draft) => {
+            draft.filters = {
+              category: null,
+              showPurchased: false,
+              sortBy: 'addedAt',
+              sortOrder: 'desc'
+            }
+            draft.searchQuery = ''
+          })
         },
 
-        isPantryEmpty: () => {
-          const { pantryItems } = get()
-          return pantryItems.length === 0
+        // === SUGGESTIONS ===
+        updateSuggestions: () => {
+          const state = get()
+          const purchaseHistory = state.items.filter(item => item.isPurchased)
+          const suggestions = generateSuggestions(purchaseHistory, state.items)
+          const expiringItems = checkExpiringItems(state.items)
+
+          set((draft) => {
+            draft.suggestions = suggestions
+            draft.expiringItems = expiringItems
+          })
         },
+
+        acceptSuggestion: async (suggestion: ItemSuggestion) => {
+          const newItem = await get().addItem(suggestion.name, suggestion.category || 'other')
+          if (newItem) {
+            get().dismissSuggestion(suggestion.id)
+          }
+        },
+
+        dismissSuggestion: (suggestionId: string) => {
+          set((draft) => {
+            draft.suggestions = draft.suggestions.filter(s => s.id !== suggestionId)
+          })
+        },
+
+        // === HELPERS ===
+        clearError: () => {
+          set((draft) => {
+            draft.error = null
+          })
+        },
+
+        setError: (error: string) => {
+          set((draft) => {
+            draft.error = error
+          })
+        }
       })),
       {
-        name: 'shopping-data-storage',
+        name: STORAGE_KEYS.SHOPPING_DATA,
         storage: createJSONStorage(() => localStorage),
         partialize: (state) => ({
           selectedListId: state.selectedListId,
           filters: state.filters,
-        }),
+          searchQuery: state.searchQuery
+        })
       }
     ),
-    {
-      name: 'shopping-data-store',
-    }
+    { name: 'shopping-data-store' }
   )
 )
 
-// Selectors for better performance
-export const useShoppingDataSelectors = {
-  items: () => useShoppingDataStore((state) => state.items),
-  filteredItems: () => useShoppingDataStore((state) => state.getFilteredItems()),
-  itemsByStatus: () => useShoppingDataStore((state) => state.getItemsByStatus()),
-  suggestions: () => useShoppingDataStore((state) => state.suggestions),
-  expiringItems: () => useShoppingDataStore((state) => state.expiringItems),
-  purchaseHistory: () => useShoppingDataStore((state) => state.purchaseHistory),
-  pantryItems: () => useShoppingDataStore((state) => state.pantryItems),
-  loading: () => useShoppingDataStore((state) => state.loading),
-  error: () => useShoppingDataStore((state) => state.error),
-  filters: () => useShoppingDataStore((state) => state.filters),
-  searchQuery: () => useShoppingDataStore((state) => state.searchQuery),
-  selectedListId: () => useShoppingDataStore((state) => state.selectedListId),
-}
+export default useShoppingDataStore

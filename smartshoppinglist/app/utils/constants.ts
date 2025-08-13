@@ -42,6 +42,7 @@ export const CATEGORY_EMOJIS: Record<Category, string> = {
 
 export const STORAGE_KEYS = {
   SHOPPING_LIST: 'shoppingList',
+  SHOPPING_DATA: 'shoppingData',
   PURCHASE_HISTORY: 'purchaseHistory',
   PANTRY_ITEMS: 'pantryItems',
   LAST_VISIT: 'lastVisit'

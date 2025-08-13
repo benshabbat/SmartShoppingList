@@ -9,12 +9,9 @@ import { useUIStore } from '../stores/ui/uiStore'
 import { useAuth } from '../hooks/useAuth'
 import { useToasts } from '../components/Toast'
 import { useSoundManager } from '../utils/soundManager'
-import { ShoppingItem, ItemSuggestion, ExpiringItem } from '../types'
+import { ShoppingItem } from '../types'
 import type { 
-  EnhancedGlobalShoppingContextValue,
-  ShoppingAnalytics,
-  ShoppingState,
-  ComputedShoppingItem
+  EnhancedGlobalShoppingContextValue
 } from './types'
 
 export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => {
@@ -32,14 +29,14 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
       // Log app initialization
       console.log('App initialized for user:', user?.id || 'guest')
       
-      // Load items for the current user
+      // Initialize store with current user
       if (typeof window !== 'undefined') {
-        itemsStore.loadItems(user?.id)
+        itemsStore.initializeStore()
       }
     }
     
     initializeApp()
-  }, [user?.id, itemsStore.loadItems])
+  }, [user?.id, itemsStore.initializeStore])
 
   // Show welcome message when user transitions from guest to logged in
   useEffect(() => {
@@ -52,24 +49,27 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
 
   // Advanced computed values with memoization
   const computedValues = useMemo(() => {
-    const itemsByStatus = itemsStore.getItemsByStatus()
+    const items = itemsStore.items
+    const pendingItems = items.filter(item => !item.isPurchased && !item.isInCart)
+    const cartItems = items.filter(item => item.isInCart && !item.isPurchased)
+    const purchasedItems = items.filter(item => item.isPurchased)
     
     return {
       // Basic item collections
-      pendingItems: itemsByStatus.pending,
-      cartItems: itemsByStatus.inCart,
-      purchasedItems: itemsByStatus.purchased,
+      pendingItems,
+      cartItems,
+      purchasedItems,
       
       // Advanced computed properties
-      hasItemsInCart: itemsByStatus.inCart.length > 0,
-      hasExpiringItems: itemsStore.hasExpiringItems(),
-      hasPurchaseHistory: itemsByStatus.purchased.length > 0,
-      isPantryEmpty: itemsByStatus.pending.length === 0 && itemsByStatus.inCart.length === 0,
+      hasItemsInCart: cartItems.length > 0,
+      hasExpiringItems: itemsStore.expiringItems.length > 0,
+      hasPurchaseHistory: purchasedItems.length > 0,
+      isPantryEmpty: pendingItems.length === 0 && cartItems.length === 0,
       
       // Shopping statistics
-      totalItems: itemsStore.items.length,
-      completionRate: itemsStore.items.length > 0 
-        ? Math.round((itemsByStatus.purchased.length / itemsStore.items.length) * 100) 
+      totalItems: items.length,
+      completionRate: items.length > 0 
+        ? Math.round((purchasedItems.length / items.length) * 100) 
         : 0,
       
       // Category distribution
@@ -84,11 +84,11 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
         .slice(0, 5),
       
       // Priority items (in cart + expiring soon)
-      priorityItems: itemsByStatus.inCart.filter((item: ShoppingItem) => 
+      priorityItems: cartItems.filter((item: ShoppingItem) => 
         item.expiryDate && new Date(item.expiryDate) <= new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)
       )
     }
-  }, [itemsStore.items, itemsStore.getItemsByStatus, itemsStore.hasExpiringItems])
+  }, [itemsStore.items, itemsStore.expiringItems])
 
   // Enhanced item operations with validation and feedback
   const addItem = useCallback(async (itemName: string, category: string, addToCart = false) => {
@@ -109,7 +109,11 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
         return
       }
 
-      await itemsStore.addItem(itemName, category, user?.id, addToCart)
+      const newItem = await itemsStore.addItem(itemName, category)
+      
+      if (newItem && addToCart) {
+        await itemsStore.addToCart(newItem.id)
+      }
       
       const message = addToCart 
         ? `הפריט "${itemName}" נוסף ישירות לסל`
@@ -137,7 +141,7 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
         return
       }
       
-      await itemsStore.toggleItemCart(id, user?.id)
+      await itemsStore.toggleInCart(id)
       
       if (item.isInCart) {
         playRemoveFromCart()
@@ -149,7 +153,7 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
     } catch (error) {
       showError('שגיאה בעדכון הפריט')
     }
-  }, [itemsStore.items, itemsStore.toggleItemCart, user?.id, playRemoveFromCart, playAddToCart, showInfo, showSuccess, showError])
+  }, [itemsStore.items, itemsStore.toggleInCart, user?.id, playRemoveFromCart, playAddToCart, showInfo, showSuccess, showError])
 
   const removeItem = useCallback(async (id: string) => {
     try {
@@ -159,7 +163,7 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
         return
       }
       
-      await itemsStore.deleteItem(id, user?.id)
+      await itemsStore.deleteItem(id)
       playDelete()
       showError(`${item.name} הוסר מהרשימה`)
     } catch (error) {
@@ -176,13 +180,13 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
         return
       }
 
-      await itemsStore.clearPurchasedItems(user?.id)
+      await itemsStore.clearPurchased()
       playDelete()
       showInfo(`${purchasedCount} פריטים שנקנו נמחקו`)
     } catch (error) {
       showError('שגיאה במחיקת הפריטים')
     }
-  }, [computedValues.purchasedItems.length, itemsStore.clearPurchasedItems, user?.id, playDelete, showInfo, showError])
+  }, [computedValues.purchasedItems.length, itemsStore.clearPurchased, user?.id, playDelete, showInfo, showError])
 
   // Clear cart items - move all items from cart back to pending
   const clearCartItems = useCallback(async () => {
@@ -196,7 +200,7 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
 
       // Move all cart items back to pending
       for (const item of computedValues.cartItems) {
-        await itemsStore.toggleItemInCart(item.id)
+        await itemsStore.toggleInCart(item.id)
       }
       
       playDelete()
@@ -204,7 +208,7 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
     } catch (error) {
       showError('שגיאה בניקוי הסל')
     }
-  }, [computedValues.cartItems, itemsStore.toggleItemInCart, user?.id, playDelete, showInfo, showError])
+  }, [computedValues.cartItems, itemsStore.toggleInCart, user?.id, playDelete, showInfo, showError])
 
   // Complex operations with enhanced logic
   const handleCheckout = useCallback(() => {
@@ -264,8 +268,11 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
         )
         
         if (!existingItem) {
-          await itemsStore.addItem(item.name, item.category, user?.id, true)
-          successCount++
+          const newItem = await itemsStore.addItem(item.name, item.category)
+          if (newItem) {
+            await itemsStore.addToCart(newItem.id)
+            successCount++
+          }
         }
       }
 
@@ -294,7 +301,7 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
             isPurchased: true, 
             purchasedAt: new Date(),
             expiryDate: item.expiryDate 
-          }, user?.id)
+          })
         }
       }
       
@@ -312,7 +319,7 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
         await itemsStore.updateItem(item.id, { 
           isPurchased: true, 
           purchasedAt: new Date() 
-        }, user?.id)
+        })
       }
       showSuccess('הקנייה הושלמה בהצלחה!')
       playPurchase()
@@ -328,7 +335,7 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
     expiringItems: itemsStore.expiringItems,
     purchaseHistory: itemsStore.purchaseHistory,
     pantryItems: itemsStore.pantryItems,
-    loading: itemsStore.loading,
+    loading: itemsStore.isLoading,
     error: itemsStore.error,
     
     // UI State

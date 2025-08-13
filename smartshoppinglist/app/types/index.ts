@@ -12,6 +12,7 @@ export interface ShoppingItem {
 }
 
 export interface ItemSuggestion {
+  id: string
   name: string
   frequency: number
   lastBought?: Date

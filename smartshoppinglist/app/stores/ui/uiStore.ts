@@ -388,11 +388,11 @@ export const useUIStore = create<UIStore>()(
   )
 )
 
-// Selectors for better performance
+// Selectors for better performance - These ARE React hooks
 export const useUISelectors = {
-  theme: () => useUIStore((state) => state.theme),
-  toasts: () => useUIStore((state) => state.toasts),
-  modals: () => useUIStore((state) => ({
+  useTheme: () => useUIStore((state) => state.theme),
+  useToasts: () => useUIStore((state) => state.toasts),
+  useModals: () => useUIStore((state) => ({
     activeModal: state.activeModal,
     showReceiptScanner: state.showReceiptScanner,
     showExpiryModal: state.showExpiryModal,
@@ -401,22 +401,22 @@ export const useUISelectors = {
     showWelcomeMessage: state.showWelcomeMessage,
     welcomeUserName: state.welcomeUserName,
   })),
-  loading: () => useUIStore((state) => ({
+  useLoading: () => useUIStore((state) => ({
     globalLoading: state.globalLoading,
     isAddingItem: state.isAddingItem,
     isUpdatingItem: state.isUpdatingItem,
     isDeletingItem: state.isDeletingItem,
   })),
-  preferences: () => useUIStore((state) => ({
+  usePreferences: () => useUIStore((state) => ({
     soundEnabled: state.soundEnabled,
     sidebarOpen: state.sidebarOpen,
     completedTutorialSteps: state.completedTutorialSteps,
   })),
-  guestMode: () => useUIStore((state) => ({
+  useGuestMode: () => useUIStore((state) => ({
     hasShownGuestExplanation: state.hasShownGuestExplanation,
     showGuestModeNotification: state.showGuestModeNotification,
   })),
-  checkout: () => useUIStore((state) => state.checkoutItems),
+  useCheckout: () => useUIStore((state) => state.checkoutItems),
 }
 
 // Convenience hooks for specific UI concerns

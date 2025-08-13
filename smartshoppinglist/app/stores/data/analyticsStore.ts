@@ -102,7 +102,7 @@ const getDaysSinceDate = (date: Date): number => {
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24))
 }
 
-const getWeekKey = (date: Date): string => {
+const _getWeekKey = (date: Date): string => {
   const year = date.getFullYear()
   const week = Math.ceil(((date.getTime() - new Date(year, 0, 1).getTime()) / 86400000 + 1) / 7)
   return `${year}-W${week}`
@@ -201,7 +201,7 @@ export const useAnalyticsStore = create<AnalyticsStore>()(
               state.isAnalyzing = false
             })
 
-          } catch (error) {
+          } catch (_error) {
             set((state) => {
               state.isAnalyzing = false
             })
@@ -404,20 +404,20 @@ export const useAnalyticsStore = create<AnalyticsStore>()(
   )
 )
 
-// Selectors for better performance
+// Selectors for better performance - These ARE React hooks
 export const useAnalyticsSelectors = {
-  suggestions: () => useAnalyticsStore((state) => state.smartSuggestions),
-  popularItems: () => useAnalyticsStore((state) => state.popularItems),
-  statistics: () => useAnalyticsStore((state) => ({
+  useSuggestions: () => useAnalyticsStore((state) => state.smartSuggestions),
+  usePopularItems: () => useAnalyticsStore((state) => state.popularItems),
+  useStatistics: () => useAnalyticsStore((state) => ({
     totalPurchased: state.totalPurchased,
     purchasedThisWeek: state.purchasedThisWeek,
     purchasedLastWeek: state.purchasedLastWeek,
     expiringItemsCount: state.expiringItemsCount,
     totalPantryItems: state.totalPantryItems,
   })),
-  categoryStats: () => useAnalyticsStore((state) => state.categoryStats),
-  topCategory: () => useAnalyticsStore((state) => state.topCategory),
-  trends: () => useAnalyticsStore((state) => state.weeklyTrends),
-  isAnalyzing: () => useAnalyticsStore((state) => state.isAnalyzing),
-  settings: () => useAnalyticsStore((state) => state.suggestionSettings),
+  useCategoryStats: () => useAnalyticsStore((state) => state.categoryStats),
+  useTopCategory: () => useAnalyticsStore((state) => state.topCategory),
+  useTrends: () => useAnalyticsStore((state) => state.weeklyTrends),
+  useIsAnalyzing: () => useAnalyticsStore((state) => state.isAnalyzing),
+  useSettings: () => useAnalyticsStore((state) => state.suggestionSettings),
 }

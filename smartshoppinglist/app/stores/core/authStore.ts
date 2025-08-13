@@ -98,11 +98,11 @@ export const useAuthStore = create<AuthStore>()(
   )
 )
 
-// Selectors for better performance
+// Selectors for better performance - These ARE React hooks
 export const useAuthSelectors = {
-  user: () => useAuthStore((state) => state.user),
-  isLoading: () => useAuthStore((state) => state.isLoading),
-  isInitialized: () => useAuthStore((state) => state.isInitialized),
-  isAuthenticated: () => useAuthStore((state) => state.isAuthenticated()),
-  isGuestMode: () => useAuthStore((state) => state.isGuestMode()),
+  useUser: () => useAuthStore((state) => state.user),
+  useIsLoading: () => useAuthStore((state) => state.isLoading),
+  useIsInitialized: () => useAuthStore((state) => state.isInitialized),
+  useIsAuthenticated: () => useAuthStore((state) => state.isAuthenticated()),
+  useIsGuestMode: () => useAuthStore((state) => state.isGuestMode()),
 }

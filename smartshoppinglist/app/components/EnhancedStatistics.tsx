@@ -34,13 +34,13 @@ export const EnhancedStatistics = () => {
   
   // Analytics store hooks
   const refreshAnalytics = useAnalyticsStore(state => state.refreshAnalytics)
-  const categoryStats = useAnalyticsSelectors.categoryStats()
-  const isAnalyzing = useAnalyticsSelectors.isAnalyzing()
+  const categoryStats = useAnalyticsSelectors.useCategoryStats()
+  const isAnalyzing = useAnalyticsSelectors.useIsAnalyzing()
   const totalPurchased = useAnalyticsStore(state => state.totalPurchased)
   const totalPantryItems = useAnalyticsStore(state => state.totalPantryItems)
-  const topCategory = useAnalyticsSelectors.topCategory()
+  const topCategory = useAnalyticsSelectors.useTopCategory()
   const expiringItemsCount = useAnalyticsStore(state => state.expiringItemsCount)
-  const _weeklyTrends = useAnalyticsSelectors.trends()
+  const _weeklyTrends = useAnalyticsSelectors.useTrends()
   
   // Refresh analytics when data changes
   useEffect(() => {

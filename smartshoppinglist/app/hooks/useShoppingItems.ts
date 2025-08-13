@@ -1,9 +1,9 @@
 ﻿import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
-import type { ShoppingItem } from '../types'
 import { useAuthStore } from '../stores/core/authStore'
 import { useShoppingDataStore } from '../stores/data/shoppingDataStore'
 import { useUIStore } from '../stores/ui/uiStore'
+import type { ShoppingItem } from '../types'
 
 // Query Keys
 export const shoppingItemKeys = {
@@ -17,17 +17,17 @@ export const shoppingItemKeys = {
 /**
  * Transform database item to ShoppingItem type
  */
-const transformDbItem = (dbItem: any): ShoppingItem => ({
-  id: dbItem.id,
-  name: dbItem.name,
-  category: dbItem.category,
-  isInCart: dbItem.is_in_cart || false,
-  isPurchased: dbItem.is_purchased || false,
-  addedAt: new Date(dbItem.created_at),
-  purchasedAt: dbItem.purchased_at ? new Date(dbItem.purchased_at) : undefined,
-  expiryDate: dbItem.expiry_date ? new Date(dbItem.expiry_date) : undefined,
-  purchaseLocation: dbItem.purchase_location,
-  price: dbItem.price,
+const transformDbItem = (dbItem: Record<string, unknown>): ShoppingItem => ({
+  id: dbItem.id as string,
+  name: dbItem.name as string,
+  category: dbItem.category as string,
+  isInCart: dbItem.is_in_cart as boolean || false,
+  isPurchased: dbItem.is_purchased as boolean || false,
+  addedAt: new Date(dbItem.created_at as string),
+  purchasedAt: dbItem.purchased_at ? new Date(dbItem.purchased_at as string) : undefined,
+  expiryDate: dbItem.expiry_date ? new Date(dbItem.expiry_date as string) : undefined,
+  purchaseLocation: dbItem.purchase_location as string | undefined,
+  price: dbItem.price as number | undefined,
 })
 
 /**

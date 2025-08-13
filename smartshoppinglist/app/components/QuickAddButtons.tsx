@@ -17,7 +17,7 @@ export const QuickAddButtons = () => {
     try {
       await addItem(name, category)
       showSuccess(`${name} נוסף לרשימה`)
-    } catch (_error) {
+    } catch {
       // Error already handled in global context
     }
   }

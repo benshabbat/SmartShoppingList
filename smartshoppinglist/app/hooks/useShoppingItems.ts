@@ -117,11 +117,6 @@ export function useAddShoppingItem() {
 
       if (user.isGuest) {
         // For guest users, create item locally
-        const newItem: ShoppingItem = {
-          ...item,
-          id: `guest-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
-          addedAt: new Date(),
-        }
         const apiNewItem = await addItem(item.name, item.category, user.id, item.expiryDate?.toISOString())
         if (!apiNewItem) {
           throw new Error('Failed to create item')

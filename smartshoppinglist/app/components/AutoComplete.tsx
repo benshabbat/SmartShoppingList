@@ -31,10 +31,7 @@ export const AutoComplete = ({
   const inputRef = useRef<HTMLInputElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
-  // Memoize purchase history length to prevent unnecessary recalculations
-  const purchaseHistoryLength = useMemo(() => purchaseHistory.length, [purchaseHistory.length])
-  
-  // Memoize filtered suggestions to prevent infinite loops
+  // Memoized filtered suggestions to prevent infinite loops
   const filteredSuggestions = useMemo(() => {
     // Show all suggestions when no text is entered
     if (!value.trim()) {

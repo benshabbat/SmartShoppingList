@@ -76,7 +76,7 @@ export const useAddItemFormLogic = () => {
         showSuccess(`${itemName.value.trim()} נוסף לרשימה`)
         itemName.reset()
         setAutoChangedCategory(false)
-      } catch (_error) {
+      } catch {
         showError('שגיאה בהוספת הפריט')
       }
     }
@@ -88,7 +88,7 @@ export const useAddItemFormLogic = () => {
       showSuccess(`${selectedItem} נוסף לרשימה`)
       itemName.reset()
       setAutoChangedCategory(false)
-    } catch (_error) {
+    } catch {
       showError('שגיאה בהוספת הפריט')
     }
   }

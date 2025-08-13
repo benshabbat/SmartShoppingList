@@ -201,7 +201,7 @@ export const useAnalyticsStore = create<AnalyticsStore>()(
               state.isAnalyzing = false
             })
 
-          } catch (_error) {
+          } catch {
             set((state) => {
               state.isAnalyzing = false
             })

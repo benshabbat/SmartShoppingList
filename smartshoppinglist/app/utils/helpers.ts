@@ -32,6 +32,7 @@ export const generateSuggestions = (
     .map(([name, data]) => {
       const daysSince = Math.floor((now.getTime() - data.lastBought.getTime()) / (1000 * 60 * 60 * 24))
       return {
+        id: name, // Use name as a unique id, or generate a hash if needed
         name,
         frequency: data.count,
         lastBought: data.lastBought,

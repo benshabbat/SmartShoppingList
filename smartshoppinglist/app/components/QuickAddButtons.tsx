@@ -7,7 +7,7 @@ import { useAnalyticsSelectors } from '../stores/data/analyticsStore'
 export const QuickAddButtons = () => {
   // Get everything from global context - NO PROPS!
   const { addItem, showSuccess } = useGlobalShopping()
-  const popularItems = useAnalyticsSelectors.popularItems()
+  const popularItems = useAnalyticsSelectors.usePopularItems()
   
   if (popularItems.length === 0) return null
 

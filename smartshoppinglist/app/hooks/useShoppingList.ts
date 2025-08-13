@@ -146,7 +146,7 @@ export function useShoppingList() {
     }
 
     loadData()
-  }, [user?.id, isGuest, loadFromLocalStorage, loadFromDatabase])
+  }, [user, isGuest, loadFromLocalStorage, loadFromDatabase])
 
   // Save to storage when data changes
   useEffect(() => {

@@ -21,11 +21,7 @@ const eslintConfig = [
       // Allow any type in certain contexts
       "@typescript-eslint/no-explicit-any": "warn",
       // Relax exhaustive deps for stores that change frequently  
-      "react-hooks/exhaustive-deps": "warn",
-      // Allow hooks in selector functions (store pattern)
-      "react-hooks/rules-of-hooks": ["error", {
-        "additionalHooks": "useAnalyticsStore|useAuthStore|useUIStore"
-      }]
+      "react-hooks/exhaustive-deps": "warn"
     }
   }
 ];

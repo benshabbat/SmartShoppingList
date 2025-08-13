@@ -241,6 +241,7 @@ export const useAnalyticsStore = create<AnalyticsStore>()(
               daysSinceLastPurchase >= suggestionSettings.daysSinceLastPurchase
             ) {
               suggestions.push({
+                id: `suggestion-${name}-${Date.now()}`, // Generate unique ID
                 name: name.charAt(0).toUpperCase() + name.slice(1),
                 category: data.category,
                 frequency: data.count,

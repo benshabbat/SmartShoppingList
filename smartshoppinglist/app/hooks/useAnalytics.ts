@@ -14,7 +14,7 @@ export const useAnalytics = (purchaseHistory: ShoppingItem[], pantryItems: Shopp
     if (purchaseHistory.length > 0 || pantryItems.length > 0) {
       store.refreshAnalytics(purchaseHistory, pantryItems)
     }
-  }, [purchaseHistory, pantryItems, store.refreshAnalytics])
+  }, [purchaseHistory, pantryItems, store])
   
   return {
     // Analytics data

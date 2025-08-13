@@ -5,6 +5,10 @@ export * from './appConstants'
 export * from './errorHandling'
 export * from './dateUtils'
 export * from './mathUtils'
+export * from './errorUtils'
+export * from './validationUtils'
+export * from './operationsUtils'
+export { MESSAGES as COMMON_MESSAGES } from './commonMessages'
 
 // Re-export existing utilities
 export * from './categories'

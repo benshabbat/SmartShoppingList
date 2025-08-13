@@ -10,6 +10,16 @@ import { useAuth } from '../hooks/useAuth'
 import { useToasts } from '../components/Toast'
 import { useSoundManager } from '../utils/soundManager'
 import { ShoppingItem } from '../types'
+import { 
+  createErrorHandler,
+  createAsyncHandler,
+  createBulkOperationHandler,
+  filterItemsByStatus,
+  calculateItemStats,
+  validateItemName,
+  checkDuplicateItem,
+  COMMON_MESSAGES
+} from '../utils'
 import type { 
   EnhancedGlobalShoppingContextValue
 } from './types'
@@ -22,6 +32,10 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
   // Store hooks
   const itemsStore = useShoppingDataStore()
   const uiStore = useUIStore()
+  
+  // Error handlers
+  const handleError = createErrorHandler('GlobalShoppingLogic', showError)
+  const asyncHandler = createAsyncHandler('GlobalShoppingLogic', showError)
   
   // App initialization and item loading
   useEffect(() => {
@@ -47,36 +61,31 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
     }
   }, [user, isGuest, uiStore])
 
-  // Advanced computed values with memoization
+  // Advanced computed values with memoization using utility functions
   const computedValues = useMemo(() => {
     const items = itemsStore.items
-    const pendingItems = items.filter(item => !item.isPurchased && !item.isInCart)
-    const cartItems = items.filter(item => item.isInCart && !item.isPurchased)
-    const purchasedItems = items.filter(item => item.isPurchased)
+    const itemStats = calculateItemStats(items)
+    const filteredItems = filterItemsByStatus(items)
     
     return {
-      // Basic item collections
-      pendingItems,
-      cartItems,
-      purchasedItems,
+      // Basic item collections using utility function
+      pendingItems: filteredItems.pending,
+      cartItems: filteredItems.inCart,
+      purchasedItems: filteredItems.purchased,
+      
+      // Stats from utility function
+      ...itemStats,
       
       // Advanced computed properties
-      hasItemsInCart: cartItems.length > 0,
-      hasExpiringItems: itemsStore.expiringItems.length > 0,
-      hasPurchaseHistory: purchasedItems.length > 0,
-      isPantryEmpty: pendingItems.length === 0 && cartItems.length === 0,
+      hasItemsInCart: filteredItems.inCart.length > 0,
+      hasExpiringItems: filteredItems.expiring.length > 0,
+      hasPurchaseHistory: filteredItems.purchased.length > 0,
+      isPantryEmpty: filteredItems.pending.length === 0 && filteredItems.inCart.length === 0,
       
-      // Shopping statistics
-      totalItems: items.length,
-      completionRate: items.length > 0 
-        ? Math.round((purchasedItems.length / items.length) * 100) 
-        : 0,
-      
-      // Category distribution
-      categoryStats: itemsStore.items.reduce((acc: Record<string, number>, item: ShoppingItem) => {
-        acc[item.category] = (acc[item.category] || 0) + 1
-        return acc
-      }, {} as Record<string, number>),
+      // Shopping Analytics (required by interface)
+      totalItems: itemStats.total,
+      completionRate: itemStats.completionRate,
+      categoryStats: itemStats.categoryStats,
       
       // Recent activity
       recentlyAdded: [...itemsStore.items]
@@ -84,7 +93,7 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
         .slice(0, 5),
       
       // Priority items (in cart + expiring soon)
-      priorityItems: cartItems.filter((item: ShoppingItem) => 
+      priorityItems: filteredItems.inCart.filter((item: ShoppingItem) => 
         item.expiryDate && new Date(item.expiryDate) <= new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)
       )
     }
@@ -92,20 +101,17 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
 
   // Enhanced item operations with validation and feedback
   const addItem = useCallback(async (itemName: string, category: string, addToCart = false) => {
-    try {
-      // Validation
-      if (!itemName.trim()) {
-        showError('שם הפריט לא יכול להיות רק')
+    const result = await asyncHandler(async () => {
+      // Validation using utility
+      const validation = validateItemName(itemName)
+      if (!validation.isValid) {
+        showError(validation.error!)
         return
       }
 
-      // Check for duplicates
-      const existingItem = itemsStore.items.find(
-        (item: ShoppingItem) => item.name.toLowerCase() === itemName.toLowerCase() && !item.isPurchased
-      )
-      
-      if (existingItem) {
-        showError(`הפריט "${itemName}" כבר קיים ברשימה`)
+      // Check for duplicates using utility
+      if (checkDuplicateItem(itemName, itemsStore.items.filter(item => !item.isPurchased))) {
+        showError(COMMON_MESSAGES.ERROR.DUPLICATE_ITEM(itemName))
         return
       }
 
@@ -116,22 +122,16 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
       }
       
       const message = addToCart 
-        ? `הפריט "${itemName}" נוסף ישירות לסל`
-        : `הפריט "${itemName}" נוסף לרשימה`
+        ? COMMON_MESSAGES.SUCCESS.ITEM_ADDED_TO_CART(itemName)
+        : COMMON_MESSAGES.SUCCESS.ITEM_ADDED(itemName)
       
       showSuccess(message)
       
       if (addToCart) {
         playAddToCart()
       }
-    } catch (error) {
-      if (error instanceof Error) {
-        showError(error.message)
-      } else {
-        showError('שגיאה בהוספת הפריט')
-      }
-    }
-  }, [itemsStore, user?.id, showSuccess, showError, playAddToCart])
+    }, COMMON_MESSAGES.ERROR.ADD_ITEM_FAILED())
+  }, [itemsStore, user?.id, showSuccess, showError, playAddToCart, asyncHandler])
 
   const toggleItemInCart = useCallback(async (id: string) => {
     try {
@@ -234,34 +234,33 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
   }, [computedValues.cartItems, uiStore, showError, showInfo])
 
   const createQuickList = useCallback(async (items: Array<{name: string, category: string}>) => {
-    try {
-      let successCount = 0
-      let duplicateCount = 0
+    const result = await asyncHandler(async () => {
+      // Create bulk operation handler
+      const bulkAddHandler = createBulkOperationHandler(
+        async (item: {name: string, category: string}) => {
+          // Check for duplicates
+          if (checkDuplicateItem(item.name, itemsStore.items.filter(existing => !existing.isPurchased))) {
+            return false // Skip duplicates
+          }
+          
+          const newItem = await itemsStore.addItem(item.name, item.category, user?.id || 'guest')
+          return !!newItem
+        },
+        (count: number) => `נוספו ${count} פריטים לרשימה`,
+        'שגיאה ביצירת רשימה מהירה'
+      )
 
-      for (const item of items) {
-        const existingItem = itemsStore.items.find(
-          (existing: ShoppingItem) => existing.name.toLowerCase() === item.name.toLowerCase() && !existing.isPurchased
-        )
-        
-        if (existingItem) {
-          duplicateCount++
-        } else {
-          await itemsStore.addItem(item.name, item.category, user?.id || 'guest')
-          successCount++
-        }
-      }
-
-      let message = `נוספו ${successCount} פריטים לרשימה`
+      const operationResult = await bulkAddHandler(items)
+      const duplicateCount = items.length - operationResult.count!
+      
+      let message = operationResult.message!
       if (duplicateCount > 0) {
         message += ` (${duplicateCount} פריטים כבר קיימים)`
       }
       
       showSuccess(message)
-    } catch (error) {
-      console.error('Error creating quick list:', error)
-      showError('שגיאה ביצירת רשימה מהירה')
-    }
-  }, [itemsStore, showSuccess, showError, user?.id])
+    }, 'שגיאה ביצירת רשימה מהירה')
+  }, [itemsStore, showSuccess, showError, user?.id, asyncHandler])
 
   const addBulkToCart = useCallback(async (items: Array<{name: string, category: string}>) => {
     try {

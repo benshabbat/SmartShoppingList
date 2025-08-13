@@ -3,7 +3,7 @@
  * עוזר ל-TypeScript להבין את הטיפוסים
  */
 
-import { ShoppingItem } from '../types'
+import { ShoppingItem, ItemSuggestion, ExpiringItem } from '../types'
 
 // Extended Shopping Item with computed properties
 export interface ComputedShoppingItem extends ShoppingItem {
@@ -36,8 +36,8 @@ export interface ShoppingState {
 export interface EnhancedGlobalShoppingContextValue extends ShoppingState, ShoppingAnalytics {
   // === DATA ACCESS ===
   items: ShoppingItem[]
-  suggestions: string[]
-  expiringItems: ShoppingItem[]
+  suggestions: ItemSuggestion[]
+  expiringItems: ExpiringItem[]
   purchaseHistory: ShoppingItem[]
   pantryItems: ShoppingItem[]
   loading: boolean
@@ -97,8 +97,8 @@ export interface EnhancedGlobalShoppingContextValue extends ShoppingState, Shopp
 // Hook Return Types
 export interface UseShoppingDataReturn {
   items: ShoppingItem[]
-  suggestions: string[]
-  expiringItems: ShoppingItem[]
+  suggestions: ItemSuggestion[]
+  expiringItems: ExpiringItem[]
   purchaseHistory: ShoppingItem[]
   pantryItems: ShoppingItem[]
   loading: boolean

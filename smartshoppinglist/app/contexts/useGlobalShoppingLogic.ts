@@ -150,7 +150,8 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
         playAddToCart()
         showSuccess(`${item.name} נוסף לסל`)
       }
-    } catch {
+    } catch (error) {
+      console.error('Error updating cart status:', error)
       showError('שגיאה בעדכון הפריט')
     }
   }, [itemsStore, playRemoveFromCart, playAddToCart, showInfo, showSuccess, showError])
@@ -166,7 +167,8 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
       await itemsStore.deleteItem(id)
       playDelete()
       showError(`${item.name} הוסר מהרשימה`)
-    } catch {
+    } catch (error) {
+      console.error('Error deleting item:', error)
       showError('שגיאה במחיקת הפריט')
     }
   }, [itemsStore, playDelete, showError])
@@ -183,7 +185,8 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
       await itemsStore.clearPurchased()
       playDelete()
       showInfo(`${purchasedCount} פריטים שנקנו נמחקו`)
-    } catch {
+    } catch (error) {
+      console.error('Error clearing purchased items:', error)
       showError('שגיאה במחיקת הפריטים')
     }
   }, [itemsStore, playDelete, showInfo, showError, computedValues.purchasedItems.length])
@@ -205,7 +208,8 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
       
       playDelete()
       showInfo(`${cartItemsCount} פריטים הוחזרו לרשימת הקניות`)
-    } catch {
+    } catch (error) {
+      console.error('Error clearing cart items:', error)
       showError('שגיאה בניקוי הסל')
     }
   }, [itemsStore, playDelete, showInfo, showError, computedValues.cartItems])
@@ -253,7 +257,8 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
       }
       
       showSuccess(message)
-    } catch {
+    } catch (error) {
+      console.error('Error creating quick list:', error)
       showError('שגיאה ביצירת רשימה מהירה')
     }
   }, [itemsStore, showSuccess, showError, user?.id])
@@ -280,7 +285,8 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
       if (successCount > 0) {
         playAddToCart()
       }
-    } catch {
+    } catch (error) {
+      console.error('Error adding bulk items to cart:', error)
       showError('שגיאה בהוספת פריטים לעגלה')
     }
   }, [itemsStore, showSuccess, showError, playAddToCart, user?.id])
@@ -308,7 +314,8 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
       uiStore.closeExpiryModal()
       showSuccess('הקנייה הושלמה בהצלחה!')
       playPurchase()
-    } catch {
+    } catch (error) {
+      console.error('Error completing purchase with expiry:', error)
       showError('שגיאה בהשלמת הקנייה')
     }
   }, [itemsStore, uiStore, showSuccess, showError, playPurchase])
@@ -323,7 +330,8 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
       }
       showSuccess('הקנייה הושלמה בהצלחה!')
       playPurchase()
-    } catch {
+    } catch (error) {
+      console.error('Error completing purchase:', error)
       showError('שגיאה בהשלמת הקנייה')
     }
   }, [itemsStore, showSuccess, showError, playPurchase])

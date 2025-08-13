@@ -7,10 +7,11 @@
 
 import { useState } from 'react'
 import { useGlobalShopping } from '../../contexts/GlobalShoppingContext'
+import type { ShoppingItem } from '../../types'
 
 // === BEFORE: עם Props Drilling ❌ ===
 interface BadComponentProps {
-  items: any[]
+  items: ShoppingItem[]
   addItem: (name: string, category: string) => void
   removeItem: (id: string) => void
   toggleItem: (id: string) => void
@@ -20,8 +21,8 @@ interface BadComponentProps {
   completionRate: number
   hasItemsInCart: boolean
   categoryStats: Record<string, number>
-  cartItems: any[]
-  pendingItems: any[]
+  cartItems: ShoppingItem[]
+  pendingItems: ShoppingItem[]
 }
 
 const BadComponent = (props: BadComponentProps) => {

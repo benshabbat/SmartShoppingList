@@ -36,8 +36,8 @@ export interface ShoppingState {
 export interface EnhancedGlobalShoppingContextValue extends ShoppingState, ShoppingAnalytics {
   // === DATA ACCESS ===
   items: ShoppingItem[]
-  suggestions: any[]
-  expiringItems: any[]
+  suggestions: string[]
+  expiringItems: ShoppingItem[]
   purchaseHistory: ShoppingItem[]
   pantryItems: ShoppingItem[]
   loading: boolean
@@ -97,8 +97,8 @@ export interface EnhancedGlobalShoppingContextValue extends ShoppingState, Shopp
 // Hook Return Types
 export interface UseShoppingDataReturn {
   items: ShoppingItem[]
-  suggestions: any[]
-  expiringItems: any[]
+  suggestions: string[]
+  expiringItems: ShoppingItem[]
   purchaseHistory: ShoppingItem[]
   pantryItems: ShoppingItem[]
   loading: boolean

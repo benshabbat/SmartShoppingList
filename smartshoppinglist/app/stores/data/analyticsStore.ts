@@ -201,7 +201,8 @@ export const useAnalyticsStore = create<AnalyticsStore>()(
               state.isAnalyzing = false
             })
 
-          } catch {
+          } catch (error) {
+            console.error('Error analyzing shopping patterns:', error)
             set((state) => {
               state.isAnalyzing = false
             })

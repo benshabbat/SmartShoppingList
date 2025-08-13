@@ -10,7 +10,7 @@ import { useAuth } from '../../../hooks/useAuth'
  */
 export function GuestSection() {
   const { isGuest } = useAuth()
-  const { shouldShowGuestExplanation, dismissGuestExplanation } = useGlobalShopping()
+  const { shouldShowGuestExplanation, dismissGuestExplanation: _dismissGuestExplanation } = useGlobalShopping()
 
   if (!isGuest) {
     return null

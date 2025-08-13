@@ -7,8 +7,8 @@ import { CategorySection } from './CategorySection'
 export function ShoppingCartSection() {
   const { 
     cartItems, 
-    toggleItemInCart, 
-    removeItem, 
+    toggleItemInCart: _toggleItemInCart, 
+    removeItem: _removeItem, 
     handleCheckout, 
     clearPurchasedItems 
   } = useGlobalShopping()

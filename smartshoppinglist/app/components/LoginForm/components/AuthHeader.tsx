@@ -1,5 +1,4 @@
-import React from 'react'
-import { CSS_CLASSES, UI_TEXT } from '../constants'
+import { UI_TEXT } from '../constants'
 
 interface AuthHeaderProps {
   isLogin: boolean

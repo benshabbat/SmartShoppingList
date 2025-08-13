@@ -45,7 +45,7 @@ const CategoryItems: React.FC<{
   categoryIndex: number
 }> = ({ categoryItems, variant, categoryIndex }) => {
   // ZERO PROPS DRILLING - Get actions from context!
-  const { toggleItemInCart, removeItem } = useGlobalShopping()
+  const { toggleItemInCart: _toggleItemInCart, removeItem: _removeItem } = useGlobalShopping()
   
   return (
     <div className="space-y-2 mr-6">

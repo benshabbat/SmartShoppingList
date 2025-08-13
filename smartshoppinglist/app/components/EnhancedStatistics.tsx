@@ -1,5 +1,4 @@
 import { History, TrendingUp, Package, Target, ShoppingCart, Clock, Award, ChevronDown, ChevronUp, BarChart3, PieChart } from 'lucide-react'
-import { ShoppingItem } from '../types'
 import { formatDate } from '../utils/dateUtils'
 import { useState, useEffect } from 'react'
 import { 
@@ -41,7 +40,7 @@ export const EnhancedStatistics = () => {
   const totalPantryItems = useAnalyticsStore(state => state.totalPantryItems)
   const topCategory = useAnalyticsSelectors.topCategory()
   const expiringItemsCount = useAnalyticsStore(state => state.expiringItemsCount)
-  const weeklyTrends = useAnalyticsSelectors.trends()
+  const _weeklyTrends = useAnalyticsSelectors.trends()
   
   // Refresh analytics when data changes
   useEffect(() => {

@@ -13,7 +13,7 @@ export const useMainAppLogic = () => {
     showTutorial,
     openDataImportModal,
     showSuccess,
-    items,
+    items: _items,
     shouldShowGuestExplanation
   } = useGlobalShopping()
 

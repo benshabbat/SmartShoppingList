@@ -10,17 +10,17 @@ import { HEADER_STYLES } from './constants'
 export const Header = () => {
   const {
     // State
-    soundEnabled,
-    user,
-    isGuest,
-    isStatisticsPage,
+    soundEnabled: _soundEnabled,
+    user: _user,
+    isGuest: _isGuest,
+    isStatisticsPage: _isStatisticsPage,
     
     // Actions
-    openTutorial,
-    openReceiptScanner,
-    toggleSound,
-    handleSignOut,
-    handleSwitchToAuth,
+    openTutorial: _openTutorial,
+    openReceiptScanner: _openReceiptScanner,
+    toggleSound: _toggleSound,
+    handleSignOut: _handleSignOut,
+    handleSwitchToAuth: _handleSwitchToAuth,
   } = useHeaderLogic()
 
   return (

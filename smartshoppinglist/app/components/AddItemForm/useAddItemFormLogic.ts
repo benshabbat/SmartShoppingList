@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
-import { Category, ShoppingItem } from '../../types'
+import { Category } from '../../types'
 import { generateSmartSuggestions, suggestCategoryForProduct } from '../../utils/smartSuggestions'
 import { useFormField } from '../../hooks/useFormState'
 import { validateProductName } from '../../utils/validation'
@@ -13,7 +13,7 @@ export const useAddItemFormLogic = () => {
   // Get everything from global context - no props needed!
   const { 
     addItem, 
-    suggestions: globalSuggestions, 
+    suggestions: _globalSuggestions, 
     purchaseHistory, 
     items: currentItems,
     showSuccess,
@@ -76,7 +76,7 @@ export const useAddItemFormLogic = () => {
         showSuccess(`${itemName.value.trim()} נוסף לרשימה`)
         itemName.reset()
         setAutoChangedCategory(false)
-      } catch (error) {
+      } catch (_error) {
         showError('שגיאה בהוספת הפריט')
       }
     }
@@ -88,7 +88,7 @@ export const useAddItemFormLogic = () => {
       showSuccess(`${selectedItem} נוסף לרשימה`)
       itemName.reset()
       setAutoChangedCategory(false)
-    } catch (error) {
+    } catch (_error) {
       showError('שגיאה בהוספת הפריט')
     }
   }

@@ -36,9 +36,9 @@ export function LoginFormUI() {
     // Event handlers
     handleGuestLogin,
     handleSubmit,
-    handleForgotPassword,
-    toggleMode,
-    clearMessages,
+    handleForgotPassword: _handleForgotPassword,
+    toggleMode: _toggleMode,
+    clearMessages: _clearMessages,
     setEmail,
     setPassword,
     setFullName

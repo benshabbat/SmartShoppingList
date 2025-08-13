@@ -11,7 +11,7 @@ export const SmartSuggestions = () => {
     try {
       await addItem(name, 'כלל') // Default category
       showSuccess(`${name} נוסף לרשימה`)
-    } catch (error) {
+    } catch (_error) {
       // Error already handled in global context
     }
   }

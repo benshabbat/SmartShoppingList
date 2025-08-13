@@ -10,8 +10,8 @@ export function ShoppingListSections() {
     pendingItems,
     cartItems,
     purchasedItems,
-    toggleItemInCart,
-    removeItem,
+    toggleItemInCart: _toggleItemInCart,
+    removeItem: _removeItem,
     handleCheckout,
     clearPurchasedItems,
     clearCartItems

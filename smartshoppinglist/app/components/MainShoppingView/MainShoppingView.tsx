@@ -1,5 +1,4 @@
 
-import { useMainShoppingViewLogic } from './useMainShoppingViewLogic'
 import { 
   GuestSection,
   AddItemSection,

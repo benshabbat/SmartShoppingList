@@ -42,7 +42,7 @@ export const AutoComplete = ({
     }
     // Filter suggestions based on input
     return searchWithPopularity(value, suggestions, purchaseHistory)
-  }, [value, suggestions, purchaseHistory, purchaseHistoryLength])
+  }, [value, suggestions, purchaseHistory])
 
   // Define callbacks with useCallback to prevent re-renders
   const handleSelect = useCallback((suggestion: string) => {

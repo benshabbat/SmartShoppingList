@@ -9,10 +9,10 @@ import { useHeaderLogic } from '../useHeaderLogic'
 export function RightActions() {
   const {
     user,
-    isGuest,
-    isStatisticsPage,
-    handleSwitchToAuth,
-    handleSignOut,
+    isGuest: _isGuest,
+    isStatisticsPage: _isStatisticsPage,
+    handleSwitchToAuth: _handleSwitchToAuth,
+    handleSignOut: _handleSignOut,
   } = useHeaderLogic()
 
   const isAuthenticated = !!user

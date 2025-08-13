@@ -4,7 +4,6 @@ import { useAuth } from '../../hooks/useAuth'
 import { useGlobalShopping } from '../../contexts/GlobalShoppingContext'
 import { useMainAppLogic } from '../MainAppContent/useMainAppLogic'
 import { AuthErrorHandler, FormValidator } from './utils'
-import { FORM_VALIDATION } from './constants'
 
 /**
  * Custom hook for LoginForm business logic

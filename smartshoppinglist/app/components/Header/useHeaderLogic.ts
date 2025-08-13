@@ -1,5 +1,5 @@
 import { usePathname } from 'next/navigation'
-import { useAuthStore, useUIStore } from '../../stores'
+import { useUIStore } from '../../stores'
 import { useAuth } from '../../hooks/useAuth'
 import { useGlobalShopping } from '../../contexts/GlobalShoppingContext'
 import { UserActionsHandler } from './utils'

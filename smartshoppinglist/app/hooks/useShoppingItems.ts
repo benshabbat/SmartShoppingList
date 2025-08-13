@@ -122,7 +122,7 @@ export function useAddShoppingItem() {
           id: `guest-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
           addedAt: new Date(),
         }
-        const apiNewItem = await addItem(item.name, item.category)
+        const apiNewItem = await addItem(item.name, item.category, user.id, item.expiryDate?.toISOString())
         if (!apiNewItem) {
           throw new Error('Failed to create item')
         }
@@ -152,7 +152,7 @@ export function useAddShoppingItem() {
       }
 
       const newItem = transformDbItem(data)
-      const storeItem = await addItem(newItem.name, newItem.category)
+      const storeItem = await addItem(newItem.name, newItem.category, user.id, newItem.expiryDate?.toISOString()) 
       if (!storeItem) {
         throw new Error('Failed to create item in store')
       }

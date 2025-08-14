@@ -7,6 +7,21 @@
 
 import { useGlobalShopping } from './GlobalShoppingContext'
 
+// Enhanced hook for shopping data (includes autoChangedCategory)
+export const useShoppingDataEnhanced = () => {
+  const { 
+    items, suggestions, expiringItems, purchaseHistory, pantryItems, loading, error,
+    totalItems, completionRate, categoryStats, recentlyAdded, smartSuggestions,
+    autoChangedCategory
+  } = useGlobalShopping()
+  
+  return { 
+    items, suggestions, expiringItems, purchaseHistory, pantryItems, loading, error,
+    totalItems, completionRate, categoryStats, recentlyAdded, smartSuggestions,
+    autoChangedCategory
+  }
+}
+
 // Hook for item-specific actions
 export const useItemActions = (itemId?: string) => {
   const { toggleItemInCart, removeItem, addItem } = useGlobalShopping()
@@ -116,14 +131,16 @@ export const useFormOperations = () => {
   const { 
     itemName, 
     newItemCategory, 
+    setNewItemCategory,
     handleAddItemSubmit,
-    handleItemSelect 
+    handleAutoCompleteSelect 
   } = useGlobalShopping()
   
   return {
     itemName,
     category: newItemCategory,
+    setCategory: setNewItemCategory,
     submitForm: handleAddItemSubmit,
-    selectItem: handleItemSelect
+    selectItem: handleAutoCompleteSelect
   }
 }

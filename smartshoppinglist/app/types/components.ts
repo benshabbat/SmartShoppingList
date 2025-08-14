@@ -143,17 +143,7 @@ export interface ActionButtonProps {
 
 
 // === INPUT TYPES ===
-
-export interface AutoCompleteProps {
-  value: string
-  onChange: (value: string) => void
-  onSelect: (value: string) => void
-  suggestions: string[]
-  purchaseHistory?: any[] // ShoppingItem[]
-  placeholder?: string
-  className?: string
-  autoChangedCategory?: boolean
-}
+// Note: AutoCompleteProps removed - component now uses context!
 
 // === OTHER COMPONENT TYPES ===
 

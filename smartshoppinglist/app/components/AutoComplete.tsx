@@ -1,92 +1,40 @@
-import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { ChevronDown, Search } from 'lucide-react'
-import { searchWithPopularity } from '../utils/smartSuggestions'
-import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation'
 import { getInputClasses } from '../utils/classNames'
 import { SuggestionItem } from './SuggestionItem'
-import type { AutoCompleteProps } from '../types/components'
+import { useAutoCompleteLogic } from '../hooks'
 
-export const AutoComplete: React.FC<AutoCompleteProps> = ({
-  value,
-  onChange,
-  onSelect,
-  suggestions,
-  purchaseHistory = [],
-  placeholder = "הוסף מוצר...",
-  className = "",
-  autoChangedCategory = false
-}: AutoCompleteProps) => {
-  const [isOpen, setIsOpen] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
-  const dropdownRef = useRef<HTMLDivElement>(null)
-
-  // Memoized filtered suggestions to prevent infinite loops
-  const filteredSuggestions = useMemo(() => {
-    // Show all suggestions when no text is entered
-    if (!value.trim()) {
-      return suggestions.slice(0, 8) // Show first 8 suggestions
-    }
-    // Filter suggestions based on input
-    return searchWithPopularity(value, suggestions, purchaseHistory)
-  }, [value, suggestions, purchaseHistory])
-
-  // Define callbacks with useCallback to prevent re-renders
-  const handleSelect = useCallback((suggestion: string) => {
-    onSelect(suggestion)
-    setIsOpen(false)
-  }, [onSelect])
-
-  const handleClose = useCallback(() => {
-    setIsOpen(false)
-    inputRef.current?.blur()
-  }, [])
-
-  const handleSelectByIndex = useCallback((index: number) => {
-    if (filteredSuggestions[index]) {
-      handleSelect(filteredSuggestions[index])
-    }
-  }, [filteredSuggestions, handleSelect])
-
-  const { selectedIndex } = useKeyboardNavigation({
-    itemCount: filteredSuggestions.length,
+/**
+ * AutoComplete Component - PURE UI COMPONENT!
+ * All logic moved to useAutoCompleteLogic hook in context layer
+ * This component is now just a presentation layer with ZERO business logic
+ */
+export const AutoComplete = () => {
+  // Get ALL logic from the hook - ZERO business logic in component!
+  const {
+    // State
     isOpen,
-    onSelect: handleSelectByIndex,
-    onClose: handleClose
-  })
-
-  // Separate effect for managing isOpen state
-  useEffect(() => {
-    // Don't automatically close when empty - let user see suggestions
-    // Only close if there are no suggestions at all
-    if (filteredSuggestions.length === 0) {
-      setIsOpen(false)
-    }
-  }, [filteredSuggestions.length])
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value
-    onChange(newValue)
+    filteredSuggestions,
+    selectedIndex,
+    autoChangedCategory,
     
-    // Open dropdown when user starts typing or if there are suggestions
-    if (filteredSuggestions.length > 0) {
-      setIsOpen(true)
-    }
-  }
-
-  const handleBlur = (e: React.FocusEvent) => {
-    // עיכוב קצר כדי לאפשר קליק על הצעה
-    setTimeout(() => {
-      if (!dropdownRef.current?.contains(e.relatedTarget as Node)) {
-        setIsOpen(false)
-      }
-    }, 150)
-  }
-
-  const handleFocus = () => {
-    if (filteredSuggestions.length > 0) {
-      setIsOpen(true)
-    }
-  }
+    // Input data
+    value,
+    placeholder,
+    inputClassName,
+    
+    // Refs
+    inputRef,
+    dropdownRef,
+    
+    // Event handlers
+    handleInputChange,
+    handleBlur,
+    handleFocus,
+    handleSelect,
+    
+    // Computed
+    hasFilteredSuggestions
+  } = useAutoCompleteLogic()
 
   return (
     <div className="relative">
@@ -101,13 +49,13 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({
           placeholder={placeholder}
           className={getInputClasses(
             autoChangedCategory ? 'highlighted' : 'default',
-            `pr-12 text-right ${className}`
+            inputClassName
           )}
           dir="rtl"
         />
         <div className="absolute left-3 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
           <Search className="w-5 h-5 text-gray-400" />
-          {filteredSuggestions.length > 0 && (
+          {hasFilteredSuggestions && (
             <ChevronDown 
               className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
             />
@@ -115,12 +63,12 @@ export const AutoComplete: React.FC<AutoCompleteProps> = ({
         </div>
       </div>
 
-      {isOpen && filteredSuggestions.length > 0 && (
+      {isOpen && hasFilteredSuggestions && (
         <div 
           ref={dropdownRef}
           className="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-xl max-h-64 overflow-y-auto"
         >
-          {filteredSuggestions.map((suggestion, index) => (
+          {filteredSuggestions.map((suggestion: string, index: number) => (
             <SuggestionItem
               key={index}
               suggestion={suggestion}

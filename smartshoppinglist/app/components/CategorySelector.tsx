@@ -1,23 +1,20 @@
 import { Category } from '../types'
 import { CATEGORY_EMOJIS, CATEGORIES } from '../constants'
-import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
+import { useCategorySelectorLogic } from '../hooks'
 
 /**
- * CategorySelector - Pure component using global context
+ * CategorySelector - PURE UI COMPONENT!
+ * All logic moved to useCategorySelectorLogic hook in context layer
  */
 export const CategorySelector = () => {
+  // Get ALL logic from the hook - ZERO business logic in component!
   const {
-    newItemCategory,
-    setNewItemCategory,
-    autoChangedCategory
-  } = useGlobalShopping()
-
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setNewItemCategory(e.target.value)
-  }
+    category,
+    handleChange,
+    selectClassName
+  } = useCategorySelectorLogic()
 
   const baseClasses = 'w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white shadow-sm transition-all duration-300'
-  const highlightClasses = autoChangedCategory ? 'ring-2 ring-green-400 border-green-300 bg-green-50' : ''
 
   return (
     <div>
@@ -25,9 +22,9 @@ export const CategorySelector = () => {
         קטגוריה
       </label>
       <select
-        value={newItemCategory}
+        value={category}
         onChange={handleChange}
-        className={`${baseClasses} ${highlightClasses}`}
+        className={selectClassName}
       >
         {CATEGORIES.map(category => (
           <option key={category} value={category}>

@@ -2,7 +2,7 @@
 
 import { useCartOperations, usePurchaseOperations } from '../contexts'
 import { Card, CardHeader } from './Card'
-import { CategorySection } from './CategorySection'
+import { CartItemsSection } from './SpecializedCategorySections'
 import { gradientBackgrounds, commonButtons } from '../utils/classNames'
 
 export function ShoppingCartSection() {
@@ -35,11 +35,7 @@ export function ShoppingCartSection() {
           </div>
         }
       />
-      <CategorySection 
-        title=""
-        items={cartItems}
-        variant="inCart"
-      />
+      <CartItemsSection />
     </Card>
   )
 }

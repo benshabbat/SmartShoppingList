@@ -1,25 +1,20 @@
 import { Lightbulb, Sparkles } from 'lucide-react'
-import { useShoppingData, useItemActions, useNotifications } from '../contexts'
-import { createAsyncHandler, MESSAGES } from '../utils'
+import { useSmartSuggestionsLogic } from '../hooks'
 import { gradientBackgrounds, gradientStyles } from '../utils/classNames'
 
+/**
+ * SmartSuggestions - PURE UI COMPONENT!
+ * All logic moved to useSmartSuggestionsLogic hook in context layer
+ */
 export const SmartSuggestions = () => {
-  // Get only what we need from enhanced hooks - NO PROPS!
-  const { suggestions } = useShoppingData()
-  const { addItem } = useItemActions()
-  const { success, error } = useNotifications()
+  // Get ALL logic from the hook - ZERO business logic in component!
+  const { 
+    suggestions, 
+    handleAddSuggestion, 
+    hasSuggestions 
+  } = useSmartSuggestionsLogic()
 
-  // Async handler for consistent error handling
-  const asyncHandler = createAsyncHandler('SmartSuggestions', error)
-
-  if (suggestions.length === 0) return null
-
-  const handleAddSuggestion = async (name: string) => {
-    await asyncHandler(async () => {
-      await addItem(name, 'כלל') // Default category
-      success(MESSAGES.SUCCESS.ITEM_ADDED(name))
-    }, MESSAGES.ERROR.ADD_ITEM_FAILED())
-  }
+  if (!hasSuggestions) return null
 
   return (
     <div className={`${gradientBackgrounds.warning} rounded-2xl shadow-lg p-6 mb-6 border border-amber-200`}>

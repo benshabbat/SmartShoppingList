@@ -2,6 +2,7 @@
 export { AddItemForm } from './AddItemForm'
 export { AutoComplete } from './AutoComplete'
 export { CategorySection } from './CategorySection'
+export { PendingItemsSection, CartItemsSection, PurchasedItemsSection } from './SpecializedCategorySections'
 export { CategorySelector } from './CategorySelector'
 export { DataImportModal } from './DataImportModal'
 export { ExpiryDateModal } from './ExpiryDateModal'

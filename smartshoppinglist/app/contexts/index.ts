@@ -1,5 +1,14 @@
 /**
- * Context exports - Zero Props Drilling Architecture
+ * Contex// Enhanced hooks for specific use cases
+export {
+  useItemActions,
+  useCartOperations,
+  usePurchaseOperations,
+  useModalOperations,
+  useNotifications,
+  useFormOperations,
+  useShoppingDataEnhanced
+} from './EnhancedHooks' - Zero Props Drilling Architecture
  */
 
 // Main context

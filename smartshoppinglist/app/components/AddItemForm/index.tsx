@@ -3,25 +3,22 @@ import { CategorySelector } from '../CategorySelector'
 import { AutoCompleteWrapper } from '../AutoCompleteWrapper'
 import { AutoChangeNotificationBanner, SuggestionNotificationBanner } from '../NotificationBannerWrappers'
 import { getButtonClasses, containerStyles } from '../../utils/classNames'
-import { useGlobalShopping } from '../../contexts/GlobalShoppingContext'
+import { useFormOperations } from '../../contexts'
 
 /**
  * Pure UI component for AddItemForm
- * ZERO PROPS DRILLING - everything managed by global context!
+ * ZERO PROPS DRILLING - everything managed by enhanced hooks!
  */
 export const AddItemForm = () => {
   // Only get what this specific component needs
-  const {
-    itemName,
-    handleAddItemSubmit
-  } = useGlobalShopping()
+  const { itemName, submitForm } = useFormOperations()
 
   return (
     <div className={containerStyles.section}>
       <AutoChangeNotificationBanner />
       <SuggestionNotificationBanner />
 
-      <form onSubmit={handleAddItemSubmit} className="space-y-4">
+      <form onSubmit={submitForm} className="space-y-4">
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="flex-1">
             <CategorySelector />

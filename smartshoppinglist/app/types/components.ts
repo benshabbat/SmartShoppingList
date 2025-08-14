@@ -168,22 +168,15 @@ export interface ShoppingItemComponentProps {
   item: any // ShoppingItem
   variant?: 'pending' | 'inCart' | 'purchased'
   showActions?: boolean
-  onUpdate?: (id: string, updates: any) => void
-  onDelete?: (id: string) => void
 }
 
 export interface ShoppingItemUIProps {
   item: any // ShoppingItem
   variant: 'pending' | 'inCart' | 'purchased'
-  showActions: boolean
-  onUpdate: (id: string, updates: any) => void
-  onDelete: (id: string) => void
 }
 
 export interface UseShoppingItemLogicProps {
   item: any // ShoppingItem
-  onUpdate: (id: string, updates: any) => void
-  onDelete: (id: string) => void
   variant?: 'pending' | 'inCart' | 'purchased'
 }
 

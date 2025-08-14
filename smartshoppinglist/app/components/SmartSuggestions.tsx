@@ -1,21 +1,23 @@
 import { Lightbulb, Sparkles } from 'lucide-react'
-import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
+import { useShoppingData, useItemActions, useNotifications } from '../contexts'
 import { createAsyncHandler, MESSAGES } from '../utils'
 import { gradientBackgrounds, gradientStyles } from '../utils/classNames'
 
 export const SmartSuggestions = () => {
-  // Get everything from global context - NO PROPS!
-  const { suggestions, addItem, showSuccess, showError } = useGlobalShopping()
+  // Get only what we need from enhanced hooks - NO PROPS!
+  const { suggestions } = useShoppingData()
+  const { addItem } = useItemActions()
+  const { success, error } = useNotifications()
 
   // Async handler for consistent error handling
-  const asyncHandler = createAsyncHandler('SmartSuggestions', showError)
+  const asyncHandler = createAsyncHandler('SmartSuggestions', error)
 
   if (suggestions.length === 0) return null
 
   const handleAddSuggestion = async (name: string) => {
     await asyncHandler(async () => {
       await addItem(name, 'כלל') // Default category
-      showSuccess(MESSAGES.SUCCESS.ITEM_ADDED(name))
+      success(MESSAGES.SUCCESS.ITEM_ADDED(name))
     }, MESSAGES.ERROR.ADD_ITEM_FAILED())
   }
 

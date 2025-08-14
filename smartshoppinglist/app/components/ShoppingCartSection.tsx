@@ -1,18 +1,13 @@
 'use client'
 
-import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
+import { useCartOperations, usePurchaseOperations } from '../contexts'
 import { Card, CardHeader } from './Card'
 import { CategorySection } from './CategorySection'
 import { gradientBackgrounds, commonButtons } from '../utils/classNames'
 
 export function ShoppingCartSection() {
-  const { 
-    cartItems, 
-    toggleItemInCart: _toggleItemInCart, 
-    removeItem: _removeItem, 
-    handleCheckout, 
-    clearPurchasedItems 
-  } = useGlobalShopping()
+  const { cartItems, checkout } = useCartOperations()
+  const { clearPurchased } = usePurchaseOperations()
 
   if (cartItems.length === 0) {
     return null
@@ -26,13 +21,13 @@ export function ShoppingCartSection() {
         action={
           <div className="flex gap-2">
             <button
-              onClick={handleCheckout}
+              onClick={checkout}
               className={commonButtons.successLarge}
             >
               🛒 סיימתי קניות ({cartItems.length})
             </button>
             <button
-              onClick={clearPurchasedItems}
+              onClick={clearPurchased}
               className={commonButtons.dangerLarge}
             >
               🗑️

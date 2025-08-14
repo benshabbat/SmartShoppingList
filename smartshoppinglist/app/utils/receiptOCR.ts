@@ -1,6 +1,7 @@
 import Tesseract from 'tesseract.js'
 import { ReceiptData, ReceiptItem } from '../types'
 import { categorizeItem } from './smartSuggestions'
+import { logger } from './helpers'
 
 export class ReceiptOCR {
   private static readonly HEBREW_STORE_PATTERNS = {
@@ -52,7 +53,7 @@ export class ReceiptOCR {
    */
   public static async processReceiptImage(file: File): Promise<ReceiptData> {
     try {
-      console.log('🔍 מתחיל עיבוד קבלה:', file.name)
+      logger.info('🔍 מתחיל עיבוד קבלה:', file.name)
       
       // בדיקות קובץ
       await this.validateFile(file)
@@ -63,11 +64,11 @@ export class ReceiptOCR {
       // עיבוד הטקסט
       const receiptData = this.parseHebrewReceiptText(ocrText)
       
-      console.log('✅ קבלה עובדה בהצלחה:', receiptData)
+      logger.info('✅ קבלה עובדה בהצלחה:', receiptData)
       return receiptData
       
     } catch (error) {
-      console.error('❌ שגיאה בעיבוד הקבלה:', error)
+      logger.error('❌ שגיאה בעיבוד הקבלה:', error)
       throw new Error(`שגיאה בעיבוד הקבלה: ${error instanceof Error ? error.message : 'שגיאה לא ידועה'}`)
     }
   }
@@ -92,17 +93,17 @@ export class ReceiptOCR {
     const imageUrl = URL.createObjectURL(file)
     
     try {
-      console.log('📸 מבצע OCR...')
+      logger.info('📸 מבצע OCR...')
       
       const { data } = await Tesseract.recognize(imageUrl, 'heb+eng', {
         logger: m => {
           if (m.status === 'recognizing text') {
-            console.log(`📊 התקדמות OCR: ${Math.round(m.progress * 100)}%`)
+            logger.info(`📊 התקדמות OCR: ${Math.round(m.progress * 100)}%`)
           }
         }
       })
       
-      console.log('📄 טקסט שזוהה:', data.text.substring(0, 200) + '...')
+      logger.info('📄 טקסט שזוהה:', data.text.substring(0, 200) + '...')
       
       if (data.text.length < 20) {
         throw new Error('הטקסט שזוהה קצר מדי. נסה תמונה איכותית יותר')
@@ -123,7 +124,7 @@ export class ReceiptOCR {
       .map(line => line.trim())
       .filter(line => line.length > 0)
     
-    console.log('📋 מעבד שורות:', lines.length)
+    logger.info('📋 מעבד שורות:', lines.length)
     
     return {
       storeName: this.detectHebrewStoreName(lines),
@@ -143,7 +144,7 @@ export class ReceiptOCR {
       for (const [storeName, patterns] of Object.entries(this.HEBREW_STORE_PATTERNS)) {
         for (const pattern of patterns) {
           if (cleanLine.includes(pattern.toLowerCase())) {
-            console.log('🏪 זוהתה חנות:', storeName)
+            logger.info('🏪 זוהתה חנות:', storeName)
             return storeName
           }
         }
@@ -173,17 +174,17 @@ export class ReceiptOCR {
       if (item && !processedNames.has(item.name.toLowerCase())) {
         items.push(item)
         processedNames.add(item.name.toLowerCase())
-        console.log('🛒 נמצא פריט:', item.name, '-', item.price, '₪')
+        logger.info('🛒 נמצא פריט:', item.name, '-', item.price, '₪')
       }
     }
     
     // אם לא נמצאו פריטים, נסה גישה אגרסיבית
     if (items.length === 0) {
-      console.log('🔄 לא נמצאו פריטים, מנסה גישה אגרסיבית...')
+      logger.info('🔄 לא נמצאו פריטים, מנסה גישה אגרסיבית...')
       return this.extractItemsAggressive(lines)
     }
     
-    console.log(`✅ נמצאו ${items.length} פריטים`)
+    logger.info(`✅ נמצאו ${items.length} פריטים`)
     return items
   }
 
@@ -273,13 +274,13 @@ export class ReceiptOCR {
       if (match) {
         const amount = parseFloat(match[1].replace(',', '.'))
         if (!isNaN(amount) && amount > 0) {
-          console.log('💰 נמצא סכום כולל:', amount, '₪')
+          logger.info('💰 נמצא סכום כולל:', amount, '₪')
           return amount
         }
       }
     }
     
-    console.log('⚠️ לא נמצא סכום כולל')
+    logger.info('⚠️ לא נמצא סכום כולל')
     return 0
   }
 

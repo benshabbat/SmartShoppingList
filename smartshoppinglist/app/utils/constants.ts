@@ -1,5 +1,130 @@
 import { Category } from '../types'
 
+/**
+ * Consolidated constants file - DRY principles applied
+ */
+
+// Environment
+export const ENV_CONSTANTS = {
+  IS_DEV: process.env.NODE_ENV === 'development',
+  IS_PROD: process.env.NODE_ENV === 'production',
+} as const
+
+// Time constants
+export const TIME_CONSTANTS = {
+  NOTIFICATION_TIMEOUT: 3000,
+  ANIMATION_DELAY_BASE: 100,
+  EXPIRY_WARNING_DAYS: 3,
+  WEEK_IN_DAYS: 7,
+  TWO_WEEKS_IN_DAYS: 14,
+} as const
+
+// UI Constants
+export const UI_CONSTANTS = {
+  MIN_PRODUCT_NAME_LENGTH: 2,
+  MAX_PRODUCT_NAME_LENGTH: 50,
+  MAX_TUTORIAL_STEPS: 6,
+  DEFAULT_PAGE_SIZE: 10,
+} as const
+
+// CSS Constants
+export const CSS_CONSTANTS = {
+  BORDER_RADIUS: {
+    SMALL: 'rounded-lg',
+    MEDIUM: 'rounded-xl',
+    LARGE: 'rounded-2xl',
+  },
+  SHADOW: {
+    SMALL: 'shadow-sm',
+    MEDIUM: 'shadow-md',
+    LARGE: 'shadow-lg',
+    EXTRA_LARGE: 'shadow-xl',
+    EXTRA_EXTRA_LARGE: 'shadow-2xl',
+  },
+  SPACING: {
+    SMALL: 'p-2',
+    MEDIUM: 'p-4',
+    LARGE: 'p-6',
+    EXTRA_LARGE: 'p-8',
+  },
+  GAP: {
+    SMALL: 'gap-2',
+    MEDIUM: 'gap-4',
+    LARGE: 'gap-6',
+  },
+} as const
+
+// Color schemes
+export const COLOR_SCHEMES = {
+  PRIMARY: 'from-indigo-500 to-purple-600',
+  SUCCESS: 'from-green-500 to-emerald-600',
+  WARNING: 'from-amber-500 to-orange-600',
+  DANGER: 'from-red-500 to-pink-600',
+  INFO: 'from-blue-500 to-indigo-600',
+} as const
+
+// Consolidated messages
+export const MESSAGES = {
+  SUCCESS: {
+    ITEM_ADDED: (itemName: string) => `הפריט "${itemName}" נוסף לרשימה`,
+    ITEM_ADDED_TO_CART: (itemName: string) => `הפריט "${itemName}" נוסף ישירות לסל`,
+    ITEM_REMOVED: (itemName: string) => `הפריט "${itemName}" הוסר מהרשימה`,
+    ITEM_UPDATED: (itemName: string) => `הפריט "${itemName}" עודכן`,
+    ADDED_TO_CART: (itemName: string) => `${itemName} נוסף לסל`,
+    REMOVED_FROM_CART: (itemName: string) => `${itemName} הוסר מהסל`,
+    PURCHASE_COMPLETED: () => 'הקנייה הושלמה בהצלחה!',
+    ITEMS_CLEARED: (count: number, type: string) => `${count} פריטים ${type} נמחקו`,
+    BULK_ADDED: (count: number) => `נוספו ${count} פריטים לרשימה`,
+    BULK_ADDED_TO_CART: (count: number) => `נוספו ${count} פריטים לעגלה`,
+    RECEIPT_SCANNED: (count: number, storeName: string) => `נסרקו ${count} פריטים מ-${storeName}`,
+    CART_CLEARED: (count: number) => `${count} פריטים הוחזרו לרשימת הקניות`,
+    LIST_CREATED: () => 'רשימה נוצרה!',
+  },
+  ERROR: {
+    ITEM_NAME_REQUIRED: () => 'שם הפריט חובה',
+    ITEM_NAME_TOO_SHORT: () => 'שם הפריט חייב להכיל לפחות 2 תווים',
+    ITEM_NAME_TOO_LONG: () => 'שם הפריט לא יכול להכיל יותר מ-50 תווים',
+    CATEGORY_REQUIRED: () => 'קטגוריה חובה',
+    DUPLICATE_ITEM: (itemName: string) => `הפריט "${itemName}" כבר קיים ברשימה`,
+    ITEM_NOT_FOUND: () => 'הפריט לא נמצא',
+    ADD_ITEM_FAILED: () => 'שגיאה בהוספת הפריט',
+    UPDATE_ITEM_FAILED: () => 'שגיאה בעדכון הפריט',
+    DELETE_ITEM_FAILED: () => 'שגיאה במחיקת הפריט',
+    EMPTY_CART: () => 'הסל ריק',
+    NO_ITEMS_TO_PURCHASE: () => 'אין מוצרים בסל לקנייה',
+    INVALID_NAME: () => 'שם המוצר לא תקין',
+    NAME_TOO_SHORT: () => 'שם המוצר קצר מדי',
+    NAME_TOO_LONG: () => 'שם המוצר ארוך מדי',
+    PRODUCT_EXISTS: () => 'המוצר כבר קיים ברשימה',
+    PURCHASE_FAILED: () => 'שגיאה בהשלמת הקנייה',
+    CLEAR_CART_FAILED: () => 'שגיאה בניקוי הסל',
+    CONNECTION_ERROR: () => 'בעיית התקשרות',
+    GENERIC_ERROR: () => 'אירעה שגיאה',
+    VALIDATION_ERROR: () => 'שגיאת אימות',
+    RECEIPT_SCAN_FAILED: () => 'נכשל בסריקת הקבלה',
+    NETWORK_ERROR: () => 'שגיאת רשת',
+    SERVER_ERROR: () => 'שגיאת שרת',
+  },
+  WARNING: {
+    EXPIRY_SOON: (itemName: string, days: number) => `${itemName} יפוג תוך ${days} ימים`,
+    EXPIRY_TODAY: (itemName: string) => `${itemName} פג היום!`,
+    EXPIRY_PAST: (itemName: string) => `${itemName} פג!`,
+    CONFIRM_DELETE_ALL: () => 'האם למחוק את כל הפריטים?',
+    CONFIRM_CLEAR_CART: () => 'האם להחזיר את כל הפריטים לרשימה?',
+    UNSAVED_CHANGES: () => 'יש שינויים שלא נשמרו',
+    LOW_STOCK: (itemName: string) => `מלאי נמוך: ${itemName}`,
+  },
+  INFO: {
+    LOADING: () => 'טוען...',
+    NO_ITEMS: () => 'אין פריטים ברשימה',
+    NO_ITEMS_IN_CART: () => 'אין פריטים בסל',
+    SEARCH_NO_RESULTS: () => 'לא נמצאו תוצאות',
+    GUEST_MODE: () => 'מצב אורח - השינויים לא יישמרו',
+    TUTORIAL_WELCOME: () => 'ברוכים הבאים לרשימת הקניות החכמה!',
+    TUTORIAL_STEP: (step: number, total: number) => `שלב ${step} מתוך ${total}`,
+  },
+} as const
+
 export const CATEGORIES: Category[] = [
   'פירות וירקות',
   'מוצרי חלב',

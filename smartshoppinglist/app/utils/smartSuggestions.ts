@@ -1,6 +1,7 @@
 import { ShoppingItem } from '../types'
 import { COMMON_PRODUCTS } from './constants'
 import { detectCategory } from './categories'
+import { logger } from './helpers'
 
 // Alias for backwards compatibility
 export const categorizeItem = detectCategory
@@ -11,7 +12,7 @@ export const generateSmartSuggestions = (
   purchaseHistory: ShoppingItem[],
   currentItems: ShoppingItem[]
 ): string[] => {
-  console.log('📝 Generating suggestions for:', { category, historyCount: purchaseHistory.length, currentCount: currentItems.length })
+  logger.debug('📝 Generating suggestions for:', { category, historyCount: purchaseHistory.length, currentCount: currentItems.length })
   
   // מוצרים שנקנו בעבר באותה קטגוריה
   const historyItems = purchaseHistory
@@ -24,7 +25,7 @@ export const generateSmartSuggestions = (
 
   // מוצרים נפוצים בקטגוריה
   const commonItems = COMMON_PRODUCTS[category as keyof typeof COMMON_PRODUCTS] || []
-  console.log('🏪 Common items for category', category, ':', commonItems.slice(0, 5))
+  logger.debug(`🏪 Common items for category ${category}:`, commonItems.slice(0, 5))
 
   // ספירת תדירות של מוצרים בהיסטוריה
   const frequency: Record<string, number> = {}
@@ -51,7 +52,7 @@ export const generateSmartSuggestions = (
     .map(item => item.charAt(0).toUpperCase() + item.slice(1))
     .slice(0, 10) // מגביל ל-10 הצעות
     
-  console.log('✨ Final suggestions:', finalSuggestions)
+  logger.debug('✨ Final suggestions:', finalSuggestions)
   return finalSuggestions
 }
 

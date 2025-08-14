@@ -5,7 +5,7 @@
 
 import { useMemo } from 'react'
 import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
-import { TIME_CONSTANTS } from '../utils/appConstants'
+import { TIME_CONSTANTS } from '../utils/constants'
 import { 
   getDaysAgo, 
   isWithinLastDays, 

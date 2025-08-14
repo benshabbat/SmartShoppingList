@@ -3,6 +3,7 @@
 import React from 'react'
 import { AlertTriangle, Clock, X, ShoppingCart } from 'lucide-react'
 import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
+import { getExpiryColor, logger } from '../utils/helpers'
 
 export function ExpiryNotification() {
   // Get everything from global context - NO PROPS DRILLING!
@@ -19,7 +20,7 @@ export function ExpiryNotification() {
 
   const handleRemoveFromPantry = (itemName: string) => {
     // TODO: Implement remove from pantry in global context
-    console.log('Remove from pantry:', itemName)
+    logger.info('Remove from pantry:', itemName)
   }
 
   const handleDismiss = () => {
@@ -31,12 +32,6 @@ export function ExpiryNotification() {
     if (daysUntilExpiry === 0) return 'פג תוקף היום'
     if (daysUntilExpiry === 1) return 'פג תוקף מחר'
     return `פג תוקף בעוד ${daysUntilExpiry} ימים`
-  }
-
-  const getExpiryColor = (daysUntilExpiry: number) => {
-    if (daysUntilExpiry <= 0) return 'text-red-700 bg-red-50 border-red-200'
-    if (daysUntilExpiry === 1) return 'text-orange-700 bg-orange-50 border-orange-200'
-    return 'text-yellow-700 bg-yellow-50 border-yellow-200'
   }
 
   return (

@@ -1,20 +1,21 @@
 import { Lightbulb, Sparkles } from 'lucide-react'
 import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
+import { createAsyncHandler, MESSAGES } from '../utils'
 
 export const SmartSuggestions = () => {
   // Get everything from global context - NO PROPS!
-  const { suggestions, addItem, showSuccess } = useGlobalShopping()
+  const { suggestions, addItem, showSuccess, showError } = useGlobalShopping()
+
+  // Async handler for consistent error handling
+  const asyncHandler = createAsyncHandler('SmartSuggestions', showError)
 
   if (suggestions.length === 0) return null
 
   const handleAddSuggestion = async (name: string) => {
-    try {
+    await asyncHandler(async () => {
       await addItem(name, 'כלל') // Default category
-      showSuccess(`${name} נוסף לרשימה`)
-    } catch (error) {
-      console.error('Error adding suggestion:', error)
-      // Error already handled in global context
-    }
+      showSuccess(MESSAGES.SUCCESS.ITEM_ADDED(name))
+    }, MESSAGES.ERROR.ADD_ITEM_FAILED())
   }
 
   return (

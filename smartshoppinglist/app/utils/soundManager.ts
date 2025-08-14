@@ -18,7 +18,7 @@ class SoundManager {
       try {
         this.context = new (window.AudioContext || (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext)()
       } catch {
-        console.log('Audio not supported')
+        logger.info('Audio not supported')
       }
     }
   }
@@ -91,6 +91,7 @@ export const soundManager = new SoundManager()
 
 // React hook for sound controls
 import { useState, useEffect } from 'react'
+import { logger } from './helpers'
 
 export const useSoundManager = () => {
   const [soundEnabled, setSoundEnabled] = useState(soundManager.isEnabled())

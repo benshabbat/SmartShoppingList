@@ -111,3 +111,18 @@ export const validateExpiryDate: Validator<Date> = (value: Date): ValidationResu
     error: isValid ? undefined : 'תאריך התפוגה חייב להיות בעתיד'
   }
 }
+
+// Alias for consistency with new utils
+export const validateItemName = validateProductName
+
+/**
+ * Check for duplicate items
+ */
+export const checkDuplicateItem = (
+  newItemName: string,
+  existingItems: Array<{ name: string }>
+): boolean => {
+  return existingItems.some(item => 
+    item.name.toLowerCase().trim() === newItemName.toLowerCase().trim()
+  )
+}

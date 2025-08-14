@@ -8,6 +8,8 @@ import { ReceiptData, ShoppingItem } from '../types'
 import { ReceiptOCR } from '../utils/receiptOCR'
 import { categorizeItem } from '../utils/smartSuggestions'
 import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
+import { formatDate } from '../utils/dateUtils'
+import { logger } from '../utils/helpers'
 
 export function ReceiptScanner() {
   // Get functions from global context - NO PROPS DRILLING!
@@ -32,7 +34,7 @@ export function ReceiptScanner() {
     setProgress(0)
     
     try {
-      console.log('📤 מעלה קובץ:', file.name)
+      logger.info('📤 מעלה קובץ:', file.name)
       
       // סימולציה של התקדמות
       const progressInterval = setInterval(() => {
@@ -47,7 +49,7 @@ export function ReceiptScanner() {
         const rawText = await ReceiptOCR.extractRawText(file)
         setRawOcrText(rawText)
       } catch (error) {
-        console.warn('⚠️ לא ניתן לחלץ טקסט גולמי:', error)
+        logger.warn('⚠️ לא ניתן לחלץ טקסט גולמי:', error)
       }
       
       clearInterval(progressInterval)
@@ -56,14 +58,14 @@ export function ReceiptScanner() {
       if (receiptData.items.length === 0) {
         alert('❌ לא נמצאו פריטים בקבלה.\n\n💡 טיפים:\n• וודא שהתמונה ברורה וחדה\n• צלם ישר מול הקבלה\n• השתמש בתאורה טובה\n• נסה לחתוך את התמונה לחלק הרלוונטי')
       } else {
-        console.log('✅ עיבוד הושלם בהצלחה:', receiptData.items.length, 'פריטים')
+        logger.success(`✅ עיבוד הושלם בהצלחה: ${receiptData.items.length} פריטים`)
       }
       
       setReceiptData(receiptData)
       setSelectedItems(new Set(receiptData.items.map((_, index) => index)))
       
     } catch (error) {
-      console.error('❌ שגיאה בעיבוד:', error)
+      logger.error('❌ שגיאה בעיבוד:', error)
       const errorMessage = error instanceof Error ? error.message : 'שגיאה לא צפויה'
       alert(`❌ שגיאה בעיבוד הקבלה:\n${errorMessage}\n\n💡 נסה:\n• תמונה איכותית יותר\n• תאורה טובה יותר\n• צילום ישר מול הקבלה`)
     } finally {
@@ -224,7 +226,7 @@ export function ReceiptScanner() {
               <div className="bg-gray-50 p-4 rounded-lg">
                 <h3 className="font-bold text-lg mb-2">📍 {receiptData.storeName}</h3>
                 <p className="text-gray-600">
-                  📅 תאריך: {receiptData.date.toLocaleDateString('he-IL')}
+                  📅 תאריך: {formatDate(receiptData.date)}
                 </p>
                 <p className="text-gray-600 font-semibold">
                   💰 סה&quot;כ: ₪{receiptData.totalAmount.toFixed(2)}

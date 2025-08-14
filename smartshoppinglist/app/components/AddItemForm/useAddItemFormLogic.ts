@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react'
 import { Category } from '../../types'
 import { generateSmartSuggestions, suggestCategoryForProduct } from '../../utils/smartSuggestions'
 import { useFormField } from '../../hooks/useFormState'
-import { validateProductName } from '../../utils/validation'
+import { validateItemName, MESSAGES, createAsyncHandler } from '../../utils'
 import { useGlobalShopping } from '../../contexts/GlobalShoppingContext'
 
 /**
@@ -20,11 +20,14 @@ export const useAddItemFormLogic = () => {
     showError
   } = useGlobalShopping()
   
-  // Form field with validation
+  // Error handler for async operations
+  const asyncHandler = createAsyncHandler('AddItemForm', showError)
+  
+  // Form field with validation using new utility
   const itemName = useFormField({
     initialValue: '',
     validator: (value: string) => {
-      const result = validateProductName(value)
+      const result = validateItemName(value)
       return result.isValid ? undefined : result.error
     }
   })
@@ -71,28 +74,22 @@ export const useAddItemFormLogic = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (itemName.isValid && itemName.value.trim()) {
-      try {
+      await asyncHandler(async () => {
         await addItem(itemName.value.trim(), newItemCategory)
-        showSuccess(`${itemName.value.trim()} נוסף לרשימה`)
+        showSuccess(MESSAGES.SUCCESS.ITEM_ADDED(itemName.value.trim()))
         itemName.reset()
         setAutoChangedCategory(false)
-      } catch (error) {
-        console.error('Error adding item:', error)
-        showError('שגיאה בהוספת הפריט')
-      }
+      }, MESSAGES.ERROR.ADD_ITEM_FAILED())
     }
   }
 
   const handleAutoCompleteSelect = async (selectedItem: string) => {
-    try {
+    await asyncHandler(async () => {
       await addItem(selectedItem, newItemCategory)
-      showSuccess(`${selectedItem} נוסף לרשימה`)
+      showSuccess(MESSAGES.SUCCESS.ITEM_ADDED(selectedItem))
       itemName.reset()
       setAutoChangedCategory(false)
-    } catch (error) {
-      console.error('Error adding item from autocomplete:', error)
-      showError('שגיאה בהוספת הפריט')
-    }
+    }, MESSAGES.ERROR.ADD_ITEM_FAILED())
   }
 
   const handleNameChange = (name: string) => {

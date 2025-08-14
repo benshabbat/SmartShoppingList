@@ -3,24 +3,25 @@ import { CATEGORY_EMOJIS } from '../utils/constants'
 import { FadeIn } from './Animations'
 import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
 import { useAnalyticsSelectors } from '../stores/data/analyticsStore'
+import { createAsyncHandler, MESSAGES } from '../utils'
 
 export const QuickAddButtons = () => {
   // Get everything from global context - NO PROPS!
-  const { addItem, showSuccess } = useGlobalShopping()
+  const { addItem, showSuccess, showError } = useGlobalShopping()
   const popularItems = useAnalyticsSelectors.usePopularItems()
+  
+  // Async handler for consistent error handling
+  const asyncHandler = createAsyncHandler('QuickAddButtons', showError)
   
   if (popularItems.length === 0) return null
 
   const topItems = popularItems.slice(0, 6) // 6 הכי פופולריים
 
   const handleAddItem = async (name: string, category: string) => {
-    try {
+    await asyncHandler(async () => {
       await addItem(name, category)
-      showSuccess(`${name} נוסף לרשימה`)
-    } catch (error) {
-      console.error('Error adding quick item:', error)
-      // Error already handled in global context
-    }
+      showSuccess(MESSAGES.SUCCESS.ITEM_ADDED(name))
+    }, MESSAGES.ERROR.ADD_ITEM_FAILED())
   }
 
   return (

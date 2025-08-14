@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Download, FileText, Share2, Copy, Check } from 'lucide-react'
 import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
+import { formatDate, logger } from '../utils'
 
 export const DataExport: React.FC = () => {
   // Get data from global context - NO PROPS!
@@ -59,7 +60,7 @@ export const DataExport: React.FC = () => {
         
         output += `  ${status} ${item.name}`
         if (item.addedAt) {
-          output += ` (נוסף: ${new Date(item.addedAt).toLocaleDateString('he-IL')})`
+          output += ` (נוסף: ${formatDate(item.addedAt)})`
         }
         output += '\n'
       })
@@ -72,7 +73,7 @@ export const DataExport: React.FC = () => {
     if (expiredItems.length > 0) {
       output += '\n⚠️ פריטים שפג תוקפם:\n'
       expiredItems.forEach(item => {
-        output += `• ${item.name} (פג ב-${new Date(item.expiryDate!).toLocaleDateString('he-IL')})\n`
+        output += `• ${item.name} (פג ב-${formatDate(item.expiryDate!)})\n`
       })
     }
     
@@ -99,7 +100,7 @@ export const DataExport: React.FC = () => {
     
     output += '-------------------\n'
     output += `סה"כ פריטים: ${pendingItems.length}\n`
-    output += `נוצר בתאריך: ${new Date().toLocaleDateString('he-IL')}\n`
+    output += `נוצר בתאריך: ${formatDate(new Date())}\n`
     
     return output
   }
@@ -124,7 +125,7 @@ export const DataExport: React.FC = () => {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch (err) {
-      console.error('Failed to copy:', err)
+      logger.error('Failed to copy:', err)
     }
   }
 
@@ -150,7 +151,7 @@ export const DataExport: React.FC = () => {
           text: data,
         })
       } catch (err) {
-        console.error('Error sharing:', err)
+        logger.error('Error sharing:', err)
       }
     } else {
       copyToClipboard()

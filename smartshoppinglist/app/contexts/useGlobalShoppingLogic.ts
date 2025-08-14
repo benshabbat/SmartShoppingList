@@ -18,7 +18,7 @@ import {
   calculateItemStats,
   validateItemName,
   checkDuplicateItem,
-  COMMON_MESSAGES
+  MESSAGES
 } from '../utils'
 import type { 
   EnhancedGlobalShoppingContextValue
@@ -111,7 +111,7 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
 
       // Check for duplicates using utility
       if (checkDuplicateItem(itemName, itemsStore.items.filter(item => !item.isPurchased))) {
-        showError(COMMON_MESSAGES.ERROR.DUPLICATE_ITEM(itemName))
+        showError(MESSAGES.ERROR.DUPLICATE_ITEM(itemName))
         return
       }
 
@@ -122,15 +122,15 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
       }
       
       const message = addToCart 
-        ? COMMON_MESSAGES.SUCCESS.ITEM_ADDED_TO_CART(itemName)
-        : COMMON_MESSAGES.SUCCESS.ITEM_ADDED(itemName)
+        ? MESSAGES.SUCCESS.ITEM_ADDED_TO_CART(itemName)
+        : MESSAGES.SUCCESS.ITEM_ADDED(itemName)
       
       showSuccess(message)
       
       if (addToCart) {
         playAddToCart()
       }
-    }, COMMON_MESSAGES.ERROR.ADD_ITEM_FAILED())
+    }, MESSAGES.ERROR.ADD_ITEM_FAILED())
   }, [itemsStore, user?.id, showSuccess, showError, playAddToCart, asyncHandler])
 
   const toggleItemInCart = useCallback(async (id: string) => {

@@ -1,6 +1,7 @@
 import Tesseract from 'tesseract.js'
 import { ReceiptData, ReceiptItem } from '../types'
 import { detectCategory } from './categories'
+import { logger } from './helpers'
 
 export class ReceiptProcessor {
   private static readonly STORE_PATTERNS = {
@@ -58,7 +59,7 @@ export class ReceiptProcessor {
       // המרת הקובץ ל-base64 לטסרקט
       const imageData = await this.fileToBase64(file)
       
-      console.log('Starting OCR processing for file:', file.name)
+      logger.info('Starting OCR processing for file:', file.name)
       
       // ניסיון ראשון עם עברית ואנגלית
       let ocrResult
@@ -66,24 +67,24 @@ export class ReceiptProcessor {
         const { data } = await Tesseract.recognize(imageData, 'heb+eng', {
           logger: m => {
             if (m.status === 'recognizing text') {
-              console.log(`OCR Progress: ${(m.progress * 100).toFixed(1)}%`)
+              logger.info(`OCR Progress: ${(m.progress * 100).toFixed(1)}%`)
             }
           }
         })
         ocrResult = data.text
-        console.log('OCR Result (heb+eng):', ocrResult)
+        logger.info('OCR Result (heb+eng):', ocrResult)
       } catch (error) {
-        console.warn('Hebrew OCR failed, trying English only:', error)
+        logger.warn('Hebrew OCR failed, trying English only:', error)
         // ניסיון שני רק עם אנגלית
         const { data } = await Tesseract.recognize(imageData, 'eng', {
           logger: m => {
             if (m.status === 'recognizing text') {
-              console.log(`OCR Progress (eng): ${(m.progress * 100).toFixed(1)}%`)
+              logger.info(`OCR Progress (eng): ${(m.progress * 100).toFixed(1)}%`)
             }
           }
         })
         ocrResult = data.text
-        console.log('OCR Result (eng only):', ocrResult)
+        logger.info('OCR Result (eng only):', ocrResult)
       }
 
       // אם הטקסט קצר מדי, זה כנראה לא עבד
@@ -96,7 +97,7 @@ export class ReceiptProcessor {
       
       // אם לא נמצאו פריטים, נסה עיבוד אגרסיבי יותר
       if (receiptData.items.length === 0) {
-        console.log('No items found with standard parsing, trying aggressive parsing...')
+        logger.info('No items found with standard parsing, trying aggressive parsing...')
         const aggressiveResult = this.parseReceiptTextAggressive(ocrResult)
         if (aggressiveResult.items.length > 0) {
           return aggressiveResult
@@ -105,7 +106,7 @@ export class ReceiptProcessor {
       
       return receiptData
     } catch (error) {
-      console.error('Error processing receipt:', error)
+      logger.error('Error processing receipt:', error)
       const errorMessage = error instanceof Error ? error.message : 'שגיאה לא צפויה'
       throw new Error(`שגיאה בעיבוד הקבלה: ${errorMessage}`)
     }
@@ -121,16 +122,16 @@ export class ReceiptProcessor {
   }
 
   private static parseReceiptTextAggressive(text: string): ReceiptData {
-    console.log('Starting simplified parsing...')
+    logger.info('Starting simplified parsing...')
     const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 1)
     
     // זיהוי שם החנות - רק בשורות הראשונות
     const storeName = this.detectStoreName(lines.slice(0, 8)) || 'לא זוהה'
-    console.log('Store name:', storeName)
+    logger.info('Store name:', storeName)
     
     // זיהוי תאריך פשוט
     const receiptDate = this.detectSimpleDate(lines) || new Date()
-    console.log('Receipt date:', receiptDate)
+    logger.info('Receipt date:', receiptDate)
     
     const items: ReceiptItem[] = []
     
@@ -160,14 +161,14 @@ export class ReceiptProcessor {
             price,
             quantity: 1
           })
-          console.log('Found item:', itemName, 'Price:', price)
+          logger.info('Found item:', itemName, 'Price:', price)
         }
       }
     }
     
     const totalAmount = items.reduce((sum, item) => sum + item.price, 0)
     
-    console.log('Found', items.length, 'items, total:', totalAmount)
+    logger.info('Found', items.length, 'items, total:', totalAmount)
     
     return {
       storeName,
@@ -180,24 +181,24 @@ export class ReceiptProcessor {
   private static parseReceiptText(text: string): ReceiptData {
     const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0)
     
-    console.log('Processing lines:', lines.length, 'lines')
+    logger.info('Processing lines:', lines.length, 'lines')
     
     // זיהוי שם החנות - התמקד בשורות הראשונות
     const storeName = this.detectStoreName(lines.slice(0, 8))
-    console.log('Detected store:', storeName)
+    logger.info('Detected store:', storeName)
     
     // זיהוי תאריך
     const receiptDate = this.detectSimpleDate(lines) || new Date()
-    console.log('Detected date:', receiptDate)
+    logger.info('Detected date:', receiptDate)
     
     // זיהוי פריטים - פשוט ויעיל
     const items = this.detectItemsSimple(lines)
-    console.log('Detected items:', items.length)
+    logger.info('Detected items:', items.length)
     
     // סכום כולל
     const totalAmount = this.detectTotalAmount(lines) || 
                        items.reduce((sum: number, item: ReceiptItem) => sum + item.price, 0)
-    console.log('Total amount:', totalAmount)
+    logger.info('Total amount:', totalAmount)
     
     return {
       storeName: storeName || 'לא זוהה',
@@ -274,7 +275,7 @@ export class ReceiptProcessor {
           price,
           quantity: 1
         })
-        console.log('Simple detection - Item:', itemName, 'Price:', price)
+        logger.info('Simple detection - Item:', itemName, 'Price:', price)
       }
     }
     
@@ -301,7 +302,7 @@ export class ReceiptProcessor {
     
     // אם לא נמצאו פריטים, נסה גישה פחות מגבילה
     if (items.length === 0) {
-      console.log('No items found with strict filtering, trying relaxed approach...')
+      logger.info('No items found with strict filtering, trying relaxed approach...')
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i]
         
@@ -404,7 +405,7 @@ export class ReceiptProcessor {
         
         const price = parseFloat(priceStr)
         if (!isNaN(price) && price >= 0.1 && price <= 2000) {
-          console.log(`Found price: ${price} from text: "${text}"`)
+          logger.info(`Found price: ${price} from text: "${text}"`)
           return price
         }
       }
@@ -416,7 +417,7 @@ export class ReceiptProcessor {
       for (const match of simpleMatch) {
         const price = parseFloat(match.replace(',', '.'))
         if (!isNaN(price) && price >= 0.1 && price <= 2000) {
-          console.log(`Found simple price: ${price} from text: "${text}"`)
+          logger.info(`Found simple price: ${price} from text: "${text}"`)
           return price
         }
       }
@@ -461,7 +462,7 @@ export class ReceiptProcessor {
           
           // בדוק שהתאריך סביר
           if (day >= 1 && day <= 31 && month >= 1 && month <= 12 && year >= 2020 && year <= 2030) {
-            console.log('Found date:', day, month, year)
+            logger.info('Found date:', day, month, year)
             return new Date(year, month - 1, day)
           }
         }
@@ -479,14 +480,14 @@ export class ReceiptProcessor {
       const { data } = await Tesseract.recognize(imageData, 'heb+eng', {
         logger: m => {
           if (m.status === 'recognizing text') {
-            console.log(`OCR Progress: ${(m.progress * 100).toFixed(1)}%`)
+            logger.info(`OCR Progress: ${(m.progress * 100).toFixed(1)}%`)
           }
         }
       })
       
       return data.text
     } catch (error) {
-      console.error('Error extracting raw text:', error)
+      logger.error('Error extracting raw text:', error)
       throw new Error('שגיאה בחילוץ הטקסט')
     }
   }

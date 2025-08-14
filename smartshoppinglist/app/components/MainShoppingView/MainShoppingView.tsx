@@ -3,10 +3,10 @@ import {
   GuestSection,
   AddItemSection,
   SuggestionsSection,
-  ExpiryNotificationSection,
   ConditionalDataExportSection,
   ModalsContainer
 } from './components'
+import { ExpiryNotification } from '../ExpiryNotification'
 import { QuickStatsCards } from '../QuickStatsCards'
 import { QuickListCreator } from '../QuickListCreator'
 import { QuickAddButtons } from '../QuickAddButtons'
@@ -46,7 +46,7 @@ export function MainShoppingView() {
       <ShoppingCartSection />
 
       {/* Expiry Notifications */}
-      <ExpiryNotificationSection />
+      <ExpiryNotification />
 
       {/* Shopping List Sections */}
       <ShoppingListSections />

@@ -19,17 +19,6 @@ export {
 } from './useAuth'
 export { useAuthContext } from './useAuthContext'
 
-// Shopping and data hooks
-export { useShoppingList } from './useShoppingList'
-export { 
-  useShoppingItems, 
-  useShoppingItem, 
-  useAddShoppingItem, 
-  useUpdateShoppingItem, 
-  useDeleteShoppingItem,
-  shoppingItemKeys 
-} from './useShoppingItems'
-
 // Analytics and statistics
 export { 
   useAnalytics, 

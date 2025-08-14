@@ -1,14 +1,10 @@
 import { FORM_VALIDATION } from '../constants'
+import { ValidationResult } from '../../../types'
 
 /**
  * Form Validator
  * Single Responsibility: Validate form inputs
  */
-
-export interface ValidationResult {
-  isValid: boolean
-  errors: string[]
-}
 
 export class FormValidator {
   static validateEmail(email: string): ValidationResult {

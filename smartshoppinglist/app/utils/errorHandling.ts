@@ -3,15 +3,7 @@
  */
 
 import { MESSAGES } from './constants'
-
-export type ErrorType = 'validation' | 'business' | 'system'
-
-export interface AppError {
-  type: ErrorType
-  message: string
-  code?: string
-  details?: unknown
-}
+import { ErrorType, AppError, ErrorHandlerOptions } from '../types'
 
 export class ValidationError extends Error {
   public readonly type: ErrorType = 'validation'
@@ -97,12 +89,6 @@ export const hasErrorCode = (error: AppError, code: string): boolean => {
 /**
  * Enhanced error handling utilities for async operations
  */
-export interface ErrorHandlerOptions {
-  logToConsole?: boolean
-  showToast?: boolean
-  fallbackMessage?: string
-}
-
 export const createErrorHandler = (
   context: string,
   showError: (message: string) => void,

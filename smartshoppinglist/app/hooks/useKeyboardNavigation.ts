@@ -1,11 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-
-export interface UseKeyboardNavigationOptions {
-  itemCount: number
-  isOpen: boolean
-  onSelect: (index: number) => void
-  onClose: () => void
-}
+import { UseKeyboardNavigationOptions } from '../types'
 
 /**
  * Hook for keyboard navigation in lists/dropdowns

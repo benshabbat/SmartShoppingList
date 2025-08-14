@@ -1,15 +1,5 @@
 import { useState, useCallback } from 'react'
-
-export interface FormField<T> {
-  value: T
-  error?: string
-  isValid: boolean
-}
-
-export interface UseFormFieldOptions<T> {
-  initialValue: T
-  validator?: (value: T) => string | undefined
-}
+import { FormField, UseFormFieldOptions } from '../types'
 
 /**
  * Hook for managing individual form field state with validation

@@ -25,8 +25,21 @@ export * from './smartSuggestions'
 export * from './soundManager'
 export * from './receiptProcessor'
 
-// Type exports
-export type { ValidationResult } from './validation'
+// Type exports - now imported from centralized types
+export type { 
+  ValidationResult,
+  Validator,
+  ErrorType,
+  AppError,
+  ErrorHandlerOptions,
+  ButtonVariant,
+  ContainerVariant,
+  InputVariant,
+  ItemVariant,
+  PresetList,
+  CategoryType,
+  Category
+} from '../types'
 
 // Specific utility exports
 export { logger, calculations } from './helpers'

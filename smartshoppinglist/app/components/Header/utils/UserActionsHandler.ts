@@ -1,5 +1,5 @@
 import { HEADER_TEXT } from '../constants'
-import type { User } from '../types'
+import type { User } from '../../../types'
 
 /**
  * User Actions Handler

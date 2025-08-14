@@ -2,14 +2,7 @@
  * CSS class name utilities following DRY principles
  */
 
-export interface ButtonVariant {
-  base: string
-  primary: string
-  secondary: string
-  danger: string
-  success: string
-  warning: string
-}
+import { ButtonVariant, ContainerVariant, InputVariant, ItemVariant } from '../types'
 
 export const buttonStyles: ButtonVariant = {
   base: 'px-4 py-2 rounded-xl font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2',
@@ -20,26 +13,11 @@ export const buttonStyles: ButtonVariant = {
   warning: 'bg-amber-500 text-white hover:bg-amber-600 focus:ring-amber-500 shadow-md hover:shadow-lg'
 }
 
-export interface ContainerVariant {
-  base: string
-  card: string
-  section: string
-  modal: string
-}
-
 export const containerStyles: ContainerVariant = {
   base: 'rounded-xl border border-gray-200 shadow-sm',
   card: 'bg-white rounded-2xl shadow-lg p-6 border border-gray-100',
   section: 'bg-white rounded-2xl shadow-lg p-6 mb-6 border border-gray-100',
   modal: 'bg-white rounded-2xl shadow-2xl border border-gray-200'
-}
-
-export interface InputVariant {
-  base: string
-  default: string
-  error: string
-  success: string
-  highlighted: string
 }
 
 export const inputStyles: InputVariant = {
@@ -48,12 +26,6 @@ export const inputStyles: InputVariant = {
   error: 'border-red-300 focus:ring-red-500 bg-red-50',
   success: 'border-green-300 focus:ring-green-500 bg-green-50',
   highlighted: 'ring-2 ring-green-400 border-green-300 bg-green-50'
-}
-
-export interface ItemVariant {
-  pending: string
-  inCart: string
-  purchased: string
 }
 
 export const itemContainerStyles: ItemVariant = {

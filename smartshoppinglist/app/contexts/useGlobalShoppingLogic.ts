@@ -22,7 +22,7 @@ import {
 } from '../utils'
 import type { 
   EnhancedGlobalShoppingContextValue
-} from './types'
+} from '../types'
 
 export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => {
   const { user, isGuest } = useAuth()

@@ -7,24 +7,11 @@
  * - All component prop interfaces removed - components use context!
  */
 
-export interface User {
-  email?: string
-  id?: string
-  name?: string
-}
+import { User, HeaderState, HeaderActions } from '../../types'
 
-export interface HeaderState {
-  soundEnabled: boolean
-  user: User | null
-  isGuest: boolean
-  isStatisticsPage: boolean
-  isAuthenticated: boolean
-}
-
-export interface HeaderActions {
-  openTutorial: () => void
-  openReceiptScanner: () => void
-  toggleSound: () => void
-  handleSignOut: () => void
-  handleSwitchToAuth: () => void
+// Re-export all types for backward compatibility
+export type {
+  User,
+  HeaderState,
+  HeaderActions
 }

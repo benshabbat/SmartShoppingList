@@ -2,12 +2,7 @@
  * Validation utilities following single responsibility principle
  */
 
-export interface ValidationResult {
-  isValid: boolean
-  error?: string
-}
-
-export type Validator<T> = (value: T) => ValidationResult
+import { ValidationResult, Validator } from '../types'
 
 /**
  * Creates a required field validator

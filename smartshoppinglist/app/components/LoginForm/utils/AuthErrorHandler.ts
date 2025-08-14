@@ -3,10 +3,7 @@
  * Single Responsibility: Handle authentication errors with Hebrew translations
  */
 
-export interface AuthError {
-  code: string
-  message: string
-}
+import { AuthError } from '../../../types'
 
 export class AuthErrorHandler {
   private static readonly ERROR_MESSAGES: Record<string, string> = {

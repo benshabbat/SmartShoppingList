@@ -1,4 +1,6 @@
 // קבצי קטגוריות מאורגנים
+import { CategoryType } from '../types'
+
 export const CATEGORIES = {
   DAIRY: 'מוצרי חלב',
   MEAT_FISH: 'בשר ודגים',
@@ -14,8 +16,6 @@ export const CATEGORIES = {
   OILS_SPICES: 'שמנים ותבלינים',
   GENERAL: 'כללי'
 } as const
-
-export type CategoryType = typeof CATEGORIES[keyof typeof CATEGORIES]
 
 // מפה של מילות מפתח לקטגוריות - מורחבת
 export const CATEGORY_KEYWORDS: Record<string, CategoryType> = {

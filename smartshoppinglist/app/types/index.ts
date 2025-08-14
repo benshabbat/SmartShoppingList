@@ -62,7 +62,7 @@ export type Category =
   | 'מוצרי חיות מחמד'
   | 'אחר'
 
-// Legacy CategoryType for categories.ts - will be unified later
+// Category Type for utils/categories.ts
 export type CategoryType = 
   | 'מוצרי חלב'
   | 'בשר ודגים'
@@ -162,7 +162,7 @@ export interface ItemVariant {
 // === PRESET LISTS TYPES ===
 export interface PresetList {
   title: string
-  items: Array<{name: string, category: Category}>
+  items: Array<{name: string, category: CategoryType}>
   icon?: string
   description?: string
 }
@@ -291,3 +291,6 @@ export interface UseShoppingActionsReturn {
   clearPurchasedItems: () => Promise<void>
   clearCartItems: () => Promise<void>
 }
+
+// === SUPABASE TYPES ===
+export * from './supabase'

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { X, Download, Upload, AlertTriangle } from 'lucide-react'
 import { Card } from './Card'
 import { useGlobalShopping } from '../contexts/GlobalShoppingContext'

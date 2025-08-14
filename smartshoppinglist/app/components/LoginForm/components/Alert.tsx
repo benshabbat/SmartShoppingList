@@ -1,11 +1,6 @@
-import React from 'react'
-import { CSS_CLASSES } from '../constants'
 
-interface AlertProps {
-  type: 'error' | 'success'
-  message: string
-  className?: string
-}
+import { CSS_CLASSES } from '../../../constants'
+import { AlertProps } from '../../../types'
 
 /**
  * Alert Component

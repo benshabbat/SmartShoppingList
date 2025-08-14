@@ -1,6 +1,4 @@
-interface LoadingOverlayProps {
-  message?: string
-}
+import { LoadingOverlayProps } from '../types'
 
 export function LoadingOverlay({ message = "טוען..." }: LoadingOverlayProps) {
   return (

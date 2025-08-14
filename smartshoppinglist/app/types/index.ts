@@ -54,7 +54,7 @@ export interface ItemActionsProps {
 // Shopping Item Component types
 export interface ShoppingItemComponentProps {
   item: ShoppingItem
-  className?: string
+  variant?: 'pending' | 'inCart' | 'purchased'
 }
 
 export interface ShoppingItemUIProps {
@@ -76,15 +76,23 @@ export interface SuggestionItemProps {
 
 // Loading Overlay types
 export interface LoadingOverlayProps {
-  isVisible: boolean
   message?: string
 }
 
 // Interactive Emoji types
 export interface InteractiveEmojiProps {
-  emoji: string
+  category: string
+  size?: 'sm' | 'md' | 'lg'
+  interactive?: boolean
+}
+
+// Category Selector types
+export interface CategorySelectorProps {
+  value: Category
+  onChange: (category: Category) => void
+  categories: Category[]
   className?: string
-  onClick?: () => void
+  isHighlighted?: boolean
   disabled?: boolean
 }
 
@@ -124,18 +132,19 @@ export interface FormFieldProps {
 }
 
 export interface AlertProps {
+  type: 'error' | 'success'
   message: string
-  type: 'error' | 'success' | 'info'
   className?: string
 }
 
 export interface SeparatorProps {
-  text: string
+  text?: string
   className?: string
 }
 
 export interface GuestModeSectionProps {
   onGuestLogin: () => void
+  className?: string
 }
 
 export interface AccountBenefitsSectionProps {

@@ -1,10 +1,6 @@
 import React from 'react'
-import { UI_TEXT } from '../constants'
-
-interface SeparatorProps {
-  text?: string
-  className?: string
-}
+import { UI_TEXT } from '../../../constants'
+import { SeparatorProps } from '../../../types'
 
 /**
  * Separator Component

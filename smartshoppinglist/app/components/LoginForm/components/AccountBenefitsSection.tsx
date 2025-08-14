@@ -1,9 +1,6 @@
 import React from 'react'
-import { CSS_CLASSES, UI_TEXT } from '../constants'
-
-interface AccountBenefitsSectionProps {
-  className?: string
-}
+import { CSS_CLASSES, UI_TEXT } from '../../../constants'
+import { AccountBenefitsSectionProps } from '../../../types'
 
 /**
  * Account Benefits Section Component

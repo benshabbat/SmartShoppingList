@@ -1,10 +1,5 @@
-import { ShoppingItem } from '../../types'
+import { ShoppingItem, ShoppingItemComponentProps } from '../../types'
 import { ShoppingItemUI } from './ShoppingItemUI'
-
-interface ShoppingItemComponentProps {
-  item: ShoppingItem
-  variant?: 'pending' | 'inCart' | 'purchased'
-}
 
 /**
  * Container component - Zero Props Drilling for actions!

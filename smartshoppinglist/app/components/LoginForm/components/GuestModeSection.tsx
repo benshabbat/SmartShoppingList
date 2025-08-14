@@ -1,10 +1,5 @@
-import React from 'react'
 import { CSS_CLASSES, UI_TEXT } from '../../../constants'
-
-interface GuestModeSectionProps {
-  onGuestLogin: () => void
-  className?: string
-}
+import { GuestModeSectionProps } from '../../../types'
 
 /**
  * Guest Mode Section Component

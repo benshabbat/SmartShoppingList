@@ -1,14 +1,5 @@
-import { Category } from '../types'
+import { Category, CategorySelectorProps } from '../types'
 import { CATEGORY_EMOJIS } from '../constants'
-
-export interface CategorySelectorProps {
-  value: Category
-  onChange: (category: Category) => void
-  categories: Category[]
-  className?: string
-  isHighlighted?: boolean
-  disabled?: boolean
-}
 
 export const CategorySelector: React.FC<CategorySelectorProps> = ({
   value,

@@ -1,11 +1,6 @@
 import { useState } from 'react'
-import { CATEGORY_EMOJIS } from '../utils/constants'
-
-interface InteractiveEmojiProps {
-  category: string
-  size?: 'sm' | 'md' | 'lg'
-  interactive?: boolean
-}
+import { CATEGORY_EMOJIS } from '../constants'
+import { InteractiveEmojiProps } from '../types'
 
 export const InteractiveEmoji = ({ 
   category, 

@@ -1,6 +1,5 @@
 import {
   AddItemSection,
-  SuggestionsSection,
   ModalsContainer,
   GuestWelcomeMessage,
 } from "./components";
@@ -12,6 +11,7 @@ import { ShoppingListSections } from "../ShoppingListSections";
 import { ShoppingCartSection } from "../ShoppingCartSection";
 import { MAIN_VIEW_STYLES } from "../../constants";
 import { DataExport } from "../DataExport";
+import { SmartSuggestions } from "../SmartSuggestions";
 
 /**
  * Main Shopping View Component
@@ -36,7 +36,7 @@ export function MainShoppingView() {
       <AddItemSection />
 
       {/* Smart Suggestions */}
-      <SuggestionsSection />
+      <SmartSuggestions />
 
       {/* Quick Add Buttons */}
       <QuickAddButtons />

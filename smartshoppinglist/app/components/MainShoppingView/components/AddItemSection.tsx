@@ -1,4 +1,5 @@
-import { AddItemForm } from '../../AddItemForm'
+
+import { AddItemForm } from '../..'
 import { MAIN_VIEW_STYLES } from '../../../constants'
 
 /**
@@ -8,7 +9,7 @@ import { MAIN_VIEW_STYLES } from '../../../constants'
 export function AddItemSection() {
   return (
     <div className={MAIN_VIEW_STYLES.CARD}>
-      <AddItemForm />
+      <AddItemForm/>
     </div>
   )
 }

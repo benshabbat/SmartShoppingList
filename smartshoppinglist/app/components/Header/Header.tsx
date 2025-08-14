@@ -1,6 +1,6 @@
 import { LeftActions, RightActions, BrandSection } from './components'
 import { useHeaderLogic } from './useHeaderLogic'
-import { HEADER_STYLES } from '../../constants'
+import { HEADER_STYLES } from './constants'
 
 /**
  * Header Component

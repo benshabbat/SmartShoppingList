@@ -1,4 +1,4 @@
-import { CSS_CLASSES, UI_TEXT, LAYOUT } from '../../../constants'
+import { CSS_CLASSES, UI_TEXT, LAYOUT } from '../constants'
 import { BrandHeaderProps } from '../../../types'
 
 /**

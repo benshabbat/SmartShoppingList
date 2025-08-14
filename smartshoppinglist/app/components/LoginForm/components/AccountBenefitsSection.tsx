@@ -1,5 +1,4 @@
-import React from 'react'
-import { CSS_CLASSES, UI_TEXT } from '../../../constants'
+import { CSS_CLASSES, UI_TEXT } from '../constants'
 import { AccountBenefitsSectionProps } from '../../../types'
 
 /**

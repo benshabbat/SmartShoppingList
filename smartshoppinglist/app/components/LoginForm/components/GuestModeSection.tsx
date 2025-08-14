@@ -1,4 +1,4 @@
-import { CSS_CLASSES, UI_TEXT } from '../../../constants'
+import { CSS_CLASSES, UI_TEXT } from '../constants'
 import { GuestModeSectionProps } from '../../../types'
 
 /**

@@ -1,4 +1,4 @@
-import { CSS_CLASSES } from '../../../constants'
+import { CSS_CLASSES } from '../constants'
 import { FormFieldProps } from '../../../types'
 
 /**

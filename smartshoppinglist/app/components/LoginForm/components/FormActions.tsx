@@ -1,5 +1,5 @@
 import { useLoginFormLogic } from '../useLoginFormLogic'
-import { CSS_CLASSES, UI_TEXT } from '../../../constants'
+import { CSS_CLASSES, UI_TEXT } from '../constants'
 
 /**
  * Form Actions Component - ZERO PROPS DRILLING

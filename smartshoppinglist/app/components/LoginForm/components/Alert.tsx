@@ -1,5 +1,5 @@
 
-import { CSS_CLASSES } from '../../../constants'
+import { CSS_CLASSES } from '../constants'
 import { AlertProps } from '../../../types'
 
 /**

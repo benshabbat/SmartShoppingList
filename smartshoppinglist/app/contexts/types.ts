@@ -5,13 +5,6 @@
 
 import { ShoppingItem, ItemSuggestion, ExpiringItem } from '../types'
 
-// Extended Shopping Item with computed properties
-export interface ComputedShoppingItem extends ShoppingItem {
-  daysSinceAdded?: number
-  isExpiringSoon?: boolean
-  isPriority?: boolean
-}
-
 // Shopping Analytics Interface
 export interface ShoppingAnalytics {
   totalItems: number
@@ -115,14 +108,4 @@ export interface UseShoppingActionsReturn {
   removeItem: (id: string) => Promise<void>
   clearPurchasedItems: () => Promise<void>
   clearCartItems: () => Promise<void>
-}
-
-export interface UseShoppingComputedReturn extends ShoppingState {
-  priorityItems: ShoppingItem[]
-  completionRate: number
-  categoryStats: Record<string, number>
-}
-
-export interface UseShoppingAnalyticsReturn extends ShoppingAnalytics {
-  purchaseHistory: ShoppingItem[]
 }

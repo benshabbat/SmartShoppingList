@@ -1,3 +1,5 @@
+'use client'
+
 import { useState, useEffect } from 'react'
 import { X, ChevronRight, ChevronLeft, Lightbulb } from 'lucide-react'
 import { FadeIn } from './Animations'

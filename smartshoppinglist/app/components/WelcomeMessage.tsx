@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState, useEffect, useCallback } from 'react'
 import { CheckCircle, User, ArrowRight } from 'lucide-react'
 import { useGlobalShopping } from '../contexts/GlobalShoppingContext'

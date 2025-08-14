@@ -3,6 +3,7 @@
 import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
 import { Card, CardHeader } from './Card'
 import { CategorySection } from './CategorySection'
+import { gradientBackgrounds, commonButtons } from '../utils/classNames'
 
 export function ShoppingListSections() {
   // Get everything from global context - NO PROPS DRILLING!

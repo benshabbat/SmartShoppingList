@@ -104,3 +104,32 @@ export const getInputClasses = (
     className
   )
 }
+
+/**
+ * Common gradient styles to avoid duplication
+ */
+export const gradientStyles = {
+  primary: 'bg-gradient-to-r from-indigo-500 to-purple-600',
+  success: 'bg-gradient-to-r from-green-500 to-emerald-600',
+  warning: 'bg-gradient-to-r from-amber-500 to-orange-600',
+  danger: 'bg-gradient-to-r from-red-500 to-pink-500',
+  accent: 'bg-gradient-to-r from-purple-500 to-pink-500',
+}
+
+export const gradientBackgrounds = {
+  primary: 'bg-gradient-to-r from-indigo-50 to-purple-50',
+  success: 'bg-gradient-to-r from-green-50 to-emerald-50',
+  warning: 'bg-gradient-to-r from-amber-50 to-orange-50',
+  danger: 'bg-gradient-to-r from-red-50 to-pink-50',
+  accent: 'bg-gradient-to-r from-purple-50 to-pink-50',
+  blue: 'bg-gradient-to-r from-blue-50 to-indigo-50',
+}
+
+/**
+ * Common button combinations
+ */
+export const commonButtons = {
+  successLarge: 'px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all duration-200 font-bold shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center gap-2',
+  dangerLarge: 'px-4 py-3 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl hover:from-red-600 hover:to-pink-600 transition-all duration-200 font-bold shadow-lg hover:shadow-xl transform hover:scale-105',
+  accentMedium: 'px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-200 font-medium shadow-md hover:shadow-lg transform hover:scale-105',
+}

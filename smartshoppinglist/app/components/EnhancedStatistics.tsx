@@ -6,6 +6,7 @@ import {
   useAnalyticsSelectors 
 } from '../stores/data/analyticsStore'
 import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
+import { gradientStyles } from '../utils/classNames'
 
 import { LucideIcon } from 'lucide-react'
 
@@ -86,7 +87,7 @@ export const EnhancedStatistics = () => {
       label: 'סה"כ נקנה',
       value: totalPurchased,
       icon: ShoppingCart,
-      color: 'from-blue-500 to-indigo-600',
+      color: gradientStyles.primary.replace('bg-gradient-to-r', ''),
       bgColor: 'bg-gradient-to-br from-blue-50 to-indigo-100',
       textColor: 'text-blue-700',
       subtext: `${avgPerWeek} בממוצע לשבוע`,
@@ -97,7 +98,7 @@ export const EnhancedStatistics = () => {
       label: 'נקנה השבוע',
       value: purchasedThisWeek,
       icon: TrendingUp,
-      color: 'from-green-500 to-emerald-600',
+      color: gradientStyles.success.replace('bg-gradient-to-r', ''),
       bgColor: 'bg-gradient-to-br from-green-50 to-emerald-100',
       textColor: 'text-green-700',
       subtext: `${Math.round((purchasedThisWeek / Math.max(totalPurchased, 1)) * 100)}% מהסה"כ`,
@@ -107,7 +108,7 @@ export const EnhancedStatistics = () => {
       label: 'הצעות חכמות',
       value: useAnalyticsStore.getState().smartSuggestions.length,
       icon: Target,
-      color: 'from-purple-500 to-pink-600',
+      color: gradientStyles.accent.replace('bg-gradient-to-r', ''),
       bgColor: 'bg-gradient-to-br from-purple-50 to-pink-100',
       textColor: 'text-purple-700',
       subtext: 'מחכות לך'
@@ -116,7 +117,7 @@ export const EnhancedStatistics = () => {
       label: 'במזווה',
       value: totalPantryItems,
       icon: Package,
-      color: 'from-amber-500 to-orange-600',
+      color: gradientStyles.warning.replace('bg-gradient-to-r', ''),
       bgColor: 'bg-gradient-to-br from-amber-50 to-orange-100',
       textColor: 'text-amber-700',
       subtext: `${expiringItemsCount} עומדים לפוג`
@@ -427,7 +428,7 @@ export const EnhancedStatistics = () => {
                 document.body.removeChild(a)
                 URL.revokeObjectURL(url)
               }}
-              className="flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg sm:rounded-xl text-sm font-medium hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 transform hover:scale-105 shadow-lg w-full sm:w-auto"
+              className={`flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-3 ${gradientStyles.primary} text-white rounded-lg sm:rounded-xl text-sm font-medium hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 transform hover:scale-105 shadow-lg w-full sm:w-auto`}
             >
               <Package className="w-4 h-4" />
               ייצא נתונים

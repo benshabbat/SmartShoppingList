@@ -4,6 +4,7 @@ import { FadeIn } from './Animations'
 import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
 import { useAnalyticsSelectors } from '../stores/data/analyticsStore'
 import { createAsyncHandler, MESSAGES } from '../utils'
+import { gradientBackgrounds } from '../utils/classNames'
 
 export const QuickAddButtons = () => {
   // Get everything from global context - NO PROPS!
@@ -26,7 +27,7 @@ export const QuickAddButtons = () => {
 
   return (
     <FadeIn delay={200}>
-      <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl shadow-lg p-4 mb-6 border border-purple-200 hover:shadow-xl transition-shadow duration-300">
+      <div className={`${gradientBackgrounds.accent} rounded-2xl shadow-lg p-4 mb-6 border border-purple-200 hover:shadow-xl transition-shadow duration-300`}>
         <div className="flex items-center gap-2 mb-3">
           <div className="p-1 bg-purple-100 rounded-full animate-bounce-gentle">
             <Zap className="w-5 h-5 text-purple-600" />

@@ -1,6 +1,7 @@
 import { Lightbulb, Sparkles } from 'lucide-react'
 import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
 import { createAsyncHandler, MESSAGES } from '../utils'
+import { gradientBackgrounds, gradientStyles } from '../utils/classNames'
 
 export const SmartSuggestions = () => {
   // Get everything from global context - NO PROPS!
@@ -19,7 +20,7 @@ export const SmartSuggestions = () => {
   }
 
   return (
-    <div className="bg-gradient-to-br from-amber-50 to-orange-100 rounded-2xl shadow-lg p-6 mb-6 border border-amber-200">
+    <div className={`${gradientBackgrounds.warning} rounded-2xl shadow-lg p-6 mb-6 border border-amber-200`}>
       <div className="flex items-center gap-3 mb-4">
         <div className="p-2 bg-amber-500 rounded-full">
           <Lightbulb className="w-5 h-5 text-white" />
@@ -37,7 +38,7 @@ export const SmartSuggestions = () => {
           <div key={index} className="flex items-center justify-between bg-white rounded-xl p-4 shadow-sm border border-amber-100 hover:shadow-md transition-all">
             <button
               onClick={() => handleAddSuggestion(suggestion.name)}
-              className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg hover:from-amber-600 hover:to-orange-600 transition-all duration-200 font-medium shadow-md hover:shadow-lg transform hover:scale-105"
+              className={`px-4 py-2 ${gradientStyles.warning} text-white rounded-lg hover:from-amber-600 hover:to-orange-600 transition-all duration-200 font-medium shadow-md hover:shadow-lg transform hover:scale-105`}
             >
               הוסף
             </button>

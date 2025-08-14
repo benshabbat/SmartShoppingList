@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { CheckCircle, User, ArrowRight } from 'lucide-react'
 import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
+import { gradientBackgrounds } from '../utils/classNames'
 
 export function WelcomeMessage() {
   const { showWelcomeMessage, welcomeUserName, closeWelcome } = useGlobalShopping()
@@ -30,7 +31,7 @@ export function WelcomeMessage() {
     <div className={`fixed top-4 right-4 z-50 max-w-sm transition-all duration-300 ${
       isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
     }`}>
-      <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-4 shadow-lg">
+      <div className={`${gradientBackgrounds.success} border border-green-200 rounded-xl p-4 shadow-lg`}>
         <div className="flex items-start gap-3">
           <div className="bg-green-100 rounded-full p-2">
             <CheckCircle className="w-5 h-5 text-green-600" />

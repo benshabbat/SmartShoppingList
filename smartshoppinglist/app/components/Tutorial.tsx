@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { X, ChevronRight, ChevronLeft, Lightbulb } from 'lucide-react'
 import { FadeIn } from './Animations'
 import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
+import { gradientStyles } from '../utils/classNames'
 
 interface TutorialStep {
   title: string
@@ -75,7 +76,7 @@ export const Tutorial = () => {
           </button>
 
           <div className="text-center mb-6">
-            <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className={`w-16 h-16 ${gradientStyles.accent} rounded-full flex items-center justify-center mx-auto mb-4`}>
               <Lightbulb className="w-8 h-8 text-white" />
             </div>
             <h2 className="text-xl font-bold text-gray-800 mb-2">
@@ -120,7 +121,7 @@ export const Tutorial = () => {
 
               <button
                 onClick={nextStep}
-                className="flex items-center gap-1 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl hover:from-purple-600 hover:to-pink-600 transition-all"
+                className={`flex items-center gap-1 px-4 py-2 ${gradientStyles.accent} text-white rounded-xl hover:from-purple-600 hover:to-pink-600 transition-all`}
               >
                 {currentStep < tutorialSteps.length - 1 && (
                   <ChevronLeft className="w-4 h-4" />

@@ -5,6 +5,7 @@ import { Wand2, Plus, X, Sparkles, ShoppingCart, List, Eye, Check } from 'lucide
 import { PRESET_LISTS, parseCustomList, getPresetListKeys } from '../utils/presetLists'
 import { CATEGORY_EMOJIS } from '../utils/constants'
 import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
+import { gradientStyles, gradientBackgrounds } from '../utils/classNames'
 
 export const QuickListCreator: React.FC = () => {
   // Get functions from global context - NO PROPS DRILLING!
@@ -47,10 +48,10 @@ export const QuickListCreator: React.FC = () => {
   }
 
   return (
-    <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-2xl border border-purple-200 mb-6 shadow-lg">
+    <div className={`${gradientBackgrounds.accent} p-6 rounded-2xl border border-purple-200 mb-6 shadow-lg`}>
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full">
+          <div className={`p-2 ${gradientStyles.accent} rounded-full`}>
             <Wand2 className="text-white" size={20} />
           </div>
           <div>
@@ -184,7 +185,7 @@ export const QuickListCreator: React.FC = () => {
                 <button
                   onClick={handleCustomList}
                   disabled={!customList.trim()}
-                  className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl hover:from-purple-600 hover:to-pink-600 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105 font-medium shadow-md"
+                  className={`px-6 py-3 ${gradientStyles.accent} text-white rounded-xl hover:from-purple-600 hover:to-pink-600 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105 font-medium shadow-md`}
                 >
                   {actionMode === 'cart' ? 'הוסף לסל' : 'צור רשימה'}
                 </button>

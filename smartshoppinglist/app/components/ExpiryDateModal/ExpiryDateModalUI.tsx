@@ -1,5 +1,6 @@
 import { ShoppingItem } from '../../types'
 import { Card } from '../Card'
+import { gradientStyles } from '../../utils/classNames'
 
 interface ExpiryDateModalUIProps {
   items: ShoppingItem[]
@@ -160,7 +161,7 @@ export const ExpiryDateModalUI = ({
             </button>
             <button
               onClick={onSubmit}
-              className="px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 font-bold shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center gap-2"
+              className={`px-6 py-3 ${gradientStyles.primary} text-white rounded-xl hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 font-bold shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center gap-2`}
             >
               <span>סיים רכישה</span>
               <span className="text-sm bg-white bg-opacity-20 px-2 py-1 rounded">

@@ -1,11 +1,5 @@
 import { useState } from 'react'
-import { ShoppingItem } from '../../types'
-
-interface UseExpiryDateModalLogicProps {
-  items: ShoppingItem[]
-  onSubmit: (itemsWithExpiry: Array<{ id: string; expiryDate?: Date }>) => void
-  onClose: () => void
-}
+import { ShoppingItem, UseExpiryDateModalLogicProps } from '../../types'
 
 /**
  * Custom hook for ExpiryDateModal business logic

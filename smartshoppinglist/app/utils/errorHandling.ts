@@ -2,7 +2,7 @@
  * Error handling utilities following clean code principles
  */
 
-import { MESSAGES } from './constants'
+import { MESSAGES } from '../constants'
 import { ErrorType, AppError, ErrorHandlerOptions } from '../types'
 
 export class ValidationError extends Error {

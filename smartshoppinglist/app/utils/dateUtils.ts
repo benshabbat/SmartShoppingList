@@ -2,7 +2,7 @@
  * Date and time utilities following DRY principles
  */
 
-import { TIME_CONSTANTS } from './constants'
+import { TIME_CONSTANTS } from '../constants'
 
 /**
  * Format date in Hebrew locale

@@ -12,7 +12,7 @@ import { QuickListCreator } from '../QuickListCreator'
 import { QuickAddButtons } from '../QuickAddButtons'
 import { ShoppingListSections } from '../ShoppingListSections'
 import { ShoppingCartSection } from '../ShoppingCartSection'
-import { MAIN_VIEW_STYLES } from './constants'
+import { MAIN_VIEW_STYLES } from '../../constants'
 
 /**
  * Main Shopping View Component

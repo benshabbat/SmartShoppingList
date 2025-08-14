@@ -1,12 +1,6 @@
-import React from 'react'
 import { Search, Clock, TrendingUp } from 'lucide-react'
 import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
-
-interface SuggestionItemProps {
-  suggestion: string
-  isHighlighted: boolean
-  onClick: () => void
-}
+import { SuggestionItemProps } from '../types'
 
 export const SuggestionItem: React.FC<SuggestionItemProps> = ({
   suggestion,

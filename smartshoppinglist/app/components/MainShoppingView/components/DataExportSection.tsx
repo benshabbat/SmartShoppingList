@@ -1,6 +1,6 @@
 import React from 'react'
 import { DataExport } from '../../DataExport'
-import { MAIN_VIEW_STYLES } from '../constants'
+import { MAIN_VIEW_STYLES } from '../../../constants'
 
 /**
  * Data Export Section Component

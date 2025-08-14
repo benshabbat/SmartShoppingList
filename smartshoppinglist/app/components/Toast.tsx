@@ -1,19 +1,7 @@
 import { useState, useEffect } from 'react'
 import { CheckCircle, AlertCircle, Info, X } from 'lucide-react'
 import { FadeIn } from './Animations'
-
-export interface Toast {
-  id: string
-  type: 'success' | 'error' | 'info'
-  title: string
-  message?: string
-  duration?: number
-}
-
-interface ToastProps {
-  toast: Toast
-  onRemove: (id: string) => void
-}
+import { Toast, ToastProps, SimpleToastProps } from '../types'
 
 const ToastComponent = ({ toast, onRemove }: ToastProps) => {
   useEffect(() => {

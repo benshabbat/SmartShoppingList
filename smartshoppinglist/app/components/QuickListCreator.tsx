@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Wand2, Plus, X, Sparkles, ShoppingCart, List, Eye, Check } from 'lucide-react'
 import { PRESET_LISTS, parseCustomList, getPresetListKeys } from '../utils/presetLists'
-import { CATEGORY_EMOJIS } from '../utils/constants'
+import { CATEGORY_EMOJIS } from '../constants'
 import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
 import { gradientStyles, gradientBackgrounds } from '../utils/classNames'
 

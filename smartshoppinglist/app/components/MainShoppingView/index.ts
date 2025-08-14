@@ -6,4 +6,5 @@
 export { MainShoppingView } from './MainShoppingView'
 export { useMainShoppingViewLogic } from './useMainShoppingViewLogic'
 export * from './components'
-export * from './constants'
+
+// Note: Constants are now centralized in app/constants/index.ts

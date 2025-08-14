@@ -1,15 +1,5 @@
-import React from 'react'
-import { CSS_CLASSES } from '../constants'
-
-interface FormFieldProps {
-  label: string
-  type: 'text' | 'email' | 'password'
-  value: string
-  onChange: (value: string) => void
-  required?: boolean
-  minLength?: number
-  className?: string
-}
+import { CSS_CLASSES } from '../../../constants'
+import { FormFieldProps } from '../../../types'
 
 /**
  * Form Field Component

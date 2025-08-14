@@ -1,30 +1,6 @@
-import { ShoppingItem } from '../../types'
+import { ShoppingItem, ExpiryDateModalUIProps } from '../../types'
 import { Card } from '../Card'
 import { gradientStyles } from '../../utils/classNames'
-
-interface ExpiryDateModalUIProps {
-  items: ShoppingItem[]
-  isOpen: boolean
-  
-  // State
-  expiryDates: Record<string, string>
-  skippedItems: Set<string>
-  
-  // Computed values
-  today: string
-  quickDateOptions: Array<{ label: string; days: number }>
-  hasAnyDates: boolean
-  allItemsProcessed: boolean
-  
-  // Event handlers
-  onClose: () => void
-  onExpiryDateChange: (itemId: string, date: string) => void
-  onSkipItem: (itemId: string) => void
-  onSubmit: () => void
-  onSkip: () => void
-  onQuickDateSet: (itemId: string, days: number) => void
-  onSetAllDates: (days: number) => void
-}
 
 /**
  * Pure UI component for ExpiryDateModal

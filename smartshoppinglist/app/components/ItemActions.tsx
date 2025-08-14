@@ -1,14 +1,5 @@
 import { Check, ArrowRight, Plus, X } from 'lucide-react'
-
-export type ItemActionType = 'add-to-cart' | 'remove-from-cart' | 'mark-purchased' | 'remove'
-
-export interface ItemActionsProps {
-  variant: 'pending' | 'inCart' | 'purchased'
-  onToggleCart: () => void
-  onRemove: () => void
-  className?: string
-  disabled?: boolean
-}
+import { ItemActionType, ItemActionsProps } from '../types'
 
 export const ItemActions: React.FC<ItemActionsProps> = ({
   variant,

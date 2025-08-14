@@ -1,14 +1,9 @@
 import { Calendar } from 'lucide-react'
-import { ShoppingItem } from '../../types'
+import { ShoppingItem, ShoppingItemUIProps } from '../../types'
 import { ItemActions } from '../ItemActions'
 import { formatDate } from '../../utils/dateUtils'
 import { itemContainerStyles, cn } from '../../utils/classNames'
 import { useShoppingItemLogic } from './useShoppingItemLogic'
-
-interface ShoppingItemUIProps {
-  item: ShoppingItem
-  variant?: 'pending' | 'inCart' | 'purchased'
-}
 
 /**
  * UI component for ShoppingItem

@@ -1,5 +1,5 @@
 import { ShoppingBag, Zap, Star } from 'lucide-react'
-import { CATEGORY_EMOJIS } from '../utils/constants'
+import { CATEGORY_EMOJIS } from '../constants'
 import { FadeIn } from './Animations'
 import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
 import { useAnalyticsSelectors } from '../stores/data/analyticsStore'

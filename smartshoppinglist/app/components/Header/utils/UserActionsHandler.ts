@@ -1,4 +1,4 @@
-import { HEADER_TEXT } from '../constants'
+import { HEADER_TEXT } from '../../../constants'
 import type { User } from '../../../types'
 
 /**

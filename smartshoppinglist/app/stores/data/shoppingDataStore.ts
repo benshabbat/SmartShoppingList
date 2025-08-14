@@ -9,7 +9,7 @@ import { devtools, persist, createJSONStorage } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
 import { ShoppingItem, ItemSuggestion, ExpiringItem } from '../../types'
 import { ShoppingItemService } from '@/lib/services/shoppingItemService'
-import { STORAGE_KEYS } from '../../utils/constants'
+import { STORAGE_KEYS } from '../../constants'
 import { generateSuggestions, checkExpiringItems } from '../../utils/helpers'
 
 // Types

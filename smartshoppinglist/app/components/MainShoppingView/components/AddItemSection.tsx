@@ -1,6 +1,6 @@
 import React from 'react'
 import { AddItemForm } from '../../AddItemForm'
-import { MAIN_VIEW_STYLES } from '../constants'
+import { MAIN_VIEW_STYLES } from '../../../constants'
 
 /**
  * Add Item Section Component

@@ -1,9 +1,5 @@
-import { UI_TEXT } from '../constants'
-
-interface AuthHeaderProps {
-  isLogin: boolean
-  className?: string
-}
+import { UI_TEXT } from '../../../constants'
+import { AuthHeaderProps } from '../../../types'
 
 /**
  * Auth Header Component

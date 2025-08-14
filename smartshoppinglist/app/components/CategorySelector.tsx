@@ -1,6 +1,5 @@
-import React from 'react'
 import { Category } from '../types'
-import { CATEGORY_EMOJIS } from '../utils/constants'
+import { CATEGORY_EMOJIS } from '../constants'
 
 export interface CategorySelectorProps {
   value: Category

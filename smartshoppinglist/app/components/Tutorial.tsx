@@ -5,13 +5,7 @@ import { X, ChevronRight, ChevronLeft, Lightbulb } from 'lucide-react'
 import { FadeIn } from './Animations'
 import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
 import { gradientStyles } from '../utils/classNames'
-
-interface TutorialStep {
-  title: string
-  description: string
-  target?: string
-  position?: 'top' | 'bottom' | 'left' | 'right'
-}
+import { TutorialStep } from '../types'
 
 const tutorialSteps: TutorialStep[] = [
   {

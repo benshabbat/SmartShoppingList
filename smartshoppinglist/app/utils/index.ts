@@ -19,7 +19,7 @@ export {
   CSS_CONSTANTS,
   COLOR_SCHEMES,
   MESSAGES
-} from './constants'
+} from '../constants'
 export * from './presetLists'
 export * from './smartSuggestions'
 export * from './soundManager'

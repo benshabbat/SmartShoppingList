@@ -1,9 +1,5 @@
-import React from 'react'
-import { CSS_CLASSES, UI_TEXT, LAYOUT } from '../constants'
-
-interface BrandHeaderProps {
-  className?: string
-}
+import { CSS_CLASSES, UI_TEXT, LAYOUT } from '../../../constants'
+import { BrandHeaderProps } from '../../../types'
 
 /**
  * Brand Header Component

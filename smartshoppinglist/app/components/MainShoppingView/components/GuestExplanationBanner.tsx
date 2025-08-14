@@ -1,5 +1,6 @@
 import { useGlobalShopping } from '../../../contexts/GlobalShoppingContext'
-import { MAIN_VIEW_TEXT, MAIN_VIEW_STYLES } from '../constants'
+import { Button } from '@/app/components/ActionButton'
+import { MAIN_VIEW_TEXT, MAIN_VIEW_STYLES } from '../../../constants'
 
 /**
  * Guest Explanation Banner Component - ZERO PROPS DRILLING

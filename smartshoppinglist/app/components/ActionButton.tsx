@@ -2,21 +2,9 @@
  * Centralized action buttons component following DRY principles
  */
 
-
 import { LucideIcon } from 'lucide-react'
 import { getButtonClasses, CSS_CONSTANTS } from '../utils'
-
-interface ActionButtonProps {
-  onClick: () => void
-  icon: LucideIcon
-  children: React.ReactNode
-  variant?: 'primary' | 'secondary' | 'danger' | 'success' | 'warning'
-  size?: 'sm' | 'md' | 'lg'
-  disabled?: boolean
-  loading?: boolean
-  className?: string
-  iconSize?: number
-}
+import { ActionButtonProps } from '../types'
 
 export const ActionButton: React.FC<ActionButtonProps> = ({
   onClick,

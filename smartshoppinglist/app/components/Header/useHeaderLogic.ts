@@ -3,7 +3,7 @@ import { useUIStore } from '../../stores'
 import { useAuth } from '../../hooks/useAuth'
 import { useGlobalShopping } from '../../contexts/GlobalShoppingContext'
 import { UserActionsHandler } from './utils'
-import { ROUTES } from './constants'
+import { ROUTES } from '../../constants'
 
 /**
  * Custom hook for Header business logic

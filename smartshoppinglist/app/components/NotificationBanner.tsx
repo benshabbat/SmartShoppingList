@@ -1,17 +1,6 @@
-import React from 'react'
 import { Lightbulb } from 'lucide-react'
-import { Category } from '../types'
-import { CATEGORY_EMOJIS } from '../utils/constants'
-
-export interface NotificationBannerProps {
-  type: 'auto-change' | 'suggestion'
-  message: string
-  category?: Category
-  productName?: string
-  onAccept?: () => void
-  onDismiss?: () => void
-  isVisible: boolean
-}
+import { Category, NotificationBannerProps } from '../types'
+import { CATEGORY_EMOJIS } from '../constants'
 
 export const NotificationBanner: React.FC<NotificationBannerProps> = ({
   type,

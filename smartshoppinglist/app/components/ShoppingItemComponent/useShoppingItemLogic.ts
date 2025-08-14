@@ -1,10 +1,5 @@
-import { ShoppingItem } from '../../types'
+import { ShoppingItem, UseShoppingItemLogicProps } from '../../types'
 import { useGlobalShopping } from '../../contexts/GlobalShoppingContext'
-
-interface UseShoppingItemLogicProps {
-  item: ShoppingItem
-  variant?: 'pending' | 'inCart' | 'purchased'
-}
 
 /**
  * Custom hook for ShoppingItem business logic

@@ -1,5 +1,6 @@
 import { ShoppingItem } from '../types'
-import { COMMON_PRODUCTS } from './constants'
+import { Category } from '../types'
+import { COMMON_PRODUCTS } from '../constants'
 import { detectCategory } from './categories'
 import { logger } from './helpers'
 

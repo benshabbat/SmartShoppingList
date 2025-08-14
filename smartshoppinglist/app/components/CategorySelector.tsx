@@ -1,19 +1,19 @@
 import { Category } from '../types'
 import { CATEGORY_EMOJIS, CATEGORIES } from '../constants'
-import { useAddItemFormLogic } from './AddItemForm/useAddItemFormLogic'
+import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
 
 /**
- * CategorySelector without props drilling - uses context directly
+ * CategorySelector - Pure component using global context
  */
 export const CategorySelector = () => {
   const {
     newItemCategory,
     setNewItemCategory,
     autoChangedCategory
-  } = useAddItemFormLogic()
+  } = useGlobalShopping()
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setNewItemCategory(e.target.value as Category)
+    setNewItemCategory(e.target.value)
   }
 
   const baseClasses = 'w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white shadow-sm transition-all duration-300'

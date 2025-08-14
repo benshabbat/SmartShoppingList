@@ -1,15 +1,15 @@
-import { useAddItemFormLogic } from './AddItemForm/useAddItemFormLogic'
+import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
 import { NotificationBanner } from './NotificationBanner'
 
 /**
- * Auto-change notification banner without props drilling
+ * Auto-change notification banner using global context
  */
 export const AutoChangeNotificationBanner = () => {
   const {
     itemName,
     newItemCategory,
     autoChangedCategory
-  } = useAddItemFormLogic()
+  } = useGlobalShopping()
 
   return (
     <NotificationBanner
@@ -23,7 +23,7 @@ export const AutoChangeNotificationBanner = () => {
 }
 
 /**
- * Suggestion notification banner without props drilling
+ * Suggestion notification banner using global context
  */
 export const SuggestionNotificationBanner = () => {
   const {
@@ -32,7 +32,7 @@ export const SuggestionNotificationBanner = () => {
     suggestedCategory,
     handleCategorySuggestionAccept,
     handleCategorySuggestionDismiss
-  } = useAddItemFormLogic()
+  } = useGlobalShopping()
 
   return (
     <NotificationBanner

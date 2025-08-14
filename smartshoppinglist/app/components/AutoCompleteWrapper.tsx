@@ -1,27 +1,25 @@
-import { useAddItemFormLogic } from './AddItemForm/useAddItemFormLogic'
 import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
 import { AutoComplete } from './AutoComplete'
 
 /**
- * AutoCompleteWrapper without props drilling - uses context directly
+ * AutoCompleteWrapper - Pure component using global context
  */
 export const AutoCompleteWrapper = () => {
-  const { purchaseHistory } = useGlobalShopping()
   const {
     itemName,
     newItemCategory,
-    suggestions,
+    smartSuggestions,
     autoChangedCategory,
-    handleNameChange,
+    purchaseHistory,
     handleAutoCompleteSelect
-  } = useAddItemFormLogic()
+  } = useGlobalShopping()
 
   return (
     <AutoComplete
       value={itemName.value}
-      onChange={handleNameChange}
+      onChange={itemName.onChange}
       onSelect={handleAutoCompleteSelect}
-      suggestions={suggestions}
+      suggestions={smartSuggestions}
       purchaseHistory={purchaseHistory}
       placeholder={`הוסף ${newItemCategory}...`}
       className="flex-1"

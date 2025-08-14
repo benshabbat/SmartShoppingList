@@ -123,6 +123,27 @@ export interface GlobalShoppingContextValue {
   clearPurchasedItems: () => Promise<void>
   clearCartItems: () => Promise<void>
   
+  // === ADD ITEM FORM STATE ===
+  itemName: {
+    value: string
+    isValid: boolean
+    error?: string
+    onChange: (value: string) => void
+    reset: () => void
+  }
+  newItemCategory: string
+  setNewItemCategory: (category: string) => void
+  smartSuggestions: string[]
+  autoChangedCategory: boolean
+  showCategorySuggestion: boolean
+  suggestedCategory: string | null
+  
+  // === ADD ITEM FORM ACTIONS ===
+  handleAddItemSubmit: (e: React.FormEvent) => Promise<void>
+  handleAutoCompleteSelect: (selectedItem: string) => Promise<void>
+  handleCategorySuggestionAccept: () => void
+  handleCategorySuggestionDismiss: () => void
+  
   // === UI ACTIONS ===
   openReceiptScanner: () => void
   closeReceiptScanner: () => void

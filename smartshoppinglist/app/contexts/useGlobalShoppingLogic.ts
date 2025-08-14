@@ -3,13 +3,15 @@
  * Centralized business logic for the global shopping context
  */
 
-import { useCallback, useMemo, useEffect } from 'react'
+import { useCallback, useMemo, useEffect, useState } from 'react'
 import { useShoppingDataStore } from '../stores/data/shoppingDataStore'
 import { useUIStore } from '../stores/ui/uiStore'
 import { useAuth } from '../hooks/useAuth'
 import { useToasts } from '../components/Toast'
 import { useSoundManager } from '../utils/soundManager'
-import { ShoppingItem } from '../types'
+import { useFormField } from '../hooks/useFormState'
+import { generateSmartSuggestions, suggestCategoryForProduct } from '../utils/smartSuggestions'
+import { ShoppingItem, Category } from '../types'
 import { 
   createErrorHandler,
   createAsyncHandler,
@@ -36,6 +38,90 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
   // Error handlers
   const handleError = createErrorHandler('GlobalShoppingLogic', showError)
   const asyncHandler = createAsyncHandler('GlobalShoppingLogic', showError)
+  
+  // === ADD ITEM FORM STATE AND LOGIC ===
+  // Form field with validation
+  const itemName = useFormField({
+    initialValue: '',
+    validator: (value: string) => {
+      const result = validateItemName(value)
+      return result.isValid ? undefined : result.error
+    }
+  })
+  
+  // Category state
+  const [newItemCategory, setNewItemCategory] = useState<Category>('פירות וירקות')
+  const [showCategorySuggestion, setShowCategorySuggestion] = useState(false)
+  const [suggestedCategory] = useState<Category | null>(null)
+  const [autoChangedCategory, setAutoChangedCategory] = useState(false)
+
+  // Smart suggestions based on category and history
+  const smartSuggestions = useMemo(() => {
+    const generated = generateSmartSuggestions(newItemCategory, itemsStore.purchaseHistory, itemsStore.items)
+    return generated
+  }, [newItemCategory, itemsStore.purchaseHistory, itemsStore.items])
+
+  // Auto-suggest category based on product name
+  useEffect(() => {
+    if (itemName.value.trim().length >= 2) {
+      const suggested = suggestCategoryForProduct(itemName.value)
+      
+      if (suggested && suggested !== newItemCategory && suggested !== 'אחר') {
+        setNewItemCategory(suggested as Category)
+        setAutoChangedCategory(true)
+        setShowCategorySuggestion(false)
+        
+        // Hide notification after 4 seconds
+        setTimeout(() => {
+          setAutoChangedCategory(false)
+        }, 4000)
+      }
+    } else {
+      if (autoChangedCategory) {
+        setAutoChangedCategory(false)
+      }
+    }
+  }, [itemName.value, newItemCategory, autoChangedCategory])
+
+  // Form submission handler
+  const handleAddItemSubmit = useCallback(async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (itemName.isValid && itemName.value.trim()) {
+      await asyncHandler(async () => {
+        await itemsStore.addItem(itemName.value.trim(), newItemCategory, user?.id || 'guest')
+        showSuccess(MESSAGES.SUCCESS.ITEM_ADDED(itemName.value.trim()))
+        itemName.reset()
+      })
+    }
+  }, [itemName, newItemCategory, asyncHandler, showSuccess, itemsStore, user?.id])
+
+  // AutoComplete selection handler
+  const handleAutoCompleteSelect = useCallback(async (selectedItem: string) => {
+    await asyncHandler(async () => {
+      await itemsStore.addItem(selectedItem, newItemCategory, user?.id || 'guest')
+      showSuccess(MESSAGES.SUCCESS.ITEM_ADDED(selectedItem))
+      itemName.reset()
+    })
+  }, [newItemCategory, asyncHandler, showSuccess, itemsStore, itemName, user?.id])
+
+  // Category setting handler
+  const setCategoryHandler = useCallback((category: string) => {
+    setNewItemCategory(category as Category)
+  }, [])
+
+  // Category suggestion handlers
+  const handleCategorySuggestionAccept = useCallback(() => {
+    if (suggestedCategory) {
+      setNewItemCategory(suggestedCategory)
+      setShowCategorySuggestion(false)
+    }
+  }, [suggestedCategory])
+
+  const handleCategorySuggestionDismiss = useCallback(() => {
+    setShowCategorySuggestion(false)
+  }, [])
+
+  // === END ADD ITEM FORM LOGIC ===
   
   // App initialization and item loading
   useEffect(() => {
@@ -345,6 +431,18 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
     loading: itemsStore.isLoading,
     error: itemsStore.error,
     
+    // Add Item Form Data
+    itemName: {
+      ...itemName,
+      onChange: itemName.setValue
+    },
+    newItemCategory,
+    setNewItemCategory: setCategoryHandler,
+    smartSuggestions,
+    autoChangedCategory,
+    showCategorySuggestion,
+    suggestedCategory,
+    
     // UI State
     showReceiptScanner: uiStore.showReceiptScanner,
     showExpiryModal: uiStore.showExpiryModal,
@@ -363,6 +461,12 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
     removeItem,
     clearPurchasedItems,
     clearCartItems,
+    
+    // Add Item Form Actions
+    handleAddItemSubmit,
+    handleAutoCompleteSelect,
+    handleCategorySuggestionAccept,
+    handleCategorySuggestionDismiss,
     
     // UI Actions
     openReceiptScanner: uiStore.openReceiptScanner,

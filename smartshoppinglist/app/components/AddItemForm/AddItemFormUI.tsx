@@ -1,5 +1,5 @@
 import { Plus } from 'lucide-react'
-import { CATEGORIES } from '../../utils/constants'
+import { CATEGORIES } from '../../constants'
 import { AutoComplete } from '../AutoComplete'
 import { CategorySelector } from '../CategorySelector'
 import { NotificationBanner } from '../NotificationBanner'

@@ -1,5 +1,5 @@
 import { Check, ArrowRight, Plus, X } from 'lucide-react'
-import { ItemActionType, ItemActionsProps } from '../types'
+import { ItemActionsProps } from '../types'
 
 export const ItemActions: React.FC<ItemActionsProps> = ({
   variant,

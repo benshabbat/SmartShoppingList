@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ShoppingItem, UseExpiryDateModalLogicProps } from '../../types'
+import { UseExpiryDateModalLogicProps } from '../../types'
 
 /**
  * Custom hook for ExpiryDateModal business logic

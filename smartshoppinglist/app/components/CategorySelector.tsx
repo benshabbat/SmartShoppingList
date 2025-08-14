@@ -1,21 +1,23 @@
-import { Category, CategorySelectorProps } from '../types'
-import { CATEGORY_EMOJIS } from '../constants'
+import { Category } from '../types'
+import { CATEGORY_EMOJIS, CATEGORIES } from '../constants'
+import { useAddItemFormLogic } from './AddItemForm/useAddItemFormLogic'
 
-export const CategorySelector: React.FC<CategorySelectorProps> = ({
-  value,
-  onChange,
-  categories,
-  className = '',
-  isHighlighted = false,
-  disabled = false
-}) => {
+/**
+ * CategorySelector without props drilling - uses context directly
+ */
+export const CategorySelector = () => {
+  const {
+    newItemCategory,
+    setNewItemCategory,
+    autoChangedCategory
+  } = useAddItemFormLogic()
+
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    onChange(e.target.value as Category)
+    setNewItemCategory(e.target.value as Category)
   }
 
   const baseClasses = 'w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white shadow-sm transition-all duration-300'
-  const highlightClasses = isHighlighted ? 'ring-2 ring-green-400 border-green-300 bg-green-50' : ''
-  const disabledClasses = disabled ? 'opacity-50 cursor-not-allowed' : ''
+  const highlightClasses = autoChangedCategory ? 'ring-2 ring-green-400 border-green-300 bg-green-50' : ''
 
   return (
     <div>
@@ -23,14 +25,13 @@ export const CategorySelector: React.FC<CategorySelectorProps> = ({
         קטגוריה
       </label>
       <select
-        value={value}
+        value={newItemCategory}
         onChange={handleChange}
-        disabled={disabled}
-        className={`${baseClasses} ${highlightClasses} ${disabledClasses} ${className}`}
+        className={`${baseClasses} ${highlightClasses}`}
       >
-        {categories.map(category => (
+        {CATEGORIES.map(category => (
           <option key={category} value={category}>
-            {CATEGORY_EMOJIS[category]} {category}
+            {CATEGORY_EMOJIS[category as Category] || ''} {category}
           </option>
         ))}
       </select>

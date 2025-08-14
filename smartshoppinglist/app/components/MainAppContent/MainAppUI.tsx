@@ -6,7 +6,6 @@
 'use client'
 
 import { Header } from '../Header'
-import { LoginForm } from '../LoginForm'
 import { MainShoppingView } from '../MainShoppingView'
 import { ModalsContainer } from '../MainShoppingView/components/ModalsContainer'
 import { ToastContainer } from '../Toast'
@@ -16,20 +15,21 @@ import { GuestModeNotification } from '../GuestModeNotification'
 import { WelcomeMessage } from '../WelcomeMessage'
 import { useMainAppLogic } from './useMainAppLogic'
 import { LoadingOverlay } from '../LoadingOverlay'
+import { LoginFormUI } from '../LoginForm/LoginFormUI'
 
 export const MainAppUI = () => {
   const { renderState, shouldShowGuestNotification } = useMainAppLogic()
 
   // Loading state
   if (renderState === 'loading') {
-    return <LoadingOverlay />
+    return <LoadingOverlay isVisible={true} />
   }
 
   // Login state  
   if (renderState === 'login') {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <LoginForm />
+        <LoginFormUI/>
       </div>
     )
   }

@@ -1,4 +1,4 @@
-import { ShoppingItem, ExpiryDateModalUIProps } from '../../types'
+import { ExpiryDateModalUIProps } from '../../types'
 import { Card } from '../Card'
 import { gradientStyles } from '../../utils/classNames'
 

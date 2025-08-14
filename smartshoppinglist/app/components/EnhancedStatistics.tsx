@@ -8,7 +8,6 @@ import {
 import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
 import { gradientStyles } from '../utils/classNames'
 
-import { LucideIcon } from 'lucide-react'
 import type { EnhancedStatCard } from '../types/components'
 
 /**

@@ -1,6 +1,5 @@
 import { ShoppingItem } from '../types'
 import { ShoppingItemComponent } from './ShoppingItemComponent'
-import { CATEGORIES } from '../constants'
 import { groupItemsByCategory } from '../utils/helpers'
 import { FadeIn, SlideUp } from './Animations'
 import { CategoryHeader } from './InteractiveEmoji'
@@ -8,16 +7,16 @@ import { containerStyles } from '../utils/classNames'
 import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
 import type { CategorySectionProps } from '../types/components'
 
-const EmptyState: React.FC<{ message: string }> = ({ message }) => (
+const EmptyState = ({ message }: { message: string }) => (
   <div className="text-center text-gray-500 py-8">
     <p className="text-lg">{message}</p>
   </div>
 )
 
-const SectionHeader: React.FC<{ title: string; itemCount: number; showItemCount: boolean }> = ({ 
-  title, 
-  itemCount, 
-  showItemCount 
+const SectionHeader = ({ title, itemCount, showItemCount }: {
+  title: string;
+  itemCount: number;
+  showItemCount: boolean;
 }) => (
   <div className="flex items-center justify-between mb-6">
     <div className="flex items-center gap-2">
@@ -31,11 +30,11 @@ const SectionHeader: React.FC<{ title: string; itemCount: number; showItemCount:
   </div>
 )
 
-const CategoryItems: React.FC<{
+const CategoryItems = ({ categoryItems, variant, categoryIndex }: {
   categoryItems: ShoppingItem[]
   variant: 'pending' | 'inCart' | 'purchased'
   categoryIndex: number
-}> = ({ categoryItems, variant, categoryIndex }) => {
+}) => {
   // ZERO PROPS DRILLING - Get actions from context!
   const { toggleItemInCart: _toggleItemInCart, removeItem: _removeItem } = useGlobalShopping()
   

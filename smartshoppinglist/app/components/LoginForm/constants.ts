@@ -48,6 +48,10 @@ export const UI_TEXT = {
     },
   },
   SEPARATOR: 'או',
+  ACCOUNT_BENEFITS: {
+    TITLE: 'יתרונות החשבון:',
+    DESCRIPTION: 'סנכרון בין מכשירים, גיבוי אוטומטי, סטטיסטיקות מתקדמות ועוד!',
+  },
 } as const
 
 // CSS Classes for styling

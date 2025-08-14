@@ -136,15 +136,11 @@ export interface ActionButtonProps {
   size?: ComponentSize
   disabled?: boolean
   loading?: boolean
-  icon?: ReactNode
+  icon?: LucideIcon
   className?: string
+  iconSize?: number
 }
 
-export interface ActionButtonGroupProps {
-  children: ReactNode
-  className?: string
-  spacing?: 'small' | 'medium' | 'large'
-}
 
 // === INPUT TYPES ===
 
@@ -227,6 +223,8 @@ export interface CategorySelectorProps {
   onCategorySelect: (category: string | null) => void
   showAll?: boolean
   isHighlighted?: boolean
+  className?: string
+  disabled?: boolean
 }
 
 export interface ItemActionType {

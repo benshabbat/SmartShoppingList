@@ -1,4 +1,3 @@
-import React from 'react'
 import { ReceiptScanner } from '../../ReceiptScanner'
 import { ExpiryDateModal } from '../../ExpiryDateModal'
 import { DataImportModal } from '../../DataImportModal'

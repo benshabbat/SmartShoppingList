@@ -10,7 +10,7 @@ import {
   AccountBenefitsSection,
   FormActions
 } from './components'
-import { CSS_CLASSES, UI_TEXT, LAYOUT, FORM_VALIDATION } from './constants'
+import { CSS_CLASSES, UI_TEXT, LAYOUT, FORM_VALIDATION } from "./constants"
 
 /**
  * Login Form UI Component

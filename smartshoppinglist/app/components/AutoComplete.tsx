@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { ChevronDown, Search } from 'lucide-react'
-import { ShoppingItem } from '../types'
 import { searchWithPopularity } from '../utils/smartSuggestions'
 import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation'
 import { getInputClasses } from '../utils/classNames'

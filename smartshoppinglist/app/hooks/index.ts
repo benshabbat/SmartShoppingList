@@ -28,8 +28,5 @@ export {
 } from './useAnalytics'
 export { useStatistics } from './useStatistics'
 
-// Application data hooks
-export { useConstants } from './useConstants'
-
 // Store exports
 export * from '../stores'

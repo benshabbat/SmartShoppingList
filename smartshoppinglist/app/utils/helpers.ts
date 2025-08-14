@@ -1,4 +1,5 @@
 import { ShoppingItem, ItemSuggestion, ExpiringItem } from '../types'
+import { getDaysUntilExpiry } from './dateUtils'
 
 /**
  * Enhanced logger for development and debugging
@@ -37,11 +38,6 @@ export const logger = {
 export const calculations = {
   daysBetween: (date1: Date, date2: Date): number => {
     return Math.floor((date2.getTime() - date1.getTime()) / (1000 * 60 * 60 * 24))
-  },
-  daysUntil: (targetDate: Date | string): number => {
-    const target = new Date(targetDate)
-    const now = new Date()
-    return Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
   },
   percentage: (value: number, total: number): number => {
     return total > 0 ? Math.round((value / total) * 100) : 0
@@ -112,7 +108,7 @@ export const checkExpiringItems = (pantry: ShoppingItem[]): ExpiringItem[] => {
   pantry.forEach(item => {
     if (item.expiryDate) {
       const expiryDate = new Date(item.expiryDate)
-      const daysUntilExpiry = calculations.daysUntil(expiryDate)
+      const daysUntilExpiry = getDaysUntilExpiry(expiryDate)
       
       if (daysUntilExpiry <= 3) {
         expiring.push({
@@ -126,16 +122,6 @@ export const checkExpiringItems = (pantry: ShoppingItem[]): ExpiringItem[] => {
   })
 
   return expiring
-}
-
-export const getItemsByCategory = (items: ShoppingItem[], categories: string[]) => {
-  const itemsByCategory: Record<string, ShoppingItem[]> = {}
-  
-  categories.forEach(category => {
-    itemsByCategory[category] = items.filter(item => item.category === category)
-  })
-  
-  return itemsByCategory
 }
 
 /**

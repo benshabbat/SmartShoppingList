@@ -1,7 +1,7 @@
 import { ShoppingItem } from '../types'
 import { ShoppingItemComponent } from './ShoppingItemComponent'
 import { CATEGORIES } from '../utils/constants'
-import { getItemsByCategory } from '../utils/helpers'
+import { groupItemsByCategory } from '../utils/helpers'
 import { FadeIn, SlideUp } from './Animations'
 import { CategoryHeader } from './InteractiveEmoji'
 import { containerStyles } from '../utils/classNames'
@@ -69,7 +69,7 @@ export const CategorySection = ({
   showItemCount = true,
   emptyMessage
 }: CategorySectionProps) => {
-  const itemsByCategory = getItemsByCategory(items, CATEGORIES)
+  const itemsByCategory = groupItemsByCategory(items)
 
   if (items.length === 0) {
     return emptyMessage ? <EmptyState message={emptyMessage} /> : null

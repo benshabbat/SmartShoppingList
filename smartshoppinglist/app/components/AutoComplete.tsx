@@ -5,19 +5,9 @@ import { searchWithPopularity } from '../utils/smartSuggestions'
 import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation'
 import { getInputClasses } from '../utils/classNames'
 import { SuggestionItem } from './SuggestionItem'
+import type { AutoCompleteProps } from '../types/components'
 
-interface AutoCompleteProps {
-  value: string
-  onChange: (value: string) => void
-  onSelect: (value: string) => void
-  suggestions: string[]
-  purchaseHistory?: ShoppingItem[]
-  placeholder?: string
-  className?: string
-  autoChangedCategory?: boolean
-}
-
-export const AutoComplete = ({
+export const AutoComplete: React.FC<AutoCompleteProps> = ({
   value,
   onChange,
   onSelect,

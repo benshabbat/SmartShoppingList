@@ -6,94 +6,7 @@
 import { create } from 'zustand'
 import { devtools, persist, createJSONStorage } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
-import type { ShoppingItem, ItemSuggestion } from '../../types'
-
-// Types
-interface CategoryStats {
-  category: string
-  count: number
-  percentage: number
-  trend: 'up' | 'down' | 'stable'
-  lastWeekCount: number
-}
-
-interface PopularItem {
-  name: string
-  category: string
-  count: number
-  lastPurchased?: Date
-  frequency: number
-  daysSinceLastBought: number
-}
-
-interface WeeklyTrend {
-  week: string
-  purchases: number
-  categories: Record<string, number>
-}
-
-interface AnalyticsState {
-  // === SUGGESTIONS & RECOMMENDATIONS ===
-  smartSuggestions: ItemSuggestion[]
-  popularItems: PopularItem[]
-  
-  // === STATISTICS ===
-  totalPurchased: number
-  purchasedThisWeek: number
-  purchasedLastWeek: number
-  expiringItemsCount: number
-  totalPantryItems: number
-  
-  // === CATEGORY ANALYTICS ===
-  categoryStats: CategoryStats[]
-  topCategory: string | null
-  
-  // === TRENDS ===
-  weeklyTrends: WeeklyTrend[]
-  monthlyGrowth: number
-  
-  // === STATE ===
-  isAnalyzing: boolean
-  lastAnalysisDate: Date | null
-  
-  // === SETTINGS ===
-  suggestionSettings: {
-    maxSuggestions: number
-    daysSinceLastPurchase: number
-    minFrequency: number
-    includeSeasonalSuggestions: boolean
-  }
-}
-
-interface AnalyticsActions {
-  // === ANALYSIS ACTIONS ===
-  analyzeShoppingData: (purchaseHistory: ShoppingItem[], pantryItems: ShoppingItem[]) => void
-  generateSmartSuggestions: (purchaseHistory: ShoppingItem[]) => void
-  calculatePopularItems: (purchaseHistory: ShoppingItem[]) => void
-  updateCategoryStats: (purchaseHistory: ShoppingItem[]) => void
-  
-  // === SUGGESTION MANAGEMENT ===
-  addToSuggestions: (suggestion: ItemSuggestion) => void
-  removeFromSuggestions: (suggestionName: string) => void
-  clearSuggestions: () => void
-  
-  // === POPULAR ITEMS MANAGEMENT ===
-  refreshPopularItems: (purchaseHistory: ShoppingItem[]) => void
-  
-  // === SETTINGS ===
-  updateSuggestionSettings: (settings: Partial<AnalyticsState['suggestionSettings']>) => void
-  
-  // === MANUAL REFRESH ===
-  refreshAnalytics: (purchaseHistory: ShoppingItem[], pantryItems: ShoppingItem[]) => void
-  setAnalyzing: (analyzing: boolean) => void
-  
-  // === COMPUTED VALUES ===
-  getTopCategories: (limit?: number) => CategoryStats[]
-  getMostFrequentItems: (limit?: number) => PopularItem[]
-  getRecentTrends: (weeks?: number) => WeeklyTrend[]
-}
-
-type AnalyticsStore = AnalyticsState & AnalyticsActions
+import type { ShoppingItem, ItemSuggestion, CategoryStats, PopularItem, WeeklyTrend, AnalyticsState, AnalyticsActions, AnalyticsStore } from '../../types'
 
 // Helper functions
 const getDaysSinceDate = (date: Date): number => {
@@ -117,36 +30,63 @@ const calculateTrend = (current: number, previous: number): 'up' | 'down' | 'sta
 
 // Initial State
 const initialState: AnalyticsState = {
-  // Suggestions & Recommendations
-  smartSuggestions: [],
-  popularItems: [],
+  // === COMPUTED STATISTICS ===
+  totalItems: 0,
+  completionRate: 0,
+  averageItemsPerWeek: 0,
+  totalSpentThisMonth: 0,
+  totalSpentLastMonth: 0,
+  spendingTrend: 'stable',
   
-  // Statistics
+  // === NEW ANALYTICS FIELDS ===
   totalPurchased: 0,
   purchasedThisWeek: 0,
   purchasedLastWeek: 0,
   expiringItemsCount: 0,
   totalPantryItems: 0,
-  
-  // Category Analytics
-  categoryStats: [],
   topCategory: null,
-  
-  // Trends
-  weeklyTrends: [],
   monthlyGrowth: 0,
-  
-  // State
   isAnalyzing: false,
   lastAnalysisDate: null,
+  smartSuggestions: [],
   
-  // Settings
+  // === SETTINGS ===
   suggestionSettings: {
     maxSuggestions: 10,
     daysSinceLastPurchase: 7,
     minFrequency: 2,
     includeSeasonalSuggestions: true,
   },
+  
+  // === CATEGORY ANALYTICS ===
+  categoryStats: [],
+  topCategories: [],
+  
+  // === ITEM ANALYTICS ===
+  popularItems: [],
+  recentlyAdded: [],
+  priorityItems: [],
+  expiringItems: [],
+  
+  // === TRENDS & PATTERNS ===
+  weeklyTrends: [],
+  monthlySpending: [],
+  shoppingFrequency: [],
+  peakShoppingDays: [],
+  
+  // === PERFORMANCE METRICS ===
+  averageShoppingTime: 0,
+  itemsPerSession: 0,
+  cartAbandonmentRate: 0,
+  repeatPurchaseRate: 0,
+  
+  // === META DATA ===
+  lastCalculated: null,
+  dataRange: {
+    from: new Date().toISOString(),
+    to: new Date().toISOString()
+  },
+  sampleSize: 0,
 }
 
 // Store Implementation

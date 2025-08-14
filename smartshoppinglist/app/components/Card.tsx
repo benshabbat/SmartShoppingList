@@ -2,19 +2,8 @@
  * Unified Card component following DRY principles
  */
 
-import React from 'react'
 import { containerStyles, CSS_CONSTANTS, cn } from '../utils'
-
-interface CardProps {
-  children: React.ReactNode
-  variant?: 'card' | 'section' | 'modal'
-  className?: string
-  padding?: 'small' | 'medium' | 'large' | 'extra-large'
-  shadow?: 'small' | 'medium' | 'large' | 'extra-large' | 'extra-extra-large'
-  rounded?: 'small' | 'medium' | 'large'
-  onClick?: () => void
-  hoverable?: boolean
-}
+import type { CardProps, CardHeaderProps, CardBodyProps, CardFooterProps } from '../types/components'
 
 export const Card: React.FC<CardProps> = ({
   children,
@@ -64,14 +53,6 @@ export const Card: React.FC<CardProps> = ({
   )
 }
 
-interface CardHeaderProps {
-  title: string
-  subtitle?: string
-  icon?: React.ReactNode
-  action?: React.ReactNode
-  className?: string
-}
-
 export const CardHeader: React.FC<CardHeaderProps> = ({
   title,
   subtitle,
@@ -95,11 +76,6 @@ export const CardHeader: React.FC<CardHeaderProps> = ({
   )
 }
 
-interface CardBodyProps {
-  children: React.ReactNode
-  className?: string
-}
-
 export const CardBody: React.FC<CardBodyProps> = ({
   children,
   className = '',
@@ -109,11 +85,6 @@ export const CardBody: React.FC<CardBodyProps> = ({
       {children}
     </div>
   )
-}
-
-interface CardFooterProps {
-  children: React.ReactNode
-  className?: string
 }
 
 export const CardFooter: React.FC<CardFooterProps> = ({

@@ -1,0 +1,276 @@
+/**
+ * Component Types - React Component Props and Interfaces
+ * Contains all types related to React components, their props, and component-specific logic
+ */
+
+import { ReactNode } from 'react'
+import { LucideIcon } from 'lucide-react'
+import type { Toast } from './ui'
+
+// === BASE TYPES ===
+
+// Common UI types
+export type AlertType = 'success' | 'error' | 'info' | 'warning'
+export type ComponentSize = 'sm' | 'md' | 'lg'
+export type Position = 'top' | 'bottom' | 'left' | 'right'
+export type ComponentVariant = 'primary' | 'secondary' | 'danger' | 'success' | 'warning'
+export type ItemStatus = 'pending' | 'inCart' | 'purchased'
+
+// === BASE COMPONENT TYPES ===
+
+export interface BaseComponentProps {
+  className?: string
+  disabled?: boolean
+}
+
+export interface BaseModalProps {
+  isOpen: boolean
+  onClose: () => void
+}
+
+// === PROVIDER COMPONENT TYPES ===
+
+export interface QueryProviderProps {
+  children: React.ReactNode
+}
+
+// === TOAST TYPES ===
+
+export interface SimpleToastProps {
+  type: 'success' | 'error' | 'info' | 'warning'
+  message: string
+  duration?: number
+  onClose?: () => void
+}
+
+export interface ToastProps {
+  toast: Toast
+  onToggle: () => void
+  onRemove?: (id: string) => void
+}
+
+// === STAT CARD TYPES ===
+
+export interface StatCard {
+  title: string
+  value: string | number
+  description?: string
+  trend?: 'up' | 'down' | 'stable'
+  icon?: ReactNode
+}
+
+export interface EnhancedStatCard {
+  label: string
+  value: string | number
+  icon: LucideIcon
+  color: string
+  bgColor: string
+  textColor: string
+  subtext?: string
+  isText?: boolean
+  trend?: 'up' | 'down' | 'stable'
+  trendValue?: number
+}
+
+// === CATEGORY TYPES ===
+
+export interface CategoryHeaderProps {
+  category: string
+  count: number
+  isExpanded: boolean
+  onToggle: () => void
+}
+
+export interface CategoryDisplayProps {
+  category: string
+  count: number
+  headerColor?: string
+}
+
+export interface CategorySectionProps {
+  title: string
+  items: any[] // ShoppingItem[]
+  variant?: 'pending' | 'inCart' | 'purchased'
+  headerColor?: string
+  showItemCount?: boolean
+  emptyMessage?: string
+}
+
+// === CARD TYPES ===
+
+export interface CardProps {
+  children: ReactNode
+  variant?: 'card' | 'section' | 'modal'
+  className?: string
+  padding?: 'small' | 'medium' | 'large' | 'extra-large'
+  shadow?: 'small' | 'medium' | 'large' | 'extra-large' | 'extra-extra-large'
+  rounded?: 'small' | 'medium' | 'large'
+  onClick?: () => void
+  hoverable?: boolean
+}
+
+export interface CardHeaderProps {
+  title: string
+  subtitle?: string
+  icon?: ReactNode
+  action?: ReactNode
+  className?: string
+}
+
+export interface CardBodyProps {
+  children: ReactNode
+  className?: string
+}
+
+export interface CardFooterProps {
+  children: ReactNode
+  className?: string
+}
+
+// === BUTTON TYPES ===
+
+export interface ActionButtonProps {
+  children: ReactNode
+  onClick?: () => void
+  variant?: ComponentVariant
+  size?: ComponentSize
+  disabled?: boolean
+  loading?: boolean
+  icon?: ReactNode
+  className?: string
+}
+
+export interface ActionButtonGroupProps {
+  children: ReactNode
+  className?: string
+  spacing?: 'small' | 'medium' | 'large'
+}
+
+// === INPUT TYPES ===
+
+export interface AutoCompleteProps {
+  value: string
+  onChange: (value: string) => void
+  onSelect: (value: string) => void
+  suggestions: string[]
+  purchaseHistory?: any[] // ShoppingItem[]
+  placeholder?: string
+  className?: string
+  autoChangedCategory?: boolean
+}
+
+// === OTHER COMPONENT TYPES ===
+
+export interface RenderProps<T = any> {
+  data: T
+  render: (data: T) => ReactNode
+}
+
+// === SHOPPING ITEM COMPONENT TYPES ===
+
+export interface ShoppingItemComponentProps {
+  item: any // ShoppingItem
+  variant?: 'pending' | 'inCart' | 'purchased'
+  showActions?: boolean
+  onUpdate?: (id: string, updates: any) => void
+  onDelete?: (id: string) => void
+}
+
+export interface ShoppingItemUIProps {
+  item: any // ShoppingItem
+  variant: 'pending' | 'inCart' | 'purchased'
+  showActions: boolean
+  onUpdate: (id: string, updates: any) => void
+  onDelete: (id: string) => void
+}
+
+export interface UseShoppingItemLogicProps {
+  item: any // ShoppingItem
+  onUpdate: (id: string, updates: any) => void
+  onDelete: (id: string) => void
+  variant?: 'pending' | 'inCart' | 'purchased'
+}
+
+// === SUGGESTION TYPES ===
+
+export interface SuggestionItemProps {
+  suggestion: any // ItemSuggestion
+  onAccept?: (suggestion: any) => void
+  onDismiss?: (id: string) => void
+  isHighlighted?: boolean
+  onClick?: () => void
+}
+
+// === TUTORIAL TYPES ===
+
+export interface TutorialStep {
+  id: string
+  title: string
+  description: string
+  target?: string
+  position?: 'top' | 'bottom' | 'left' | 'right'
+}
+
+// === ADDITIONAL COMPONENT TYPES ===
+
+export interface InteractiveEmojiProps {
+  category: string
+  size?: 'sm' | 'md' | 'lg'
+  interactive?: boolean
+}
+
+export interface CategorySelectorProps {
+  categories: string[]
+  selectedCategory: string | null
+  value?: string
+  onChange?: (category: string) => void
+  onCategorySelect: (category: string | null) => void
+  showAll?: boolean
+  isHighlighted?: boolean
+}
+
+export interface ItemActionType {
+  id: string
+  label: string
+  icon: any
+  action: () => void
+  variant?: 'primary' | 'secondary' | 'danger'
+}
+
+export interface ItemActionsProps {
+  item: any // ShoppingItem
+  actions: ItemActionType[]
+  variant?: 'pending' | 'inCart' | 'purchased'
+}
+
+export interface LoadingOverlayProps {
+  isVisible: boolean
+  message?: string
+  variant?: 'default' | 'minimal'
+}
+
+export interface NotificationBannerProps {
+  type: 'suggestion' | 'expiry' | 'info' | 'warning' | 'auto-change'
+  message: string
+  category?: string
+  productName?: string
+  onDismiss?: () => void
+  onAccept?: () => void
+  isVisible?: boolean
+  actions?: Array<{
+    label: string
+    action: () => void
+  }>
+}
+
+export interface ExpiryDateModalUIProps {
+  items: any[] // ShoppingItem[]
+  isOpen: boolean
+  onClose: () => void
+  onSubmit: (itemsWithExpiry: Array<{ id: string; expiryDate?: Date }>) => void
+}
+
+export interface UseExpiryDateModalLogicProps {
+  items: any[] // ShoppingItem[]
+  onSubmit: (itemsWithExpiry: Array<{ id: string; expiryDate?: Date }>) => void
+}

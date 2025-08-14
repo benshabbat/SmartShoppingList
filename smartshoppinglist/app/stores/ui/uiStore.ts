@@ -7,117 +7,7 @@
 import { create } from 'zustand'
 import { devtools, persist, createJSONStorage } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
-import { ShoppingItem } from '../../types'
-
-// Types
-interface Toast {
-  id: string
-  message: string
-  type: 'success' | 'error' | 'info' | 'warning'
-  duration?: number
-}
-
-interface Modal {
-  id: string
-  type: 'expiryDate' | 'dataImport' | 'receiptScanner' | 'tutorial' | 'confirmation'
-  data?: unknown
-}
-
-// UI State Interface
-interface UIState {
-  // === THEME & APPEARANCE ===
-  theme: 'light' | 'dark' | 'system'
-  
-  // === NOTIFICATIONS ===
-  toasts: Toast[]
-  showGuestModeNotification: boolean
-  
-  // === MODALS ===
-  activeModal: Modal | null
-  showReceiptScanner: boolean
-  showExpiryModal: boolean
-  showDataImportModal: boolean
-  showTutorial: boolean
-  showWelcomeMessage: boolean
-  welcomeUserName: string | null
-  checkoutItems: ShoppingItem[]
-  
-  // === LOADING STATES ===
-  globalLoading: boolean
-  isAddingItem: boolean
-  isUpdatingItem: boolean
-  isDeletingItem: boolean
-  
-  // === GUEST MODE ===
-  hasShownGuestExplanation: boolean
-  
-  // === USER PREFERENCES ===
-  soundEnabled: boolean
-  completedTutorialSteps: string[]
-  sidebarOpen: boolean
-  quickAddSuggestions: string[]
-}
-
-// UI Actions Interface
-interface UIActions {
-  // === THEME ACTIONS ===
-  setTheme: (theme: UIState['theme']) => void
-  toggleTheme: () => void
-  
-  // === TOAST ACTIONS ===
-  addToast: (toast: Omit<Toast, 'id'>) => void
-  removeToast: (id: string) => void
-  clearToasts: () => void
-  showSuccess: (message: string, duration?: number) => void
-  showError: (message: string, duration?: number) => void
-  showInfo: (message: string, duration?: number) => void
-  showWarning: (message: string, duration?: number) => void
-  
-  // === MODAL ACTIONS ===
-  openModal: (modal: Modal) => void
-  closeModal: () => void
-  openReceiptScanner: () => void
-  closeReceiptScanner: () => void
-  openExpiryModal: (items: ShoppingItem[]) => void
-  closeExpiryModal: () => void
-  openDataImportModal: () => void
-  closeDataImportModal: () => void
-  openTutorial: () => void
-  closeTutorial: () => void
-  showWelcome: (userName?: string) => void
-  closeWelcome: () => void
-  
-  // === LOADING ACTIONS ===
-  setGlobalLoading: (loading: boolean) => void
-  setAddingItem: (loading: boolean) => void
-  setUpdatingItem: (loading: boolean) => void
-  setDeletingItem: (loading: boolean) => void
-  
-  // === GUEST MODE ACTIONS ===
-  shouldShowGuestExplanation: () => boolean
-  dismissGuestExplanation: () => void
-  setGuestModeNotification: (show: boolean) => void
-  
-  // === USER PREFERENCES ===
-  setSoundEnabled: (enabled: boolean) => void
-  toggleSound: () => void
-  setSidebarOpen: (open: boolean) => void
-  toggleSidebar: () => void
-  addCompletedTutorialStep: (step: string) => void
-  resetTutorial: () => void
-  setQuickAddSuggestions: (suggestions: string[]) => void
-  
-  // === CHECKOUT ACTIONS ===
-  setCheckoutItems: (items: ShoppingItem[]) => void
-  clearCheckoutItems: () => void
-  addToCheckout: (item: ShoppingItem) => void
-  removeFromCheckout: (itemId: string) => void
-  
-  // === UTILITY ACTIONS ===
-  reset: () => void
-}
-
-type UIStore = UIState & UIActions
+import type { Toast, Modal, UIState, UIActions, UIStore, ShoppingItem } from '../../types'
 
 // Initial State
 const initialState: UIState = {
@@ -144,13 +34,49 @@ const initialState: UIState = {
   isUpdatingItem: false,
   isDeletingItem: false,
   
+  // User Preferences
+  soundEnabled: true,
+  notificationsEnabled: true,
+  autoCompleteEnabled: true,
+  
+  // Tutorial & Onboarding
+  hasSeenWelcome: false,
+  hasCompletedTutorial: false,
+  currentTutorialStep: 0,
+  
+  // Animations & Transitions
+  reduceMotion: false,
+  animationDuration: 300,
+  
+  // Accessibility
+  highContrast: false,
+  fontSize: 'medium',
+  
+  // Keyboard Navigation
+  keyboardNavigationEnabled: true,
+  keyboardNavigation: true,
+  focusVisible: true,
+  
+  // Layout & Display
+  compactMode: false,
+  showCategoryIcons: true,
+  showItemImages: true,
+  gridView: false,
+  sidebarOpen: false,
+  
+  // Filtering & Search
+  searchQuery: '',
+  selectedCategory: null,
+  showOnlyCartItems: false,
+  showCompletedItems: true,
+  
   // Guest Mode
   hasShownGuestExplanation: false,
   
-  // User Preferences
-  soundEnabled: true,
+  // Tutorial
   completedTutorialSteps: [],
-  sidebarOpen: false,
+  
+  // Quick Add
   quickAddSuggestions: [],
 }
 

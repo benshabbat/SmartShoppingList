@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { CheckCircle, AlertCircle, Info, X } from 'lucide-react'
 import { FadeIn } from './Animations'
-import { Toast, ToastProps, SimpleToastProps } from '../types'
+import type { Toast as ToastType, ToastProps, SimpleToastProps } from '../types'
 
 const ToastComponent = ({ toast, onRemove }: ToastProps) => {
   useEffect(() => {
@@ -77,9 +77,9 @@ export const ToastContainer = () => {
 
 // Toast Hook
 export const useToasts = () => {
-  const [toasts, setToasts] = useState<Toast[]>([])
+  const [toasts, setToasts] = useState<ToastType[]>([])
 
-  const addToast = (toast: Omit<Toast, 'id'>) => {
+  const addToast = (toast: Omit<ToastType, 'id'>) => {
     const id = Math.random().toString(36).substr(2, 9)
     setToasts(prev => [...prev, { ...toast, id }])
   }
@@ -111,13 +111,6 @@ export const useToasts = () => {
 }
 
 // Simple Toast component for individual toasts
-interface SimpleToastProps {
-  message: string
-  type: 'success' | 'error' | 'info' | 'warning'
-  onClose: () => void
-  duration?: number
-}
-
 export const Toast = ({ message, type, onClose, duration = 3000 }: SimpleToastProps) => {
   useEffect(() => {
     const timer = setTimeout(() => {

@@ -6,31 +6,7 @@
 import { create } from 'zustand'
 import { devtools, persist, createJSONStorage } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
-
-// Types
-interface User {
-  id: string
-  email: string
-  isGuest: boolean
-}
-
-interface AuthState {
-  user: User | null
-  isLoading: boolean
-  isInitialized: boolean
-}
-
-interface AuthActions {
-  setUser: (user: User | null) => void
-  setLoading: (loading: boolean) => void
-  setInitialized: (initialized: boolean) => void
-  logout: () => void
-  switchToGuestMode: () => void
-  isAuthenticated: () => boolean
-  isGuestMode: () => boolean
-}
-
-type AuthStore = AuthState & AuthActions
+import type { StoreUser, AuthState, AuthActions, AuthStore } from '../../types'
 
 // Store Implementation
 export const useAuthStore = create<AuthStore>()(

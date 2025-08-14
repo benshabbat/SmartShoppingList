@@ -3,7 +3,7 @@
  * All constants organized in one place for better maintainability
  */
 
-import { Category } from './types'
+import { Category } from '../types'
 
 // === ENVIRONMENT CONSTANTS ===
 export const ENV_CONSTANTS = {
@@ -255,14 +255,7 @@ export const UI_TEXT = {
 } as const
 
 // === MAIN VIEW CONSTANTS ===
-export const MAIN_VIEW_TEXT = {
-  GUEST_EXPLANATION: {
-    TITLE: '🎉 ברוך הבא למצב אורח!',
-    DESCRIPTION: 'אתה כעת במצב אורח - כל הנתונים שלך נשמרים באופן מקומי במכשיר זה ולא נשלחים לשום שרת. זה אומר פרטיות מלאה, אבל גם שהנתונים זמינים רק במכשיר הזה.',
-    BUTTON_TEXT: 'הבנתי',
-    ICON: 'ℹ️',
-  },
-} as const
+
 
 export const MAIN_VIEW_STYLES = {
   CONTAINER: 'container mx-auto px-4 py-6 max-w-4xl space-y-6',

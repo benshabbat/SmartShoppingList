@@ -7,86 +7,36 @@
 import { create } from 'zustand'
 import { devtools, persist, createJSONStorage } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
-import { ShoppingItem, ItemSuggestion, ExpiringItem } from '../../types'
+import { ShoppingItem, ItemSuggestion, ExpiringItem, DbShoppingItem, ShoppingDataState } from '../../types'
 import { ShoppingItemService } from '@/lib/services/shoppingItemService'
 import { STORAGE_KEYS } from '../../constants'
 import { generateSuggestions, checkExpiringItems } from '../../utils/helpers'
-
-// Types
-interface DbShoppingItem {
-  id: string
-  name: string
-  category: string
-  is_in_cart: boolean
-  is_purchased: boolean
-  added_at: string
-  purchased_at?: string | null
-  expiry_date?: string | null
-  purchase_location?: string
-  price?: number
-}
-
-interface ShoppingDataState {
+// Initial State
+const initialState: Omit<ShoppingDataState, 'initializeStore' | 'refreshData' | 'addItem' | 'updateItem' | 'deleteItem' | 'addToCart' | 'removeFromCart' | 'toggleInCart' | 'markAsPurchased' | 'markAsUnpurchased' | 'clearPurchased' | 'setSelectedList' | 'setSearchQuery' | 'updateFilters' | 'resetFilters' | 'updateSuggestions' | 'acceptSuggestion' | 'dismissSuggestion' | 'clearError' | 'setError'> = {
   // === CORE DATA ===
-  items: ShoppingItem[]
-  suggestions: ItemSuggestion[]
-  expiringItems: ExpiringItem[]
-  purchaseHistory: ShoppingItem[]
-  pantryItems: ShoppingItem[]
+  items: [],
+  suggestions: [],
+  expiringItems: [],
+  purchaseHistory: [],
+  pantryItems: [],
   
   // === LIST MANAGEMENT ===
-  selectedListId: string | null
+  selectedListId: null,
   
   // === FILTERS & SEARCH ===
   filters: {
-    category: string | null
-    showPurchased: boolean
-    sortBy: 'name' | 'category' | 'addedAt' | 'expiryDate'
-    sortOrder: 'asc' | 'desc'
-  }
-  searchQuery: string
+    category: null,
+    showPurchased: false,
+    sortBy: 'name',
+    sortOrder: 'asc'
+  },
+  searchQuery: '',
   
   // === STATE ===
-  isLoading: boolean
-  isInitialized: boolean
-  error: string | null
-  lastUpdated: string | null
-  
-  // === CORE ACTIONS ===
-  initializeStore: () => Promise<void>
-  refreshData: () => Promise<void>
-  
-  // === ITEMS CRUD ===
-  addItem: (name: string, category: string, userId: string, expiryDate?: string) => Promise<ShoppingItem | null>
-  updateItem: (id: string, updates: Partial<ShoppingItem>) => Promise<void>
-  deleteItem: (id: string) => Promise<void>
-  
-  // === CART ACTIONS ===
-  addToCart: (id: string) => Promise<void>
-  removeFromCart: (id: string) => Promise<void>
-  toggleInCart: (id: string) => Promise<void>
-  
-  // === PURCHASE ACTIONS ===
-  markAsPurchased: (id: string, location?: string, price?: number) => Promise<void>
-  markAsUnpurchased: (id: string) => Promise<void>
-  clearPurchased: () => Promise<void>
-  
-  // === LIST MANAGEMENT ===
-  setSelectedList: (listId: string | null) => void
-  
-  // === FILTERS & SEARCH ===
-  setSearchQuery: (query: string) => void
-  updateFilters: (updates: Partial<ShoppingDataState['filters']>) => void
-  resetFilters: () => void
-  
-  // === SUGGESTIONS ===
-  updateSuggestions: () => void
-  acceptSuggestion: (suggestion: ItemSuggestion, userId: string) => Promise<void>
-  dismissSuggestion: (suggestionId: string) => void
-  
-  // === HELPERS ===
-  clearError: () => void
-  setError: (error: string) => void
+  isLoading: false,
+  isInitialized: false,
+  error: null,
+  lastUpdated: null,
 }
 
 // Helper functions

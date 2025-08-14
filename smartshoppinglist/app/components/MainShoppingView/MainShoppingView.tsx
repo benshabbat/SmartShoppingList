@@ -1,18 +1,17 @@
-
-import { 
-  GuestSection,
+import {
   AddItemSection,
   SuggestionsSection,
-  ConditionalDataExportSection,
-  ModalsContainer
-} from './components'
-import { ExpiryNotification } from '../ExpiryNotification'
-import { QuickStatsCards } from '../QuickStatsCards'
-import { QuickListCreator } from '../QuickListCreator'
-import { QuickAddButtons } from '../QuickAddButtons'
-import { ShoppingListSections } from '../ShoppingListSections'
-import { ShoppingCartSection } from '../ShoppingCartSection'
-import { MAIN_VIEW_STYLES } from '../../constants'
+  ModalsContainer,
+  GuestWelcomeMessage,
+} from "./components";
+import { ExpiryNotification } from "../ExpiryNotification";
+import { QuickStatsCards } from "../QuickStatsCards";
+import { QuickListCreator } from "../QuickListCreator";
+import { QuickAddButtons } from "../QuickAddButtons";
+import { ShoppingListSections } from "../ShoppingListSections";
+import { ShoppingCartSection } from "../ShoppingCartSection";
+import { MAIN_VIEW_STYLES } from "../../constants";
+import { DataExport } from "../DataExport";
 
 /**
  * Main Shopping View Component
@@ -25,7 +24,7 @@ export function MainShoppingView() {
   return (
     <div className={MAIN_VIEW_STYLES.CONTAINER}>
       {/* Guest-specific UI - ZERO PROPS DRILLING */}
-      <GuestSection />
+      <GuestWelcomeMessage />
 
       {/* Quick Stats */}
       <QuickStatsCards />
@@ -52,10 +51,9 @@ export function MainShoppingView() {
       <ShoppingListSections />
 
       {/* Data Export (conditional) */}
-      <ConditionalDataExportSection />
-
+      <DataExport />
       {/* Modals */}
       <ModalsContainer />
     </div>
-  )
+  );
 }

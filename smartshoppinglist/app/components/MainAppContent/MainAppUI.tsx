@@ -11,17 +11,18 @@ import { MainShoppingView } from '../MainShoppingView'
 import { ModalsContainer } from '../MainShoppingView/components/ModalsContainer'
 import { ToastContainer } from '../Toast'
 import { Tutorial } from '../Tutorial'
-import { LoadingOverlay } from '../LoadingOverlay'
+
 import { GuestModeNotification } from '../GuestModeNotification'
 import { WelcomeMessage } from '../WelcomeMessage'
 import { useMainAppLogic } from './useMainAppLogic'
+import { LoadingOverlay } from '../LoadingOverlay'
 
 export const MainAppUI = () => {
   const { renderState, shouldShowGuestNotification } = useMainAppLogic()
 
   // Loading state
   if (renderState === 'loading') {
-    return <LoadingOverlay message="טוען..." />
+    return <LoadingOverlay />
   }
 
   // Login state  

@@ -1,4 +1,4 @@
-import { UI_TEXT } from '../../../constants'
+import { UI_TEXT } from '../constants'
 import { AuthHeaderProps } from '../../../types'
 
 /**

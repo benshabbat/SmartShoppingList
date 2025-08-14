@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { CATEGORY_EMOJIS } from '../constants'
-import { InteractiveEmojiProps } from '../types'
+import { InteractiveEmojiProps, CategoryDisplayProps } from '../types'
 
 export const InteractiveEmoji = ({ 
   category, 
@@ -45,17 +45,11 @@ export const InteractiveEmoji = ({
 }
 
 // Component for category headers with enhanced emojis
-interface CategoryHeaderProps {
-  category: string
-  count: number
-  headerColor?: string
-}
-
 export const CategoryHeader = ({ 
   category, 
   count, 
   headerColor = "bg-gray-100 text-gray-700" 
-}: CategoryHeaderProps) => {
+}: CategoryDisplayProps) => {
   return (
     <div className={`flex items-center gap-3 p-3 rounded-xl ${headerColor} hover:shadow-md transition-all duration-200 group`}>
       <div className="relative">

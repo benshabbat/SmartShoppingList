@@ -9,19 +9,7 @@ import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
 import { gradientStyles } from '../utils/classNames'
 
 import { LucideIcon } from 'lucide-react'
-
-interface StatCard {
-  label: string
-  value: string | number
-  icon: LucideIcon
-  color: string
-  bgColor: string
-  textColor: string
-  subtext?: string
-  isText?: boolean
-  trend?: 'up' | 'down' | 'stable'
-  trendValue?: number
-}
+import type { EnhancedStatCard } from '../types/components'
 
 /**
  * Enhanced Statistics Component - ZERO PROPS DRILLING
@@ -82,7 +70,7 @@ export const EnhancedStatistics = () => {
   const trendValue = Math.round(growthValue)
 
   // כרטיסי סטטיסטיקה עיקריים
-  const mainStats: StatCard[] = [
+  const mainStats: EnhancedStatCard[] = [
     {
       label: 'סה"כ נקנה',
       value: totalPurchased,
@@ -124,7 +112,7 @@ export const EnhancedStatistics = () => {
     }
   ]
 
-  const secondaryStats: StatCard[] = [
+  const secondaryStats: EnhancedStatCard[] = [
     {
       label: 'קטגוריה פופולרית',
       value: topCategory || 'אין נתונים',
@@ -146,7 +134,7 @@ export const EnhancedStatistics = () => {
     }
   ]
 
-  const StatCard = ({ stat }: { stat: StatCard }) => {
+  const StatCard = ({ stat }: { stat: EnhancedStatCard }) => {
     const IconComponent = stat.icon
     return (
       <div className={`${stat.bgColor} rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white shadow-md sm:shadow-xl backdrop-blur-sm transition-all duration-300 transform hover:scale-105 hover:shadow-lg sm:hover:shadow-2xl group`}>

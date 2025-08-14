@@ -1,5 +1,5 @@
 import React from 'react'
-import { UI_TEXT } from '../../../constants'
+import { UI_TEXT } from '../constants'
 import { SeparatorProps } from '../../../types'
 
 /**

@@ -8,7 +8,9 @@ export const useFormField = <T>({ initialValue, validator }: UseFormFieldOptions
   const [field, setField] = useState<FormField<T>>({
     value: initialValue,
     error: validator?.(initialValue),
-    isValid: !validator || !validator(initialValue)
+    isValid: !validator || !validator(initialValue),
+    isDirty: false,
+    isTouched: false
   })
 
   const setValue = useCallback((newValue: T) => {
@@ -16,7 +18,9 @@ export const useFormField = <T>({ initialValue, validator }: UseFormFieldOptions
     setField({
       value: newValue,
       error,
-      isValid: !error
+      isValid: !error,
+      isDirty: true,
+      isTouched: true
     })
   }, [validator])
 

@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase'
 import { useAuthStore } from '../stores/core/authStore'
 import { useUIStore } from '../stores/ui/uiStore'
 import type { User } from '@supabase/supabase-js'
+import type { LoginCredentials, SignUpCredentials } from '../types'
 
 // Query Keys
 export const authKeys = {
@@ -10,22 +11,6 @@ export const authKeys = {
   user: () => [...authKeys.all, 'user'] as const,
   session: () => [...authKeys.all, 'session'] as const,
 } as const
-
-// Types
-interface LoginCredentials {
-  email: string
-  password: string
-}
-
-interface SignUpCredentials {
-  email: string
-  password: string
-  options?: {
-    data?: {
-      full_name?: string
-    }
-  }
-}
 
 /**
  * Hook to get current session

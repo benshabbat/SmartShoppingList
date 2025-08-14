@@ -40,8 +40,14 @@ export const UI_TEXT = {
       LOGIN: 'התחבר',
       SIGNUP: 'הירשם',
       LOADING: 'טוען...',
+      FORGOT_PASSWORD: 'שכחת סיסמה?',
+    },
+    TOGGLE: {
+      TO_SIGNUP: 'אין לך חשבון? הירשם כאן',
+      TO_LOGIN: 'יש לך חשבון? התחבר כאן',
     },
   },
+  SEPARATOR: 'או',
 } as const
 
 // CSS Classes for styling
@@ -49,13 +55,28 @@ export const CSS_CLASSES = {
   GRADIENT: {
     BACKGROUND: 'bg-gradient-to-br from-indigo-50 via-white to-blue-50',
     SECONDARY_BUTTON: 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700',
+    PRIMARY_BUTTON: 'bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700',
     BRAND: 'bg-gradient-to-br from-indigo-500 to-purple-600',
+    BRAND_TEXT: 'bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent',
+    GUEST_SECTION: 'bg-gradient-to-r from-green-50 to-green-100',
   },
   CARD: {
     MAIN: 'max-w-md mx-auto bg-white/80 backdrop-blur-sm shadow-xl border border-white/20',
+    GUEST_SECTION: 'rounded-xl border border-green-200 shadow-sm',
+    BENEFITS_SECTION: 'bg-blue-50 border border-blue-200 rounded-lg p-4',
   },
   BUTTON: {
+    PRIMARY: 'text-white font-medium py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-indigo-200',
     SECONDARY: 'text-white font-medium py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-green-200',
+    LINK: 'text-indigo-600 hover:text-indigo-700 transition-colors duration-200 font-medium',
+  },
+  INPUT: {
+    LABEL: 'block text-sm font-medium text-gray-700 mb-2 text-right',
+    FIELD: 'w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white shadow-sm transition-all duration-300',
+  },
+  ALERT: {
+    ERROR: 'bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg',
+    SUCCESS: 'bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg',
   },
 } as const
 

@@ -1,20 +1,12 @@
 import { ShoppingItem } from '../types'
 import { ShoppingItemComponent } from './ShoppingItemComponent'
-import { CATEGORIES } from '../utils/constants'
+import { CATEGORIES } from '../constants'
 import { groupItemsByCategory } from '../utils/helpers'
 import { FadeIn, SlideUp } from './Animations'
 import { CategoryHeader } from './InteractiveEmoji'
 import { containerStyles } from '../utils/classNames'
 import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
-
-interface CategorySectionProps {
-  title: string
-  items: ShoppingItem[]
-  variant?: 'pending' | 'inCart' | 'purchased'
-  headerColor?: string
-  showItemCount?: boolean
-  emptyMessage?: string
-}
+import type { CategorySectionProps } from '../types/components'
 
 const EmptyState: React.FC<{ message: string }> = ({ message }) => (
   <div className="text-center text-gray-500 py-8">

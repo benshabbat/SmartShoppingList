@@ -4,7 +4,7 @@
 
 import { LucideIcon } from 'lucide-react'
 import { getButtonClasses, CSS_CONSTANTS } from '../utils'
-import { ActionButtonProps } from '../types'
+import { ActionButtonProps, ActionButtonGroupProps } from '../types'
 
 export const ActionButton: React.FC<ActionButtonProps> = ({
   onClick,
@@ -33,12 +33,6 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
       {children}
     </button>
   )
-}
-
-interface ActionButtonGroupProps {
-  children: React.ReactNode
-  className?: string
-  spacing?: 'small' | 'medium' | 'large'
 }
 
 export const ActionButtonGroup: React.FC<ActionButtonGroupProps> = ({

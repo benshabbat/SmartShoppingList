@@ -1,7 +1,4 @@
-export { GuestExplanationBanner } from './GuestExplanationBanner'
 export { AddItemSection } from './AddItemSection'
-export { DataExportSection } from './DataExportSection'
 export { SuggestionsSection } from './SuggestionsSection'
 export { ModalsContainer } from './ModalsContainer'
-export { GuestSection } from './GuestSection'
-export { ConditionalDataExportSection } from './ConditionalDataExportSection'
+export { GuestWelcomeMessage } from '../../GuestWelcomeMessage'

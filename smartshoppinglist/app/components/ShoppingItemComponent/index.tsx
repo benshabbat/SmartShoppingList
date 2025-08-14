@@ -1,4 +1,4 @@
-import { ShoppingItem, ShoppingItemComponentProps } from '../../types'
+import { ShoppingItemComponentProps } from '../../types'
 import { ShoppingItemUI } from './ShoppingItemUI'
 
 /**
@@ -7,12 +7,16 @@ import { ShoppingItemUI } from './ShoppingItemUI'
  */
 export const ShoppingItemComponent = ({ 
   item, 
-  variant = 'pending' 
+  variant = 'pending',
+  isExpanded,
+  onToggleExpansion
 }: ShoppingItemComponentProps) => {
   return (
     <ShoppingItemUI
       item={item}
       variant={variant}
+      isExpanded={isExpanded}
+      onToggleExpansion={onToggleExpansion}
     />
   )
 }

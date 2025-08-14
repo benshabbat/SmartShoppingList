@@ -1,102 +1,120 @@
-import { ShoppingItem } from '../types'
-import { ShoppingItemComponent } from './ShoppingItemComponent'
-import { groupItemsByCategory } from '../utils/helpers'
+'use client'
+
+import React from 'react'
+import { CategorySectionProps } from '@/app/types'
+import { ShoppingItem } from '@/app/types'
 import { FadeIn, SlideUp } from './Animations'
-import { CategoryHeader } from './InteractiveEmoji'
-import { containerStyles } from '../utils/classNames'
-import { useGlobalShopping } from '../contexts/GlobalShoppingContext'
-import type { CategorySectionProps } from '../types/components'
+import { ShoppingItemComponent } from './ShoppingItemComponent'
+import { InteractiveEmoji } from './InteractiveEmoji'
+import { useCategorySectionLogic } from '@/app/hooks/useCategorySectionLogic'
+import { containerStyles } from '@/app/utils/classNames'
 
-const EmptyState = ({ message }: { message: string }) => (
-  <div className="text-center text-gray-500 py-8">
-    <p className="text-lg">{message}</p>
-  </div>
-)
-
-const SectionHeader = ({ title, itemCount, showItemCount }: {
-  title: string;
-  itemCount: number;
-  showItemCount: boolean;
-}) => (
-  <div className="flex items-center justify-between mb-6">
-    <div className="flex items-center gap-2">
-      {showItemCount && (
-        <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm font-medium">
-          {itemCount}
-        </span>
-      )}
-    </div>
-    <h3 className="font-bold text-xl text-gray-800 text-right">{title}</h3>
-  </div>
-)
-
-const CategoryItems = ({ categoryItems, variant, categoryIndex }: {
-  categoryItems: ShoppingItem[]
-  variant: 'pending' | 'inCart' | 'purchased'
-  categoryIndex: number
-}) => {
-  // ZERO PROPS DRILLING - Get actions from context!
-  const { toggleItemInCart: _toggleItemInCart, removeItem: _removeItem } = useGlobalShopping()
-  
-  return (
-    <div className="space-y-2 mr-6">
-      {categoryItems.map((item, itemIndex) => (
-        <FadeIn key={item.id} delay={(categoryIndex * 100) + (itemIndex * 50)}>
-          <ShoppingItemComponent
-            item={item}
-            variant={variant}
-          />
-        </FadeIn>
-      ))}
-    </div>
-  )
-}
-
-export const CategorySection = ({
+export const CategorySection: React.FC<CategorySectionProps> = ({
   title,
   items,
   variant = 'pending',
-  headerColor = 'bg-gray-100 text-gray-700',
+  headerColor = 'text-gray-700 dark:text-gray-300',
   showItemCount = true,
   emptyMessage
-}: CategorySectionProps) => {
-  const itemsByCategory = groupItemsByCategory(items)
+}) => {
+  const {
+    categoryEntries,
+    sectionHeaderProps,
+    shouldShowEmptyState,
+    shouldShowContent,
+    variant: componentVariant,
+    headerColor: componentHeaderColor,
+    isItemExpanded,
+    toggleItemExpansion
+  } = useCategorySectionLogic(items, title, variant, headerColor, showItemCount, emptyMessage)
 
-  if (items.length === 0) {
-    return emptyMessage ? <EmptyState message={emptyMessage} /> : null
+  if (shouldShowEmptyState) {
+    return <EmptyStateComponent message={emptyMessage!} />
+  }
+
+  if (!shouldShowContent) {
+    return null
   }
 
   return (
     <div className={containerStyles.section}>
-      <SectionHeader 
-        title={title}
-        itemCount={items.length}
-        showItemCount={showItemCount}
-      />
+      <SectionHeaderComponent {...sectionHeaderProps} />
 
       <FadeIn>
         <div className="space-y-6">
-          {Object.entries(itemsByCategory).map(([category, categoryItems], categoryIndex) => 
-            categoryItems.length > 0 && (
-              <SlideUp key={category} delay={categoryIndex * 100}>
-                <div className="space-y-3">
-                  <CategoryHeader 
-                    category={category}
-                    count={categoryItems.length}
-                    headerColor={headerColor}
-                  />
-                  
-                  <CategoryItems
-                    categoryItems={categoryItems}
-                    variant={variant}
-                    categoryIndex={categoryIndex}
-                  />
-                </div>
-              </SlideUp>
-            )
-          )}
+          {categoryEntries.map(([category, categoryItems], categoryIndex) => (
+            <SlideUp key={category} delay={categoryIndex * 100}>
+              <div className="space-y-3">
+                <CategoryHeaderComponent 
+                  category={category}
+                  count={categoryItems.length}
+                  headerColor={componentHeaderColor}
+                />
+                
+                <CategoryItemsComponent
+                  categoryItems={categoryItems}
+                  variant={componentVariant}
+                  categoryIndex={categoryIndex}
+                  isItemExpanded={isItemExpanded}
+                  toggleItemExpansion={toggleItemExpansion}
+                />
+              </div>
+            </SlideUp>
+          ))}
         </div>
       </FadeIn>
     </div>
   )
 }
+
+// Sub-components
+const SectionHeaderComponent: React.FC<{
+  title: string
+  itemCount: number
+  showItemCount: boolean
+}> = ({ title, itemCount, showItemCount }) => (
+  <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">
+    {title} {showItemCount && `(${itemCount})`}
+  </h2>
+)
+
+const EmptyStateComponent: React.FC<{ message: string }> = ({ message }) => (
+  <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+    {message}
+  </div>
+)
+
+const CategoryHeaderComponent: React.FC<{
+  category: string
+  count: number
+  headerColor: string
+}> = ({ category, count, headerColor }) => (
+  <h3 className={`text-lg font-medium ${headerColor} flex items-center gap-2`}>
+    <InteractiveEmoji category={category} />
+    {category} ({count})
+  </h3>
+)
+
+const CategoryItemsComponent: React.FC<{
+  categoryItems: ShoppingItem[]
+  variant: 'pending' | 'inCart' | 'purchased'
+  categoryIndex: number
+  isItemExpanded: (itemId: string) => boolean
+  toggleItemExpansion: (itemId: string) => void
+}> = ({ categoryItems, variant, categoryIndex, isItemExpanded, toggleItemExpansion }) => (
+  <div className="grid gap-3">
+    {categoryItems.map((item, itemIndex) => {
+      const uniqueKey = `${item.id}-${categoryIndex}-${itemIndex}`
+      return (
+        <SlideUp key={uniqueKey} delay={categoryIndex * 100 + itemIndex * 50}>
+          <ShoppingItemComponent 
+            item={item}
+            variant={variant}
+            isExpanded={isItemExpanded(item.id)}
+            onToggleExpansion={() => toggleItemExpansion(item.id)}
+          />
+        </SlideUp>
+      )
+    })}
+  </div>
+)

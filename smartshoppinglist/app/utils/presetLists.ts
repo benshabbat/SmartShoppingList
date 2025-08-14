@@ -1,6 +1,6 @@
-import { CATEGORIES, CategoryType } from './categories'
+import { CATEGORIES } from './categories'
 import { suggestCategoryForProduct } from './smartSuggestions'
-import { PresetList } from '../types'
+import { ShoppingItem } from '../types'
 
 // רשימות מוכנות מאורגנות ונקיות
 

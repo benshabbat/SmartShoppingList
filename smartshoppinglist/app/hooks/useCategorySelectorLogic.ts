@@ -7,7 +7,6 @@
 
 import { useCallback } from 'react'
 import { useFormOperations, useGlobalShopping } from '../contexts'
-import { Category } from '../types'
 
 export const useCategorySelectorLogic = () => {
   // Context data

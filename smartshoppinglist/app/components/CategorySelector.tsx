@@ -14,8 +14,6 @@ export const CategorySelector = () => {
     selectClassName
   } = useCategorySelectorLogic()
 
-  const baseClasses = 'w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white shadow-sm transition-all duration-300'
-
   return (
     <div>
       <label className="block text-sm font-medium text-gray-700 mb-2 text-right">

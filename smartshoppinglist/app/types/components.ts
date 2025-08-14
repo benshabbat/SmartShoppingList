@@ -158,11 +158,15 @@ export interface ShoppingItemComponentProps {
   item: any // ShoppingItem
   variant?: 'pending' | 'inCart' | 'purchased'
   showActions?: boolean
+  isExpanded?: boolean
+  onToggleExpansion?: () => void
 }
 
 export interface ShoppingItemUIProps {
   item: any // ShoppingItem
   variant: 'pending' | 'inCart' | 'purchased'
+  isExpanded?: boolean
+  onToggleExpansion?: () => void
 }
 
 export interface UseShoppingItemLogicProps {

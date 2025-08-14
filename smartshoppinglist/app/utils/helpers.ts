@@ -102,7 +102,7 @@ export const generateSuggestions = (
 }
 
 export const checkExpiringItems = (pantry: ShoppingItem[]): ExpiringItem[] => {
-  const now = new Date()
+  const _now = new Date()
   const expiring: ExpiringItem[] = []
 
   pantry.forEach(item => {
@@ -162,7 +162,7 @@ export const calculateItemStats = (items: ShoppingItem[]) => {
 export const createBulkOperationHandler = <T>(
   operation: (item: T) => Promise<boolean>,
   successMessage: (count: number) => string,
-  errorMessage: string = 'שגיאה בביצוע הפעולה'
+  _errorMessage: string = 'שגיאה בביצוע הפעולה'
 ) => {
   return async (items: T[]) => {
     let successCount = 0

@@ -1,4 +1,4 @@
-import { ShoppingItem, UseShoppingItemLogicProps } from '../../types'
+import { UseShoppingItemLogicProps } from '../../types'
 import { useGlobalShopping } from '../../contexts/GlobalShoppingContext'
 
 /**

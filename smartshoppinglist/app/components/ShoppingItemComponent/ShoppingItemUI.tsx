@@ -1,5 +1,5 @@
 import { Calendar } from 'lucide-react'
-import { ShoppingItem, ShoppingItemUIProps } from '../../types'
+import { ShoppingItemUIProps } from '../../types'
 import { ItemActions } from '../ItemActions'
 import { formatDate } from '../../utils/dateUtils'
 import { itemContainerStyles, cn } from '../../utils/classNames'
@@ -11,7 +11,9 @@ import { useShoppingItemLogic } from './useShoppingItemLogic'
  */
 export const ShoppingItemUI = ({
   item,
-  variant = 'pending'
+  variant = 'pending',
+  isExpanded: _isExpanded,
+  onToggleExpansion: _onToggleExpansion
 }: ShoppingItemUIProps) => {
   // Get everything from logic hook - no props drilling!
   const {

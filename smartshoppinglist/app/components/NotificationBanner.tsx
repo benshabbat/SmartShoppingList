@@ -1,5 +1,5 @@
 import { Lightbulb } from 'lucide-react'
-import { Category, NotificationBannerProps } from '../types'
+import { NotificationBannerProps } from '../types'
 import { CATEGORY_EMOJIS } from '../constants'
 
 export const NotificationBanner: React.FC<NotificationBannerProps> = ({

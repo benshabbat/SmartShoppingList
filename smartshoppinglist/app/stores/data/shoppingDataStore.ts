@@ -50,7 +50,7 @@ export const useShoppingDataStore = create<ShoppingDataState>()(
         lastUpdated: null,
 
         // === INITIALIZATION ===
-        initializeStore: async () => {
+        initializeStore: async (userId?: string) => {
           const state = get()
           if (state.isInitialized) return
 
@@ -60,9 +60,14 @@ export const useShoppingDataStore = create<ShoppingDataState>()(
           })
 
           try {
-            // Load data from Supabase
-            const dbItems = await ShoppingItemService.getShoppingItems('')
-            const items = dbItems.map(mapDbItemToShoppingItem)
+            // Only load data from Supabase if we have a valid userId
+            let items: ShoppingItem[] = []
+            
+            if (userId && userId !== 'guest') {
+              const dbItems = await ShoppingItemService.getShoppingItems(userId)
+              items = dbItems.map(mapDbItemToShoppingItem)
+            }
+            // For guest users, start with empty items array
 
             set((draft) => {
               draft.items = items
@@ -77,6 +82,10 @@ export const useShoppingDataStore = create<ShoppingDataState>()(
             console.error('Failed to initialize store:', error)
             set((draft) => {
               draft.error = 'Failed to load shopping data'
+              // Still mark as initialized to prevent infinite retries
+              draft.isInitialized = true
+              // Start with empty items for guest mode
+              draft.items = []
             })
           } finally {
             set((draft) => {
@@ -85,18 +94,25 @@ export const useShoppingDataStore = create<ShoppingDataState>()(
           }
         },
 
-        refreshData: async () => {
+        refreshData: async (userId?: string) => {
           set((draft) => {
             draft.isLoading = true
             draft.error = null
           })
 
           try {
-            const dbItems = await ShoppingItemService.getShoppingItems('')
-            const items = dbItems.map(mapDbItemToShoppingItem)
+            let items: ShoppingItem[] = []
+            
+            if (userId && userId !== 'guest') {
+              const dbItems = await ShoppingItemService.getShoppingItems(userId)
+              items = dbItems.map(mapDbItemToShoppingItem)
+            }
+            // For guest users, keep existing items
 
             set((draft) => {
-              draft.items = items
+              if (userId && userId !== 'guest') {
+                draft.items = items
+              }
               draft.lastUpdated = new Date().toISOString()
             })
 
@@ -122,17 +138,32 @@ export const useShoppingDataStore = create<ShoppingDataState>()(
           })
 
           try {
-            const newDbItem = await ShoppingItemService.createShoppingItem({
-              user_id: userId,
-              name,
-              category,
-              expiry_date: expiryDate || undefined,
-              is_in_cart: false,
-              is_purchased: false,
-              added_at: new Date().toISOString()
-            })
+            let newItem: ShoppingItem
 
-            const newItem = mapDbItemToShoppingItem(newDbItem)
+            if (userId && userId !== 'guest') {
+              // For logged-in users, save to Supabase
+              const newDbItem = await ShoppingItemService.createShoppingItem({
+                user_id: userId,
+                name,
+                category,
+                expiry_date: expiryDate || undefined,
+                is_in_cart: false,
+                is_purchased: false,
+                added_at: new Date().toISOString()
+              })
+              newItem = mapDbItemToShoppingItem(newDbItem)
+            } else {
+              // For guest users, create item locally
+              newItem = {
+                id: `guest-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                name,
+                category,
+                isInCart: false,
+                isPurchased: false,
+                addedAt: new Date(),
+                expiryDate: expiryDate ? new Date(expiryDate) : undefined
+              }
+            }
 
             set((draft) => {
               draft.items.push(newItem)

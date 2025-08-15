@@ -129,7 +129,7 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
       
       // Initialize store with current user
       if (typeof window !== 'undefined') {
-        itemsStore.initializeStore()
+        itemsStore.initializeStore(user?.id || 'guest')
       }
     }
     

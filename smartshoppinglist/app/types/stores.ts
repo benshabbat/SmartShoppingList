@@ -76,8 +76,8 @@ export interface ShoppingDataState {
   lastUpdated: string | null
   
   // === CORE ACTIONS ===
-  initializeStore: () => Promise<void>
-  refreshData: () => Promise<void>
+  initializeStore: (userId?: string) => Promise<void>
+  refreshData: (userId?: string) => Promise<void>
   
   // === ITEMS CRUD ===
   addItem: (name: string, category: string, userId: string, expiryDate?: string) => Promise<ShoppingItem | null>

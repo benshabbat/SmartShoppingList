@@ -126,7 +126,7 @@ export const useShoppingDataStore = create<ShoppingDataState>()(
               user_id: userId,
               name,
               category,
-              expiry_date: expiryDate || null
+              expiry_date: expiryDate || undefined
             })
 
             const newItem = mapDbItemToShoppingItem(newDbItem)
@@ -166,12 +166,12 @@ export const useShoppingDataStore = create<ShoppingDataState>()(
             if (updates.isInCart !== undefined) dbUpdates.is_in_cart = updates.isInCart
             if (updates.isPurchased !== undefined) dbUpdates.is_purchased = updates.isPurchased
             if (updates.expiryDate !== undefined) {
-              dbUpdates.expiry_date = updates.expiryDate ? updates.expiryDate.toISOString() : null
+              dbUpdates.expiry_date = updates.expiryDate ? updates.expiryDate.toISOString() : undefined
             }
             if (updates.purchaseLocation !== undefined) dbUpdates.purchase_location = updates.purchaseLocation
             if (updates.price !== undefined) dbUpdates.price = updates.price
             if (updates.purchasedAt !== undefined) {
-              dbUpdates.purchased_at = updates.purchasedAt ? updates.purchasedAt.toISOString() : null
+              dbUpdates.purchased_at = updates.purchasedAt ? updates.purchasedAt.toISOString() : undefined
             }
 
             await ShoppingItemService.updateShoppingItem(id, dbUpdates)

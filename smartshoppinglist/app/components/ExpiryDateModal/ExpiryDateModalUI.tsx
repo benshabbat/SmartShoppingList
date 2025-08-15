@@ -21,6 +21,7 @@ export const ExpiryDateModalUI = ({
   onSubmit,
   onSkip,
   onQuickDateSet,
+  onSetAllDates,
 }: ExpiryDateModalUIProps) => {
   if (!isOpen) return null
 
@@ -52,7 +53,7 @@ export const ExpiryDateModalUI = ({
                 <button
                   key={option.days}
                   type="button"
-                  onClick={() => onQuickDateSet?.(option.days)}
+                  onClick={() => onSetAllDates?.(option.days)}
                   className="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition-colors"
                 >
                   הגדר לכל: {option.label}
@@ -96,8 +97,8 @@ export const ExpiryDateModalUI = ({
                         <input
                           type="date"
                           min={today}
-                          value={expiryDates[item.id] ? new Date(expiryDates[item.id]!).toISOString().split('T')[0] : ''}
-                          onChange={(e) => onExpiryDateChange(item.id, e.target.value ? new Date(e.target.value) : null)}
+                          value={expiryDates[item.id] || ''}
+                          onChange={(e) => onExpiryDateChange(item.id, e.target.value)}
                           className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           placeholder="תאריך פג תוקף"
                         />
@@ -109,7 +110,7 @@ export const ExpiryDateModalUI = ({
                               onClick={() => {
                                 const futureDate = new Date()
                                 futureDate.setDate(futureDate.getDate() + option.days)
-                                onExpiryDateChange(item.id, futureDate)
+                                onExpiryDateChange(item.id, futureDate.toISOString().split('T')[0])
                               }}
                               className="text-xs px-2 py-1 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-colors"
                             >

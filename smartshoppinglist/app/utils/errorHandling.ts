@@ -31,18 +31,18 @@ export class BusinessError extends Error {
  * Error factory for common validation errors
  */
 export const createValidationError = {
-  productNameTooShort: () => new ValidationError(MESSAGES.ERROR.NAME_TOO_SHORT, 'NAME_TOO_SHORT'),
-  productNameTooLong: () => new ValidationError(MESSAGES.ERROR.NAME_TOO_LONG, 'NAME_TOO_LONG'),
-  productNameInvalid: () => new ValidationError(MESSAGES.ERROR.INVALID_NAME, 'INVALID_NAME'),
-  productExists: () => new ValidationError(MESSAGES.ERROR.PRODUCT_EXISTS, 'PRODUCT_EXISTS'),
+  productNameTooShort: () => new ValidationError(MESSAGES.ERROR.NAME_TOO_SHORT(), 'NAME_TOO_SHORT'),
+  productNameTooLong: () => new ValidationError(MESSAGES.ERROR.NAME_TOO_LONG(), 'NAME_TOO_LONG'),
+  productNameInvalid: () => new ValidationError(MESSAGES.ERROR.INVALID_NAME(), 'INVALID_NAME'),
+  productExists: () => new ValidationError(MESSAGES.ERROR.PRODUCT_EXISTS(), 'PRODUCT_EXISTS'),
 }
 
 /**
  * Error factory for common business errors
  */
 export const createBusinessError = {
-  emptyCart: () => new BusinessError(MESSAGES.ERROR.EMPTY_CART, 'EMPTY_CART'),
-  noItemsToPurchase: () => new BusinessError(MESSAGES.ERROR.NO_ITEMS_TO_PURCHASE, 'NO_ITEMS_TO_PURCHASE'),
+  emptyCart: () => new BusinessError(MESSAGES.ERROR.EMPTY_CART(), 'EMPTY_CART'),
+  noItemsToPurchase: () => new BusinessError(MESSAGES.ERROR.NO_ITEMS_TO_PURCHASE(), 'NO_ITEMS_TO_PURCHASE'),
 }
 
 /**

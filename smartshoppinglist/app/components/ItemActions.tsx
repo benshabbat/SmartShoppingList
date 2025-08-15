@@ -34,6 +34,14 @@ export const ItemActions: React.FC<ItemActionsProps> = ({
             icon: <Check className="w-5 h-5" />
           }
         }
+      default:
+        return {
+          toggleButton: {
+            className: 'flex items-center gap-2 px-4 py-2 border-2 border-gray-300 rounded-xl hover:border-gray-500 hover:bg-gray-50 transition-all text-gray-600',
+            text: 'פעולה',
+            icon: <Plus className="w-5 h-5" />
+          }
+        }
     }
   }
 

@@ -161,14 +161,14 @@ export class ReceiptProcessor {
             price,
             quantity: 1
           })
-          logger.info('Found item:', itemName, 'Price:', price)
+          logger.info(`Found item: ${itemName} Price: ${price}`)
         }
       }
     }
     
     const totalAmount = items.reduce((sum, item) => sum + item.price, 0)
     
-    logger.info('Found', items.length, 'items, total:', totalAmount)
+    logger.info(`Found ${items.length} items, total: ${totalAmount}`)
     
     return {
       storeName,
@@ -181,7 +181,7 @@ export class ReceiptProcessor {
   private static parseReceiptText(text: string): ReceiptData {
     const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0)
     
-    logger.info('Processing lines:', lines.length, 'lines')
+    logger.info(`Processing lines: ${lines.length} lines`)
     
     // זיהוי שם החנות - התמקד בשורות הראשונות
     const storeName = this.detectStoreName(lines.slice(0, 8))
@@ -275,7 +275,7 @@ export class ReceiptProcessor {
           price,
           quantity: 1
         })
-        logger.info('Simple detection - Item:', itemName, 'Price:', price)
+        logger.info(`Simple detection - Item: ${itemName} Price: ${price}`)
       }
     }
     
@@ -462,7 +462,7 @@ export class ReceiptProcessor {
           
           // בדוק שהתאריך סביר
           if (day >= 1 && day <= 31 && month >= 1 && month <= 12 && year >= 2020 && year <= 2030) {
-            logger.info('Found date:', day, month, year)
+            logger.info(`Found date: ${day} ${month} ${year}`)
             return new Date(year, month - 1, day)
           }
         }

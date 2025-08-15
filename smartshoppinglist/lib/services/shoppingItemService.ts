@@ -70,7 +70,7 @@ export class ShoppingItemService {
   static async togglePurchased(id: string, isPurchased: boolean) {
     const updates: ShoppingItemUpdate = {
       is_purchased: isPurchased,
-      purchased_at: isPurchased ? new Date().toISOString() : null
+      purchased_at: isPurchased ? new Date().toISOString() : undefined
     }
     return this.updateShoppingItem(id, updates)
   }

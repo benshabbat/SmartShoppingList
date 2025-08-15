@@ -174,7 +174,7 @@ export class ReceiptOCR {
       if (item && !processedNames.has(item.name.toLowerCase())) {
         items.push(item)
         processedNames.add(item.name.toLowerCase())
-        logger.info('🛒 נמצא פריט:', item.name, '-', item.price, '₪')
+        logger.info(`🛒 נמצא פריט: ${item.name} - ${item.price} ₪`)
       }
     }
     
@@ -274,7 +274,7 @@ export class ReceiptOCR {
       if (match) {
         const amount = parseFloat(match[1].replace(',', '.'))
         if (!isNaN(amount) && amount > 0) {
-          logger.info('💰 נמצא סכום כולל:', amount, '₪')
+          logger.info(`💰 נמצא סכום כולל: ${amount} ₪`)
           return amount
         }
       }

@@ -46,8 +46,8 @@ export interface SimpleToastProps {
 
 export interface ToastProps {
   toast: Toast
-  onToggle: () => void
-  onRemove?: (id: string) => void
+  onToggle?: () => void
+  onRemove: (id: string) => void
 }
 
 // === STAT CARD TYPES ===
@@ -224,9 +224,11 @@ export interface ItemActionType {
 }
 
 export interface ItemActionsProps {
-  item: ShoppingItem
-  actions: ItemActionType[]
-  variant?: 'pending' | 'inCart' | 'purchased'
+  variant: 'pending' | 'inCart' | 'purchased'
+  onToggleCart: () => void
+  onRemove: () => void
+  className?: string
+  disabled?: boolean
 }
 
 export interface LoadingOverlayProps {
@@ -252,19 +254,19 @@ export interface NotificationBannerProps {
 export interface ExpiryDateModalUIProps {
   items: ShoppingItem[]
   isOpen: boolean
-  expiryDates: Record<string, Date | null>
+  expiryDates: Record<string, string>
   skippedItems: Set<string>
   today: string
   quickDateOptions: Array<{ label: string; value: string; days: number }>
   hasAnyDates: boolean
   allItemsProcessed: boolean
   onClose: () => void
-  onExpiryDateChange: (itemId: string, date: Date | null) => void
+  onExpiryDateChange: (itemId: string, date: string) => void
   onSkipItem: (itemId: string) => void
   onSubmit: () => void
   onSkip: () => void
-  onQuickDateSet?: (days: number) => void
-  onSetAllDates?: (date: Date) => void
+  onQuickDateSet?: (itemId: string, days: number) => void
+  onSetAllDates?: (days: number) => void
 }
 
 export interface UseExpiryDateModalLogicProps {

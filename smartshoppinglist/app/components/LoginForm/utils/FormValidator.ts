@@ -59,7 +59,7 @@ export class FormValidator {
 
     return {
       isValid: emailValidation.isValid && passwordValidation.isValid,
-      errors: [...emailValidation.errors, ...passwordValidation.errors]
+      errors: [...(emailValidation.errors || []), ...(passwordValidation.errors || [])]
     }
   }
 

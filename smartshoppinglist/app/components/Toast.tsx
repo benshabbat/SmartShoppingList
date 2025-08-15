@@ -69,6 +69,7 @@ export const ToastContainer = () => {
           key={toast.id}
           toast={toast}
           onRemove={removeToast}
+          onToggle={() => {}} // Dummy function since we don't need it
         />
       ))}
     </div>
@@ -89,15 +90,15 @@ export const useToasts = () => {
   }
 
   const showSuccess = (title: string, message?: string) => {
-    addToast({ type: 'success', title, message })
+    addToast({ type: 'success', title, message: message || '' })
   }
 
   const showError = (title: string, message?: string) => {
-    addToast({ type: 'error', title, message })
+    addToast({ type: 'error', title, message: message || '' })
   }
 
   const showInfo = (title: string, message?: string) => {
-    addToast({ type: 'info', title, message })
+    addToast({ type: 'info', title, message: message || '' })
   }
 
   return {
@@ -114,7 +115,7 @@ export const useToasts = () => {
 export const Toast = ({ message, type, onClose, duration = 3000 }: SimpleToastProps) => {
   useEffect(() => {
     const timer = setTimeout(() => {
-      onClose()
+      onClose?.()
     }, duration)
 
     return () => clearTimeout(timer)

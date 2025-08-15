@@ -94,10 +94,10 @@ export const useExpiryDateModalLogic = ({
   }
 
   const quickDateOptions = [
-    { label: 'מחר', days: 1 },
-    { label: 'בעוד 3 ימים', days: 3 },
-    { label: 'בעוד שבוע', days: 7 },
-    { label: 'בעוד חודש', days: 30 }
+    { label: 'מחר', value: getQuickDate(1), days: 1 },
+    { label: 'בעוד 3 ימים', value: getQuickDate(3), days: 3 },
+    { label: 'בעוד שבוע', value: getQuickDate(7), days: 7 },
+    { label: 'בעוד חודש', value: getQuickDate(30), days: 30 }
   ]
 
   const hasAnyDates = Object.keys(expiryDates).length > 0

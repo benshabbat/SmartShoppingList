@@ -8,6 +8,9 @@ export { HEADER_TEXT, ROUTES } from '../../constants'
 
 // Header-specific styles
 export const HEADER_STYLES = {
+  // Main container
+  CONTAINER: 'flex items-center justify-between p-4 bg-white shadow-sm border-b',
+  
   // Brand Section Styles
   BRAND_SECTION: 'flex items-center gap-4 mb-4',
   BRAND: {

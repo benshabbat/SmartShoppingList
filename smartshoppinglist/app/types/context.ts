@@ -201,4 +201,4 @@ export interface GlobalShoppingProviderProps {
 }
 
 // Enhanced version with all computed values - using Record instead of empty interface
-export type EnhancedGlobalShoppingContextValue = GlobalShoppingContextValue & Record<string, never>
+export type EnhancedGlobalShoppingContextValue = GlobalShoppingContextValue

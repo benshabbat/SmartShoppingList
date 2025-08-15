@@ -298,6 +298,23 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
     }
   }, [itemsStore, playDelete, showInfo, showError, computedValues.cartItems])
 
+  // Complete purchase operation - moved here to be available for handleCheckout
+  const completePurchase = useCallback(async (cartItems: ShoppingItem[]) => {
+    try {
+      for (const item of cartItems) {
+        await itemsStore.updateItem(item.id, { 
+          isPurchased: true, 
+          purchasedAt: new Date() 
+        })
+      }
+      showSuccess('הקנייה הושלמה בהצלחה!')
+      playPurchase()
+    } catch (error) {
+      console.error('Error completing purchase:', error)
+      showError('שגיאה בהשלמת הקנייה')
+    }
+  }, [itemsStore, showSuccess, showError, playPurchase])
+
   // Complex operations with enhanced logic
   const handleCheckout = useCallback(() => {
     const cartItems = computedValues.cartItems
@@ -315,7 +332,7 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
     } else {
       completePurchase(cartItems)
     }
-  }, [computedValues.cartItems, uiStore, showError, showInfo])
+  }, [computedValues.cartItems, uiStore, showError, showInfo, completePurchase])
 
   const createQuickList = useCallback(async (items: Array<{name: string, category: string}>) => {
     const _result = await asyncHandler(async () => {
@@ -402,22 +419,6 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
       showError('שגיאה בהשלמת הקנייה')
     }
   }, [itemsStore, uiStore, showSuccess, showError, playPurchase])
-
-  const completePurchase = useCallback(async (cartItems: ShoppingItem[]) => {
-    try {
-      for (const item of cartItems) {
-        await itemsStore.updateItem(item.id, { 
-          isPurchased: true, 
-          purchasedAt: new Date() 
-        })
-      }
-      showSuccess('הקנייה הושלמה בהצלחה!')
-      playPurchase()
-    } catch (error) {
-      console.error('Error completing purchase:', error)
-      showError('שגיאה בהשלמת הקנייה')
-    }
-  }, [itemsStore, showSuccess, showError, playPurchase])
 
   return {
     // Data

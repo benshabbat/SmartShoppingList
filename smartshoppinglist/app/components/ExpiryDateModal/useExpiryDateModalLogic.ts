@@ -44,7 +44,7 @@ export const useExpiryDateModalLogic = ({
     
     onSubmit(itemsWithExpiry)
     resetForm()
-    onClose()
+    onClose?.()
   }
 
   const handleSkip = () => {
@@ -55,7 +55,7 @@ export const useExpiryDateModalLogic = ({
     
     onSubmit(itemsWithoutExpiry)
     resetForm()
-    onClose()
+    onClose?.()
   }
 
   const handleQuickDateSet = (itemId: string, days: number) => {

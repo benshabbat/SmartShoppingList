@@ -270,4 +270,5 @@ export interface ExpiryDateModalUIProps {
 export interface UseExpiryDateModalLogicProps {
   items: ShoppingItem[]
   onSubmit: (itemsWithExpiry: Array<{ id: string; expiryDate?: Date }>) => void
+  onClose?: () => void
 }

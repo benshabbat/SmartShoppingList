@@ -193,30 +193,48 @@ export const useShoppingDataStore = create<ShoppingDataState>()(
           })
 
           try {
-            const dbUpdates: Partial<DbShoppingItem> = {}
-
-            if (updates.name !== undefined) dbUpdates.name = updates.name
-            if (updates.category !== undefined) dbUpdates.category = updates.category
-            if (updates.isInCart !== undefined) dbUpdates.is_in_cart = updates.isInCart
-            if (updates.isPurchased !== undefined) dbUpdates.is_purchased = updates.isPurchased
-            if (updates.expiryDate !== undefined) {
-              dbUpdates.expiry_date = updates.expiryDate ? updates.expiryDate.toISOString() : undefined
-            }
-            if (updates.purchaseLocation !== undefined) dbUpdates.purchase_location = updates.purchaseLocation
-            if (updates.price !== undefined) dbUpdates.price = updates.price
-            if (updates.purchasedAt !== undefined) {
-              dbUpdates.purchased_at = updates.purchasedAt ? updates.purchasedAt.toISOString() : undefined
+            // Find the item to check if it exists
+            const item = get().items.find(item => item.id === id)
+            if (!item) {
+              throw new Error('Item not found')
             }
 
-            await ShoppingItemService.updateShoppingItem(id, dbUpdates)
+            // For guest mode, just update local state
+            if (item.id.startsWith('guest-')) {
+              set((draft) => {
+                const itemIndex = draft.items.findIndex(item => item.id === id)
+                if (itemIndex !== -1) {
+                  Object.assign(draft.items[itemIndex], updates)
+                }
+                draft.lastUpdated = new Date().toISOString()
+              })
+            } else {
+              // For authenticated users, update in Supabase
+              const dbUpdates: Partial<DbShoppingItem> = {}
 
-            set((draft) => {
-              const itemIndex = draft.items.findIndex(item => item.id === id)
-              if (itemIndex !== -1) {
-                Object.assign(draft.items[itemIndex], updates)
+              if (updates.name !== undefined) dbUpdates.name = updates.name
+              if (updates.category !== undefined) dbUpdates.category = updates.category
+              if (updates.isInCart !== undefined) dbUpdates.is_in_cart = updates.isInCart
+              if (updates.isPurchased !== undefined) dbUpdates.is_purchased = updates.isPurchased
+              if (updates.expiryDate !== undefined) {
+                dbUpdates.expiry_date = updates.expiryDate ? updates.expiryDate.toISOString() : undefined
               }
-              draft.lastUpdated = new Date().toISOString()
-            })
+              if (updates.purchaseLocation !== undefined) dbUpdates.purchase_location = updates.purchaseLocation
+              if (updates.price !== undefined) dbUpdates.price = updates.price
+              if (updates.purchasedAt !== undefined) {
+                dbUpdates.purchased_at = updates.purchasedAt ? updates.purchasedAt.toISOString() : undefined
+              }
+
+              await ShoppingItemService.updateShoppingItem(id, dbUpdates)
+
+              set((draft) => {
+                const itemIndex = draft.items.findIndex(item => item.id === id)
+                if (itemIndex !== -1) {
+                  Object.assign(draft.items[itemIndex], updates)
+                }
+                draft.lastUpdated = new Date().toISOString()
+              })
+            }
 
             get().updateSuggestions()
 
@@ -225,6 +243,7 @@ export const useShoppingDataStore = create<ShoppingDataState>()(
             set((draft) => {
               draft.error = 'Failed to update item'
             })
+            throw error // Re-throw so the calling component can handle it
           } finally {
             set((draft) => {
               draft.isLoading = false
@@ -239,12 +258,27 @@ export const useShoppingDataStore = create<ShoppingDataState>()(
           })
 
           try {
-            await ShoppingItemService.deleteShoppingItem(id)
+            // Find the item to check if it exists
+            const item = get().items.find(item => item.id === id)
+            if (!item) {
+              throw new Error('Item not found')
+            }
 
-            set((draft) => {
-              draft.items = draft.items.filter(item => item.id !== id)
-              draft.lastUpdated = new Date().toISOString()
-            })
+            // For guest mode, just remove from local state
+            if (item.id.startsWith('guest-')) {
+              set((draft) => {
+                draft.items = draft.items.filter(item => item.id !== id)
+                draft.lastUpdated = new Date().toISOString()
+              })
+            } else {
+              // For authenticated users, delete from Supabase
+              await ShoppingItemService.deleteShoppingItem(id)
+              
+              set((draft) => {
+                draft.items = draft.items.filter(item => item.id !== id)
+                draft.lastUpdated = new Date().toISOString()
+              })
+            }
 
             get().updateSuggestions()
 
@@ -253,6 +287,7 @@ export const useShoppingDataStore = create<ShoppingDataState>()(
             set((draft) => {
               draft.error = 'Failed to delete item'
             })
+            throw error // Re-throw so the calling component can handle it
           } finally {
             set((draft) => {
               draft.isLoading = false

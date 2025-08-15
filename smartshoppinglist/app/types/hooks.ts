@@ -5,6 +5,7 @@
 
 import { ShoppingItem, ItemSuggestion, ExpiringItem } from './data'
 import { StoreUser, AnalyticsState, CategoryStats } from './stores'
+import { Session } from '@supabase/supabase-js'
 
 // === AUTH HOOK TYPES ===
 
@@ -70,7 +71,7 @@ export interface UseFormFieldReturn<T> extends FormField<T> {
 
 export interface UseFormStateOptions<T> {
   initialValues: T
-  validationSchema?: any // Could be Yup, Zod, or custom validation
+  validationSchema?: Record<string, unknown> // Could be Yup, Zod, or custom validation
   onSubmit?: (values: T) => void | Promise<void>
 }
 
@@ -166,14 +167,14 @@ export interface UseAsyncOptions<T> {
   immediate?: boolean
   onSuccess?: (data: T) => void
   onError?: (error: Error) => void
-  deps?: any[]
+  deps?: unknown[]
 }
 
 export interface UseAsyncReturn<T> {
   data: T | null
   error: Error | null
   isLoading: boolean
-  execute: (...args: any[]) => Promise<T>
+  execute: (...args: unknown[]) => Promise<T>
   reset: () => void
 }
 
@@ -240,7 +241,7 @@ export interface UseValidationOptions<T> {
 
 export interface UseValidationReturn<T> {
   validate: (values: T) => Record<keyof T, string>
-  validateField: (field: keyof T, value: any) => string | undefined
+  validateField: (field: keyof T, value: unknown) => string | undefined
   isValid: (values: T) => boolean
 }
 
@@ -253,7 +254,7 @@ export interface UseAuthContextOptions {
 
 export interface UseAuthContextReturn {
   user: StoreUser | null
-  session: any | null
+  session: Session | null
   loading: boolean
   isGuest: boolean
   signOut: () => Promise<void>

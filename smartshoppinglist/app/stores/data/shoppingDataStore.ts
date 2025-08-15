@@ -126,7 +126,10 @@ export const useShoppingDataStore = create<ShoppingDataState>()(
               user_id: userId,
               name,
               category,
-              expiry_date: expiryDate || undefined
+              expiry_date: expiryDate || undefined,
+              is_in_cart: false,
+              is_purchased: false,
+              added_at: new Date().toISOString()
             })
 
             const newItem = mapDbItemToShoppingItem(newDbItem)

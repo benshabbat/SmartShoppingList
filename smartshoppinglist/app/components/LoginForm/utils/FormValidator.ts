@@ -70,7 +70,7 @@ export class FormValidator {
 
     return {
       isValid: emailValidation.isValid && passwordValidation.isValid && fullNameValidation.isValid,
-      errors: [...emailValidation.errors, ...passwordValidation.errors, ...fullNameValidation.errors]
+      errors: [...(emailValidation.errors || []), ...(passwordValidation.errors || []), ...(fullNameValidation.errors || [])]
     }
   }
 }

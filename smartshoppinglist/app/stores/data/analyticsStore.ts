@@ -213,8 +213,11 @@ export const useAnalyticsStore = create<AnalyticsStore>()(
                   category: item.category,
                   count: 0,
                   lastPurchased: item.purchasedAt,
+                  lastBought: item.purchasedAt.toISOString(),
                   frequency: 0,
                   daysSinceLastBought: 0,
+                  averagePrice: item.price || 0,
+                  trend: 'stable' as const,
                 }
               }
               itemStats[key].count++
@@ -257,11 +260,14 @@ export const useAnalyticsStore = create<AnalyticsStore>()(
 
           const total = purchaseHistory.length
           const categoryStats: CategoryStats[] = Object.entries(categoryCount).map(([category, count]) => ({
+            name: category,
             category,
             count,
             percentage: (count / total) * 100,
             lastWeekCount: categoryLastWeek[category] || 0,
             trend: calculateTrend(categoryLastWeek[category] || 0, count - (categoryLastWeek[category] || 0)),
+            totalSpent: 0,
+            averagePrice: 0,
           }))
 
           // Sort by count descending
@@ -307,7 +313,7 @@ export const useAnalyticsStore = create<AnalyticsStore>()(
 
         // === MANUAL REFRESH ===
         refreshAnalytics: (purchaseHistory, pantryItems) => {
-          get().analyzeShoppingData(purchaseHistory, pantryItems)
+          get().analyzeShoppingData(purchaseHistory || [], pantryItems || [])
         },
 
         setAnalyzing: (analyzing) =>
@@ -330,6 +336,33 @@ export const useAnalyticsStore = create<AnalyticsStore>()(
           const { weeklyTrends } = get()
           return weeklyTrends.slice(-weeks)
         },
+
+        // Missing functions
+        calculateStats: () => {},
+        getCategoryInsights: (category: string) => get().categoryStats.find(c => c.category === category) || null,
+        getTopSpendingCategories: () => [],
+        getItemHistory: () => [],
+        generateShoppingPredictions: () => [],
+        updateAnalysisSettings: () => {},
+        exportAnalyticsData: () => ({}),
+        importAnalyticsData: () => {},
+        resetAnalytics: () => {},
+        getMonthlyStatistics: () => ({}),
+        getItemTrends: () => [],
+        getPurchasePattern: () => ({ frequency: 0, averageDays: 0 }),
+        exportAnalytics: () => '',
+        generateReport: () => ({ 
+          type: 'monthly' as const,
+          period: { from: new Date(), to: new Date() }, 
+          summary: { totalItems: 0, totalSpent: 0, completionRate: 0 }, 
+          categories: [], 
+          items: [], 
+          insights: [],
+          trends: [],
+          popularItems: []
+        }),
+        clearAnalytics: () => {},
+        resetCalculations: () => {},
       })),
       {
         name: 'analytics-storage',

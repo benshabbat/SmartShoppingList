@@ -20,7 +20,7 @@ export const ExpiryDateModalUI = ({
   onSkipItem,
   onSubmit,
   onSkip,
-  onQuickDateSet,
+  onQuickDateSet: _onQuickDateSet,
   onSetAllDates,
 }: ExpiryDateModalUIProps) => {
   if (!isOpen) return null

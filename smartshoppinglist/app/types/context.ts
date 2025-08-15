@@ -4,6 +4,7 @@
  */
 
 import { User as SupabaseUser, Session } from '@supabase/supabase-js'
+import type { ShoppingItem, ItemSuggestion, ExpiringItem } from './data'
 
 // === USER & AUTHENTICATION TYPES ===
 
@@ -51,13 +52,13 @@ export interface ShoppingUIState {
   showTutorial: boolean
   showWelcomeMessage: boolean
   welcomeUserName: string | null
-  checkoutItems: any[] // Forward reference to avoid circular imports
+  checkoutItems: ShoppingItem[]
 }
 
 export interface ShoppingUIActions {
   openReceiptScanner: () => void
   closeReceiptScanner: () => void
-  openExpiryModal: (items: any[]) => void
+  openExpiryModal: (items: ShoppingItem[]) => void
   closeExpiryModal: () => void
   openDataImportModal: () => void
   closeDataImportModal: () => void
@@ -73,7 +74,7 @@ export interface ShoppingComplexOperations {
   handleCheckout: () => void
   createQuickList: (items: Array<{name: string, category: string}>) => Promise<void>
   addBulkToCart: (items: Array<{name: string, category: string}>) => Promise<void>
-  processReceipt: (receiptItems: any[], storeName: string) => void
+  processReceipt: (receiptItems: ShoppingItem[], storeName: string) => void
   submitExpiryModal: (itemsWithExpiry: Array<{ id: string; expiryDate?: Date }>) => void
 }
 
@@ -99,11 +100,11 @@ export interface ShoppingGuestMode {
 
 export interface GlobalShoppingContextValue {
   // === DATA ACCESS ===
-  items: any[] // ShoppingItem[] - imported from data.ts
-  suggestions: any[] // ItemSuggestion[]
-  expiringItems: any[] // ExpiringItem[]
-  purchaseHistory: any[] // ShoppingItem[]
-  pantryItems: any[] // ShoppingItem[]
+  items: ShoppingItem[] // imported from data.ts
+  suggestions: ItemSuggestion[]
+  expiringItems: ExpiringItem[]
+  purchaseHistory: ShoppingItem[]
+  pantryItems: ShoppingItem[]
   loading: boolean
   error: string | null
   
@@ -114,7 +115,7 @@ export interface GlobalShoppingContextValue {
   showTutorial: boolean
   showWelcomeMessage: boolean
   welcomeUserName: string | null
-  checkoutItems: any[] // ShoppingItem[]
+  checkoutItems: ShoppingItem[]
   
   // === CORE ACTIONS ===
   addItem: (itemName: string, category: string, addToCart?: boolean) => Promise<void>
@@ -147,7 +148,7 @@ export interface GlobalShoppingContextValue {
   // === UI ACTIONS ===
   openReceiptScanner: () => void
   closeReceiptScanner: () => void
-  openExpiryModal: (items: any[]) => void // ShoppingItem[]
+  openExpiryModal: (items: ShoppingItem[]) => void
   closeExpiryModal: () => void
   openDataImportModal: () => void
   closeDataImportModal: () => void
@@ -160,13 +161,13 @@ export interface GlobalShoppingContextValue {
   handleCheckout: () => void
   createQuickList: (items: Array<{name: string, category: string}>) => Promise<void>
   addBulkToCart: (items: Array<{name: string, category: string}>) => Promise<void>
-  processReceipt: (receiptItems: any[], storeName: string) => void // ShoppingItem[]
+  processReceipt: (receiptItems: ShoppingItem[], storeName: string) => void
   submitExpiryModal: (itemsWithExpiry: Array<{ id: string; expiryDate?: Date }>) => void
   
   // === COMPUTED VALUES ===
-  pendingItems: any[] // ShoppingItem[]
-  cartItems: any[] // ShoppingItem[]
-  purchasedItems: any[] // ShoppingItem[]
+  pendingItems: ShoppingItem[]
+  cartItems: ShoppingItem[]
+  purchasedItems: ShoppingItem[]
   hasItemsInCart: boolean
   hasExpiringItems: boolean
   hasPurchaseHistory: boolean
@@ -176,8 +177,8 @@ export interface GlobalShoppingContextValue {
   totalItems: number
   completionRate: number
   categoryStats: Record<string, number>
-  recentlyAdded: any[] // ShoppingItem[]
-  priorityItems: any[] // ShoppingItem[]
+  recentlyAdded: ShoppingItem[]
+  priorityItems: ShoppingItem[]
   
   // === GUEST MODE ===
   shouldShowGuestExplanation: boolean
@@ -199,7 +200,5 @@ export interface GlobalShoppingProviderProps {
   children: React.ReactNode
 }
 
-// Enhanced version with all computed values
-export interface EnhancedGlobalShoppingContextValue extends GlobalShoppingContextValue {
-  // All the enhanced features are already included in GlobalShoppingContextValue
-}
+// Enhanced version with all computed values - using Record instead of empty interface
+export type EnhancedGlobalShoppingContextValue = GlobalShoppingContextValue & Record<string, never>

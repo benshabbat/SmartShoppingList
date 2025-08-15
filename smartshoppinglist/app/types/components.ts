@@ -6,6 +6,7 @@
 import { ReactNode } from 'react'
 import { LucideIcon } from 'lucide-react'
 import type { Toast } from './ui'
+import type { ShoppingItem } from './data'
 
 // === BASE TYPES ===
 
@@ -89,7 +90,7 @@ export interface CategoryDisplayProps {
 
 export interface CategorySectionProps {
   title: string
-  items: any[] // ShoppingItem[]
+  items: ShoppingItem[]
   variant?: 'pending' | 'inCart' | 'purchased'
   headerColor?: string
   showItemCount?: boolean
@@ -147,7 +148,7 @@ export interface ActionButtonProps {
 
 // === OTHER COMPONENT TYPES ===
 
-export interface RenderProps<T = any> {
+export interface RenderProps<T = unknown> {
   data: T
   render: (data: T) => ReactNode
 }
@@ -155,7 +156,7 @@ export interface RenderProps<T = any> {
 // === SHOPPING ITEM COMPONENT TYPES ===
 
 export interface ShoppingItemComponentProps {
-  item: any // ShoppingItem
+  item: ShoppingItem
   variant?: 'pending' | 'inCart' | 'purchased'
   showActions?: boolean
   isExpanded?: boolean
@@ -163,22 +164,22 @@ export interface ShoppingItemComponentProps {
 }
 
 export interface ShoppingItemUIProps {
-  item: any // ShoppingItem
+  item: ShoppingItem
   variant: 'pending' | 'inCart' | 'purchased'
   isExpanded?: boolean
   onToggleExpansion?: () => void
 }
 
 export interface UseShoppingItemLogicProps {
-  item: any // ShoppingItem
+  item: ShoppingItem
   variant?: 'pending' | 'inCart' | 'purchased'
 }
 
 // === SUGGESTION TYPES ===
 
 export interface SuggestionItemProps {
-  suggestion: any // ItemSuggestion
-  onAccept?: (suggestion: any) => void
+  suggestion: string
+  onAccept?: (suggestion: string) => void
   onDismiss?: (id: string) => void
   isHighlighted?: boolean
   onClick?: () => void
@@ -217,13 +218,13 @@ export interface CategorySelectorProps {
 export interface ItemActionType {
   id: string
   label: string
-  icon: any
+  icon: ReactNode
   action: () => void
   variant?: 'primary' | 'secondary' | 'danger'
 }
 
 export interface ItemActionsProps {
-  item: any // ShoppingItem
+  item: ShoppingItem
   actions: ItemActionType[]
   variant?: 'pending' | 'inCart' | 'purchased'
 }
@@ -249,13 +250,24 @@ export interface NotificationBannerProps {
 }
 
 export interface ExpiryDateModalUIProps {
-  items: any[] // ShoppingItem[]
+  items: ShoppingItem[]
   isOpen: boolean
+  expiryDates: Record<string, Date | null>
+  skippedItems: Set<string>
+  today: string
+  quickDateOptions: Array<{ label: string; value: string; days: number }>
+  hasAnyDates: boolean
+  allItemsProcessed: boolean
   onClose: () => void
-  onSubmit: (itemsWithExpiry: Array<{ id: string; expiryDate?: Date }>) => void
+  onExpiryDateChange: (itemId: string, date: Date | null) => void
+  onSkipItem: (itemId: string) => void
+  onSubmit: () => void
+  onSkip: () => void
+  onQuickDateSet?: (days: number) => void
+  onSetAllDates?: (date: Date) => void
 }
 
 export interface UseExpiryDateModalLogicProps {
-  items: any[] // ShoppingItem[]
+  items: ShoppingItem[]
   onSubmit: (itemsWithExpiry: Array<{ id: string; expiryDate?: Date }>) => void
 }

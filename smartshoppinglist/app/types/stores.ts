@@ -3,6 +3,8 @@
  * Contains all types related to Zustand stores, data management, and analytics
  */
 
+import { ShoppingItem, ItemSuggestion, ExpiringItem } from './data'
+
 // === AUTH STORE TYPES ===
 
 export interface StoreUser {
@@ -49,11 +51,11 @@ export interface DbShoppingItem {
 
 export interface ShoppingDataState {
   // === CORE DATA ===
-  items: any[] // ShoppingItem[] - will be imported from main types
-  suggestions: any[] // ItemSuggestion[]
-  expiringItems: any[] // ExpiringItem[]
-  purchaseHistory: any[] // ShoppingItem[]
-  pantryItems: any[] // ShoppingItem[]
+  items: ShoppingItem[]
+  suggestions: ItemSuggestion[]
+  expiringItems: ExpiringItem[]
+  purchaseHistory: ShoppingItem[]
+  pantryItems: ShoppingItem[]
   
   // === LIST MANAGEMENT ===
   selectedListId: string | null
@@ -78,8 +80,8 @@ export interface ShoppingDataState {
   refreshData: () => Promise<void>
   
   // === ITEMS CRUD ===
-  addItem: (name: string, category: string, userId: string, expiryDate?: string) => Promise<any> // ShoppingItem | null
-  updateItem: (id: string, updates: Partial<any>) => Promise<void> // Partial<ShoppingItem>
+  addItem: (name: string, category: string, userId: string, expiryDate?: string) => Promise<ShoppingItem | null>
+  updateItem: (id: string, updates: Partial<ShoppingItem>) => Promise<void>
   deleteItem: (id: string) => Promise<void>
   
   // === CART ACTIONS ===
@@ -102,7 +104,7 @@ export interface ShoppingDataState {
   
   // === SUGGESTIONS ===
   updateSuggestions: () => void
-  acceptSuggestion: (suggestion: any, userId: string) => Promise<void> // ItemSuggestion
+  acceptSuggestion: (suggestion: ItemSuggestion, userId: string) => Promise<void>
   dismissSuggestion: (suggestionId: string) => void
   
   // === HELPERS ===
@@ -140,6 +142,19 @@ export interface WeeklyTrend {
   totalSpent: number
 }
 
+export interface AnalyticsReport {
+  type: 'weekly' | 'monthly' | 'yearly'
+  period: { from: Date; to: Date }
+  summary: {
+    totalItems: number
+    totalSpent: number
+    completionRate: number
+  }
+  categories: CategoryStats[]
+  trends: WeeklyTrend[]
+  popularItems: PopularItem[]
+}
+
 export interface AnalyticsState {
   // === COMPUTED STATISTICS ===
   totalItems: number
@@ -159,7 +174,7 @@ export interface AnalyticsState {
   monthlyGrowth: number
   isAnalyzing: boolean
   lastAnalysisDate: Date | null
-  smartSuggestions: any[] // ItemSuggestion[]
+  smartSuggestions: ItemSuggestion[]
   
   // === SETTINGS ===
   suggestionSettings: {
@@ -175,9 +190,9 @@ export interface AnalyticsState {
   
   // === ITEM ANALYTICS ===
   popularItems: PopularItem[]
-  recentlyAdded: any[] // ShoppingItem[]
-  priorityItems: any[] // ShoppingItem[]
-  expiringItems: any[] // ExpiringItem[]
+  recentlyAdded: ShoppingItem[]
+  priorityItems: ShoppingItem[]
+  expiringItems: ExpiringItem[]
   
   // === TRENDS & PATTERNS ===
   weeklyTrends: WeeklyTrend[]
@@ -203,22 +218,22 @@ export interface AnalyticsState {
 export interface AnalyticsActions {
   // === DATA COMPUTATION ===
   calculateStats: () => void
-  refreshAnalytics: (purchaseHistory?: any[], pantryItems?: any[]) => void
+  refreshAnalytics: (purchaseHistory?: ShoppingItem[], pantryItems?: ShoppingItem[]) => void
   
   // === NEW ANALYTICS ACTIONS ===
-  analyzeShoppingData: (purchaseHistory: any[], pantryItems: any[]) => void
-  generateSmartSuggestions: (purchaseHistory: any[]) => void
-  calculatePopularItems: (purchaseHistory: any[]) => void
-  updateCategoryStats: (purchaseHistory: any[]) => void
+  analyzeShoppingData: (purchaseHistory: ShoppingItem[], pantryItems: ShoppingItem[]) => void
+  generateSmartSuggestions: (purchaseHistory: ShoppingItem[]) => void
+  calculatePopularItems: (purchaseHistory: ShoppingItem[]) => void
+  updateCategoryStats: (purchaseHistory: ShoppingItem[]) => void
   
   // === SUGGESTIONS MANAGEMENT ===
-  addToSuggestions: (suggestion: any) => void
+  addToSuggestions: (suggestion: ItemSuggestion) => void
   removeFromSuggestions: (suggestionName: string) => void
   clearSuggestions: () => void
-  updateSuggestionSettings: (settings: any) => void
+  updateSuggestionSettings: (settings: Partial<AnalyticsState['suggestionSettings']>) => void
   
   // === POPULAR ITEMS ===
-  refreshPopularItems: (purchaseHistory: any[]) => void
+  refreshPopularItems: (purchaseHistory: ShoppingItem[]) => void
   
   // === ANALYSIS STATE ===
   setAnalyzing: (analyzing: boolean) => void
@@ -228,13 +243,13 @@ export interface AnalyticsActions {
   getTopSpendingCategories: (limit?: number) => CategoryStats[]
   
   // === ITEM ANALYTICS ===
-  getItemHistory: (itemName: string) => any[] // ShoppingItem[]
-  getItemTrends: (itemName: string) => any
-  getPurchasePattern: (itemName: string) => any
+  getItemHistory: (itemName: string) => ShoppingItem[]
+  getItemTrends: (itemName: string) => WeeklyTrend[]
+  getPurchasePattern: (itemName: string) => { frequency: number; averageDays: number }
   
   // === EXPORT & REPORTING ===
-  exportAnalytics: () => any
-  generateReport: (type: 'weekly' | 'monthly' | 'yearly') => any
+  exportAnalytics: () => string
+  generateReport: (type: 'weekly' | 'monthly' | 'yearly') => AnalyticsReport
   
   // === UTILITIES ===
   clearAnalytics: () => void

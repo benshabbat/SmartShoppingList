@@ -1,8 +1,15 @@
 import { CATEGORIES } from './categories'
 import { suggestCategoryForProduct } from './smartSuggestions'
-import { ShoppingItem } from '../types'
 
-// רשימות מוכנות מאורגנות ונקיות
+interface PresetList {
+  title: string
+  icon: string
+  description: string
+  items: Array<{
+    name: string
+    category: string
+  }>
+}
 
 export const PRESET_LISTS: Record<string, PresetList> = {
   breakfast: {

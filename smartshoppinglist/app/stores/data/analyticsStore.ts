@@ -6,7 +6,7 @@
 import { create } from 'zustand'
 import { devtools, persist, createJSONStorage } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
-import type { ShoppingItem, ItemSuggestion, CategoryStats, PopularItem, WeeklyTrend, AnalyticsState, AnalyticsActions, AnalyticsStore } from '../../types'
+import type { ItemSuggestion, CategoryStats, PopularItem, AnalyticsState, AnalyticsStore } from '../../types'
 
 // Helper functions
 const getDaysSinceDate = (date: Date): number => {

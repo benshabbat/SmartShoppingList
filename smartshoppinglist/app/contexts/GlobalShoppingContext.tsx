@@ -5,9 +5,9 @@
 
 'use client'
 
-import { createContext, useContext, ReactNode } from 'react'
+import { createContext, useContext } from 'react'
 import { useGlobalShoppingLogic } from './useGlobalShoppingLogic'
-import type { ShoppingItem, ItemSuggestion, ExpiringItem, GlobalShoppingContextValue, GlobalShoppingProviderProps } from '../types'
+import type {GlobalShoppingContextValue, GlobalShoppingProviderProps } from '../types'
 
 const GlobalShoppingContext = createContext<GlobalShoppingContextValue | null>(null)
 

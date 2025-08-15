@@ -3,6 +3,8 @@
  * Contains all types related to UI components, modals, toasts, and UI state management
  */
 
+import { ShoppingItem, ItemSuggestion } from './data'
+
 // Toast types
 export interface Toast {
   id: string
@@ -36,7 +38,7 @@ export interface UIState {
   showTutorial: boolean
   showWelcomeMessage: boolean
   welcomeUserName: string | null
-  checkoutItems: any[] // ShoppingItem[] - will be imported from main types
+  checkoutItems: ShoppingItem[]
   
   // === LOADING STATES ===
   globalLoading: boolean
@@ -87,7 +89,7 @@ export interface UIState {
   completedTutorialSteps: string[]
   
   // === QUICK ADD ===
-  quickAddSuggestions: any[]
+  quickAddSuggestions: ItemSuggestion[]
 }
 
 // UI Actions Interface
@@ -108,7 +110,7 @@ export interface UIActions {
   // Specific modal helpers
   openReceiptScanner: () => void
   closeReceiptScanner: () => void
-  openExpiryModal: (items: any[]) => void // ShoppingItem[]
+  openExpiryModal: (items: ShoppingItem[]) => void
   closeExpiryModal: () => void
   openDataImportModal: () => void
   closeDataImportModal: () => void
@@ -183,11 +185,11 @@ export interface UIActions {
   resetCompletedTutorialSteps: () => void
   
   // === QUICK ADD ===
-  setQuickAddSuggestions: (suggestions: any[]) => void
+  setQuickAddSuggestions: (suggestions: ItemSuggestion[]) => void
   
   // === CHECKOUT ===
-  setCheckoutItems: (items: any[]) => void
-  addToCheckout: (item: any) => void
+  setCheckoutItems: (items: ShoppingItem[]) => void
+  addToCheckout: (item: ShoppingItem) => void
   removeFromCheckout: (itemId: string) => void
   clearCheckout: () => void
   

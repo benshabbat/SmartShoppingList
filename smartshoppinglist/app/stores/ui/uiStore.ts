@@ -7,7 +7,7 @@
 import { create } from 'zustand'
 import { devtools, persist, createJSONStorage } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
-import type { Toast, Modal, UIState, UIActions, UIStore, ShoppingItem } from '../../types'
+import type { UIState, UIStore } from '../../types'
 
 // Initial State
 const initialState: UIState = {

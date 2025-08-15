@@ -7,37 +7,10 @@
 import { create } from 'zustand'
 import { devtools, persist, createJSONStorage } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
-import { ShoppingItem, ItemSuggestion, ExpiringItem, DbShoppingItem, ShoppingDataState } from '../../types'
+import { ShoppingItem, ItemSuggestion, DbShoppingItem, ShoppingDataState } from '../../types'
 import { ShoppingItemService } from '@/lib/services/shoppingItemService'
 import { STORAGE_KEYS } from '../../constants'
 import { generateSuggestions, checkExpiringItems } from '../../utils/helpers'
-// Initial State
-const initialState: Omit<ShoppingDataState, 'initializeStore' | 'refreshData' | 'addItem' | 'updateItem' | 'deleteItem' | 'addToCart' | 'removeFromCart' | 'toggleInCart' | 'markAsPurchased' | 'markAsUnpurchased' | 'clearPurchased' | 'setSelectedList' | 'setSearchQuery' | 'updateFilters' | 'resetFilters' | 'updateSuggestions' | 'acceptSuggestion' | 'dismissSuggestion' | 'clearError' | 'setError'> = {
-  // === CORE DATA ===
-  items: [],
-  suggestions: [],
-  expiringItems: [],
-  purchaseHistory: [],
-  pantryItems: [],
-  
-  // === LIST MANAGEMENT ===
-  selectedListId: null,
-  
-  // === FILTERS & SEARCH ===
-  filters: {
-    category: null,
-    showPurchased: false,
-    sortBy: 'name',
-    sortOrder: 'asc'
-  },
-  searchQuery: '',
-  
-  // === STATE ===
-  isLoading: false,
-  isInitialized: false,
-  error: null,
-  lastUpdated: null,
-}
 
 // Helper functions
 const mapDbItemToShoppingItem = (dbItem: DbShoppingItem): ShoppingItem => ({

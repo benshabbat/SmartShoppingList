@@ -13,7 +13,6 @@ import { useFormField } from '../hooks/useFormState'
 import { generateSmartSuggestions, suggestCategoryForProduct } from '../utils/smartSuggestions'
 import { ShoppingItem, Category } from '../types'
 import { 
-  createErrorHandler,
   createAsyncHandler,
   createBulkOperationHandler,
   filterItemsByStatus,
@@ -36,7 +35,6 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
   const uiStore = useUIStore()
   
   // Error handlers
-  const handleError = createErrorHandler('GlobalShoppingLogic', showError)
   const asyncHandler = createAsyncHandler('GlobalShoppingLogic', showError)
   
   // === ADD ITEM FORM STATE AND LOGIC ===
@@ -183,11 +181,11 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
         item.expiryDate && new Date(item.expiryDate) <= new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)
       )
     }
-  }, [itemsStore.items, itemsStore.expiringItems])
+  }, [itemsStore.items])
 
   // Enhanced item operations with validation and feedback
   const addItem = useCallback(async (itemName: string, category: string, addToCart = false) => {
-    const result = await asyncHandler(async () => {
+    const _result = await asyncHandler(async () => {
       // Validation using utility
       const validation = validateItemName(itemName)
       if (!validation.isValid) {
@@ -320,7 +318,7 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
   }, [computedValues.cartItems, uiStore, showError, showInfo])
 
   const createQuickList = useCallback(async (items: Array<{name: string, category: string}>) => {
-    const result = await asyncHandler(async () => {
+    const _result = await asyncHandler(async () => {
       // Create bulk operation handler
       const bulkAddHandler = createBulkOperationHandler(
         async (item: {name: string, category: string}) => {
@@ -346,7 +344,7 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
       
       showSuccess(message)
     }, 'שגיאה ביצירת רשימה מהירה')
-  }, [itemsStore, showSuccess, showError, user?.id, asyncHandler])
+  }, [itemsStore, showSuccess, user?.id, asyncHandler])
 
   const addBulkToCart = useCallback(async (items: Array<{name: string, category: string}>) => {
     try {

@@ -5,27 +5,27 @@ import { getDaysUntilExpiry } from './dateUtils'
  * Enhanced logger for development and debugging
  */
 export const logger = {
-  info: (message: string, data?: any) => {
+  info: (message: string, data?: unknown) => {
     if (process.env.NODE_ENV === 'development') {
       console.log(`ℹ️ ${message}`, data ? data : '')
     }
   },
-  error: (message: string, error?: any) => {
+  error: (message: string, error?: unknown) => {
     if (process.env.NODE_ENV === 'development') {
       console.error(`❌ ${message}`, error ? error : '')
     }
   },
-  success: (message: string, data?: any) => {
+  success: (message: string, data?: unknown) => {
     if (process.env.NODE_ENV === 'development') {
       console.log(`✅ ${message}`, data ? data : '')
     }
   },
-  warn: (message: string, data?: any) => {
+  warn: (message: string, data?: unknown) => {
     if (process.env.NODE_ENV === 'development') {
       console.warn(`⚠️ ${message}`, data ? data : '')
     }
   },
-  debug: (message: string, data?: any) => {
+  debug: (message: string, data?: unknown) => {
     if (process.env.NODE_ENV === 'development' && process.env.DEBUG === 'true') {
       console.log(`🐛 ${message}`, data ? data : '')
     }

@@ -3,8 +3,6 @@
  * Single Responsibility: Handle authentication errors with Hebrew translations
  */
 
-import { AuthError } from '../../../types'
-
 export class AuthErrorHandler {
   private static readonly ERROR_MESSAGES: Record<string, string> = {
     'Invalid login credentials': 'פרטי התחברות שגויים. אנא בדוק את המייל והסיסמה',

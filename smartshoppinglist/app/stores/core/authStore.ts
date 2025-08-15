@@ -6,7 +6,7 @@
 import { create } from 'zustand'
 import { devtools, persist, createJSONStorage } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
-import type { StoreUser, AuthState, AuthActions, AuthStore } from '../../types'
+import type { AuthStore } from '../../types'
 
 // Store Implementation
 export const useAuthStore = create<AuthStore>()(

@@ -3,6 +3,9 @@
  * Contains all types related to custom hooks, their parameters, and return values
  */
 
+import { ShoppingItem, ItemSuggestion, ExpiringItem } from './data'
+import { StoreUser, AnalyticsState, CategoryStats } from './stores'
+
 // === AUTH HOOK TYPES ===
 
 export interface LoginCredentials {
@@ -27,7 +30,7 @@ export interface UseAuthOptions {
 }
 
 export interface UseAuthReturn {
-  user: any | null // User type from auth store
+  user: StoreUser | null
   isLoading: boolean
   isAuthenticated: boolean
   isGuest: boolean
@@ -118,14 +121,14 @@ export interface UseAnalyticsOptions {
 }
 
 export interface UseAnalyticsReturn {
-  data: any // AnalyticsState from stores
+  data: AnalyticsState
   isLoading: boolean
   error: string | null
   refresh: () => Promise<void>
   calculateStats: () => void
-  getCategoryInsights: (category: string) => any
-  getItemHistory: (itemName: string) => any[]
-  exportData: () => any
+  getCategoryInsights: (category: string) => CategoryStats | null
+  getItemHistory: (itemName: string) => ShoppingItem[]
+  exportData: () => string
 }
 
 // === STATISTICS HOOK TYPES ===
@@ -154,7 +157,7 @@ export interface UseStatisticsReturn {
   isLoading: boolean
   error: string | null
   refresh: () => Promise<void>
-  getDetailedStats: (category?: string) => any
+  getDetailedStats: (category?: string) => CategoryStats | null
 }
 
 // === GENERIC HOOK TYPES ===
@@ -174,12 +177,12 @@ export interface UseAsyncReturn<T> {
   reset: () => void
 }
 
-export interface UseLocalStorageOptions {
+export interface UseLocalStorageOptions<T = unknown> {
   serializer?: {
-    read: (value: string) => any
-    write: (value: any) => string
+    read: (value: string) => T
+    write: (value: T) => string
   }
-  defaultValue?: any
+  defaultValue?: T
 }
 
 export interface UseLocalStorageReturn<T> {
@@ -208,20 +211,20 @@ export interface UseShoppingDataOptions {
 }
 
 export interface UseShoppingDataReturn {
-  items: any[] // ShoppingItem[]
-  suggestions: any[] // ItemSuggestion[]
-  expiringItems: any[] // ExpiringItem[]
+  items: ShoppingItem[]
+  suggestions: ItemSuggestion[]
+  expiringItems: ExpiringItem[]
   loading: boolean
   error: string | null
   addItem: (name: string, category: string) => Promise<void>
-  updateItem: (id: string, updates: any) => Promise<void>
+  updateItem: (id: string, updates: Partial<ShoppingItem>) => Promise<void>
   removeItem: (id: string) => Promise<void>
   refresh: () => Promise<void>
 }
 
 // === VALIDATION HOOK TYPES ===
 
-export interface ValidationRule<T = any> {
+export interface ValidationRule<T = unknown> {
   required?: boolean
   min?: number
   max?: number
@@ -249,7 +252,7 @@ export interface UseAuthContextOptions {
 }
 
 export interface UseAuthContextReturn {
-  user: any | null
+  user: StoreUser | null
   session: any | null
   loading: boolean
   isGuest: boolean

@@ -12,9 +12,9 @@ import { useShoppingData, useFormOperations, useGlobalShopping } from '../contex
 
 export const useAutoCompleteLogic = () => {
   // Context data
-  const { suggestions, purchaseHistory } = useShoppingData()
+  const { purchaseHistory } = useShoppingData()
   const { itemName, category, selectItem } = useFormOperations()
-  const { autoChangedCategory } = useGlobalShopping()
+  const { autoChangedCategory, smartSuggestions } = useGlobalShopping()
 
   // Local state
   const [isOpen, setIsOpen] = useState(false)
@@ -25,11 +25,11 @@ export const useAutoCompleteLogic = () => {
   const filteredSuggestions = useMemo(() => {
     // Show all suggestions when no text is entered
     if (!itemName.value.trim()) {
-      return suggestions.slice(0, 8) // Show first 8 suggestions
+      return smartSuggestions.slice(0, 8) // Show first 8 suggestions
     }
     // Filter suggestions based on input
-    return searchWithPopularity(itemName.value, suggestions, purchaseHistory)
-  }, [itemName.value, suggestions, purchaseHistory])
+    return searchWithPopularity(itemName.value, smartSuggestions, purchaseHistory)
+  }, [itemName.value, smartSuggestions, purchaseHistory])
 
   // Define callbacks with useCallback to prevent re-renders
   const handleSelect = useCallback((suggestion: string) => {

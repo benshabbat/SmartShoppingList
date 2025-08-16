@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useAuthStore } from '../stores/core/authStore'
 import { useUIStore } from '../stores/ui/uiStore'
@@ -245,8 +246,29 @@ export function useGuestMode() {
  * Legacy useAuth hook for backward compatibility
  */
 export function useAuth() {
-  const { user, isLoading, logout, switchToGuestMode } = useAuthStore()
+  const { user, isLoading, logout, switchToGuestMode, setUser } = useAuthStore()
   const { data: session } = useSession()
+
+  // Listen for auth state changes
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('Auth state changed:', event, session)
+        
+        if (event === 'SIGNED_IN' && session?.user) {
+          setUser({
+            id: session.user.id,
+            email: session.user.email || '',
+            isGuest: false,
+          })
+        } else if (event === 'SIGNED_OUT') {
+          logout()
+        }
+      }
+    )
+
+    return () => subscription.unsubscribe()
+  }, [setUser, logout])
 
   const signOut = async () => {
     logout()

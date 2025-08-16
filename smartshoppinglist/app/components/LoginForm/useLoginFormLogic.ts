@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { UserService } from '../../../lib/services/userService'
+import { useLogin, useSignUp } from '../../hooks/useAuth'
 import { useAuth } from '../../hooks/useAuth'
 import { useGlobalShopping } from '../../contexts/GlobalShoppingContext'
 import { useMainAppLogic } from '../MainAppContent/useMainAppLogic'
@@ -13,6 +13,8 @@ export const useLoginFormLogic = () => {
   const { signInAsGuest } = useAuth()
   const { showWelcome } = useGlobalShopping()
   const { handleLoginSuccess } = useMainAppLogic()
+  const loginMutation = useLogin()
+  const signUpMutation = useSignUp()
   
   // Form state
   const [isLogin, setIsLogin] = useState(true)
@@ -41,7 +43,7 @@ export const useLoginFormLogic = () => {
 
     try {
       if (isLogin) {
-        const result = await UserService.signIn(email, password)
+        const result = await loginMutation.mutateAsync({ email, password })
         setMessage('התחברת בהצלחה!')
         
         // Show welcome message for successful login
@@ -51,7 +53,15 @@ export const useLoginFormLogic = () => {
         
         handleLoginSuccess()
       } else {
-        await UserService.signUp(email, password, fullName)
+        await signUpMutation.mutateAsync({ 
+          email, 
+          password, 
+          options: { 
+            data: { 
+              full_name: fullName 
+            } 
+          } 
+        })
         setMessage('נרשמת בהצלחה! בדוק את המייל שלך לאימות החשבון.')
       }
     } catch (err: unknown) {
@@ -72,7 +82,9 @@ export const useLoginFormLogic = () => {
     setError(null)
 
     try {
-      await UserService.resetPassword(email)
+      // Use Supabase directly for password reset
+      const { supabase } = await import('../../../lib/supabase')
+      await supabase.auth.resetPasswordForEmail(email)
       setMessage('נשלח לינק לאיפוס סיסמה למייל שלך')
     } catch (err: unknown) {
       const errorMessage = AuthErrorHandler.translateError(err)

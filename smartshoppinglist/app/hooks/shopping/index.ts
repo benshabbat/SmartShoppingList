@@ -1,4 +1,3 @@
-export { useAutoCompleteLogic } from './useAutoCompleteLogic';
-export { useCategorySectionLogic } from './useCategorySectionLogic';
-export { useCategorySelectorLogic } from './useCategorySelectorLogic';
-export { useSmartSuggestionsLogic } from './useSmartSuggestionsLogic';
+export { useAutoCompleteLogic } from './forms';
+export { useCategorySectionLogic, useCategorySelectorLogic } from './categories';
+export { useSmartSuggestionsLogic } from './suggestions';

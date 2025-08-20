@@ -12,14 +12,14 @@ import {
   getDaysAgo, 
   isWithinLastDays, 
   isExpiringShortly 
-} from '../../utils/data/dateUtils'
+} from '../../utils/data/helpers/dateUtils'
 import { 
   calculateAverage, 
   getMostFrequent, 
   countOccurrences, 
   getTopItems,
   calculateGrowth 
-} from '../../utils/data/mathUtils'
+} from '../../utils/data/helpers/mathUtils'
 
 /**
  * Main statistics hook - Gets all data from context!

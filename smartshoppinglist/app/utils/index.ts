@@ -1,5 +1,8 @@
 // Utils exports - organized by category
 
+// Core utilities
+export * from './core'
+
 // Data processing utilities
 export * from './data'
 
@@ -8,10 +11,6 @@ export * from './ui'
 
 // Validation utilities
 export * from './validation'
-
-// Keep legacy exports
-export * from './helpers'
-export * from './errorHandling'
 
 // Re-export existing utilities (consolidated)
 export { 

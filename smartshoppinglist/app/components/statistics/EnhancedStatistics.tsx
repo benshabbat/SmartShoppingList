@@ -1,5 +1,5 @@
 import { History, TrendingUp, Package, Target, ShoppingCart, Clock, Award, ChevronDown, ChevronUp, BarChart3, PieChart } from 'lucide-react'
-import { formatDate } from '../../utils/data/dateUtils'
+import { formatDate } from '../../utils/data/helpers/dateUtils'
 import { useState, useEffect } from 'react'
 import { 
   useAnalyticsStore, 

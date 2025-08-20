@@ -8,7 +8,7 @@ import { ReceiptData, ShoppingItem } from '../../types'
 import { ReceiptOCR } from '../../utils/data/processing/receiptOCR'
 import { categorizeItem } from '../../utils/data/suggestions/smartSuggestions'
 import { useGlobalShopping } from '../../contexts/GlobalShoppingContext'
-import { formatDate } from '../../utils/data/dateUtils'
+import { formatDate } from '../../utils/data/helpers/dateUtils'
 import { logger } from '../../utils/helpers'
 
 export function ReceiptScanner() {

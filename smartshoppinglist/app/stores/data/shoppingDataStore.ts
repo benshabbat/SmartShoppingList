@@ -8,7 +8,7 @@ import { create } from 'zustand'
 import { devtools, persist, createJSONStorage } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
 import { ShoppingItem, ItemSuggestion, DbShoppingItem, ShoppingDataState } from '../../types'
-import { ShoppingItemService } from '@/lib/services/shoppingItemService'
+import { ShoppingItemService } from '../../../lib/services/data/shoppingItemService'
 import { STORAGE_KEYS } from '../../constants'
 import { generateSuggestions, checkExpiringItems } from '../../utils/helpers'
 

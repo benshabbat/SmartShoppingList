@@ -3,34 +3,11 @@
  * Central export file for all custom hooks following clean code principles
  */
 
-// Form and UI hooks
-export { useFormField, useFormState } from './useFormState'
-export { useKeyboardNavigation } from './useKeyboardNavigation'
-export { useAutoCompleteLogic } from './useAutoCompleteLogic'
-export { useCategorySelectorLogic } from './useCategorySelectorLogic'
-export { useSmartSuggestionsLogic } from './useSmartSuggestionsLogic'
-export { useCategorySectionLogic } from './useCategorySectionLogic'
-
-// Authentication hooks
-export { 
-  useAuth, 
-  useSession, 
-  useCurrentUser, 
-  useLogin, 
-  useSignUp, 
-  useLogout, 
-  useGuestMode 
-} from './useAuth'
-export { useAuthContext } from './useAuthContext'
-
-// Analytics and statistics
-export { 
-  useAnalytics, 
-  useSmartSuggestions, 
-  usePopularItems, 
-  useCategoryAnalytics 
-} from './useAnalytics'
-export { useStatistics } from './useStatistics'
+// Feature-specific hook exports
+export * from './auth';
+export * from './shopping';
+export * from './ui';
+export * from './analytics';
 
 // Store exports
 export * from '../stores'

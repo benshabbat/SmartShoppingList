@@ -1,5 +1,5 @@
 import { Plus } from 'lucide-react'
-import { CategorySelector } from '../../shopping/CategorySelector'
+import { CategorySelector } from '../../shopping/categories/CategorySelector'
 import { AutoCompleteWrapper } from '../AutoCompleteWrapper'
 import { AutoChangeNotificationBanner, SuggestionNotificationBanner } from '../../notifications/NotificationBannerWrappers'
 import { getButtonClasses, containerStyles } from '../../../utils/ui/classNames'

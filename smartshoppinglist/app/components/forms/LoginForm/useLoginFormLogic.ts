@@ -1,8 +1,7 @@
 import { useState } from 'react'
-import { useLogin, useSignUp } from '../../../hooks/useAuth'
-import { useAuth } from '../../../hooks/useAuth'
+import { useLogin, useSignUp } from '../../../hooks'
+import { useAuth } from '../../../hooks'
 import { useGlobalShopping } from '../../../contexts/GlobalShoppingContext'
-import type { LoginFormLogic } from '../../../types'
 import { useMainAppLogic } from '../../layout/MainAppContent/useMainAppLogic'
 import { AuthErrorHandler, FormValidator } from './utils'
 

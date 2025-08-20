@@ -5,13 +5,13 @@ import {
 } from "./components";
 import { ExpiryNotification } from "../../notifications/ExpiryNotification";
 import { QuickStatsCards } from "../../statistics/QuickStatsCards";
-import { QuickListCreator } from "../../shopping/QuickListCreator";
-import { QuickAddButtons } from "../../shopping/QuickAddButtons";
-import { ShoppingListSections } from "../../shopping/ShoppingListSections";
-import { ShoppingCartSection } from "../../shopping/ShoppingCartSection";
+import { QuickListCreator } from "../../shopping/actions/QuickListCreator";
+import { QuickAddButtons } from "../../shopping/actions/QuickAddButtons";
+import { ShoppingListSections } from "../../shopping/cart/ShoppingListSections";
+import { ShoppingCartSection } from "../../shopping/cart/ShoppingCartSection";
 import { MAIN_VIEW_STYLES } from "../../../constants";
 import { DataExport } from "../../statistics/DataExport";
-import { SmartSuggestions } from "../../shopping/SmartSuggestions";
+import { SmartSuggestions } from "../../shopping/suggestions/SmartSuggestions";
 
 /**
  * Main Shopping View Component

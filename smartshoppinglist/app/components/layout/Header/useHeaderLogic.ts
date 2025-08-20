@@ -1,6 +1,6 @@
 import { usePathname } from 'next/navigation'
 import { useUIStore } from '../../../stores'
-import { useAuth } from '../../../hooks/useAuth'
+import { useAuth } from '../../../hooks'
 import { useGlobalShopping } from '../../../contexts/GlobalShoppingContext'
 import { UserActionsHandler } from './utils'
 import { ROUTES } from '../../../constants'

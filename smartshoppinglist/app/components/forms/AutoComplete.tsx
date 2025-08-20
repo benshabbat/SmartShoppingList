@@ -1,6 +1,6 @@
 import { ChevronDown, Search } from 'lucide-react'
 import { getInputClasses } from '../../utils/ui/classNames'
-import { SuggestionItem } from '../shopping/SuggestionItem'
+import { SuggestionItem } from '../shopping/suggestions/SuggestionItem'
 import { useAutoCompleteLogic } from '../../hooks'
 
 /**

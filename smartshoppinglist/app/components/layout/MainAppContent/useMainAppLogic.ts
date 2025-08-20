@@ -5,7 +5,7 @@
 
 import { useCallback, useMemo } from 'react'
 import { useGlobalShopping } from '../../../contexts/GlobalShoppingContext'
-import { useAuth } from '../../../hooks/useAuth'
+import { useAuth } from '../../../hooks'
 
 export const useMainAppLogic = () => {
   const { loading, user, isGuest } = useAuth()

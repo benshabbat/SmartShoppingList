@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { User, X } from 'lucide-react'
-import { useAuth } from '../../hooks/useAuth'
+import { useAuth } from '../../hooks'
 import { useMainAppLogic } from '../layout/MainAppContent/useMainAppLogic'
 
 /**

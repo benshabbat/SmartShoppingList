@@ -1,0 +1,1 @@
+export { ShoppingItemService } from './shoppingItemService';

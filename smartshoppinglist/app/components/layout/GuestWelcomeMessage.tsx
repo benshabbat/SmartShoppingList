@@ -1,8 +1,6 @@
 'use client'
 
-import { CheckCircle } from 'lucide-react'
-import { FadeIn } from '../ui/Animations'
-import { useAuth } from '../../hooks/useAuth'
+import { useAuth } from '../../hooks'
 
 /**
  * Guest Welcome Message - ZERO PROPS DRILLING

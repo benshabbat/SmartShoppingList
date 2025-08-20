@@ -2,9 +2,9 @@
 
 import Link from 'next/link'
 import { ArrowRight, Home } from 'lucide-react'
-import { EnhancedStatistics } from '../components/EnhancedStatistics'
-import { Header } from '../components/Header'
-import { ToastContainer } from '../components/Toast'
+import { EnhancedStatistics } from '../components/statistics/EnhancedStatistics'
+import { Header } from '../components/layout/Header'
+import { ToastContainer } from '../components/notifications/Toast'
 
 /**
  * Statistics Page - Zero Props Drilling!

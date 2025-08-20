@@ -7,10 +7,10 @@ import { useCallback, useMemo, useEffect, useState } from 'react'
 import { useShoppingDataStore } from '../stores/data/shoppingDataStore'
 import { useUIStore } from '../stores/ui/uiStore'
 import { useAuth } from '../hooks/useAuth'
-import { useToasts } from '../components/Toast'
-import { useSoundManager } from '../utils/soundManager'
+import { useToasts } from '../components/notifications/Toast'
+import { useSoundManager } from '../utils/ui/soundManager'
 import { useFormField } from '../hooks/useFormState'
-import { generateSmartSuggestions, suggestCategoryForProduct } from '../utils/smartSuggestions'
+import { generateSmartSuggestions, suggestCategoryForProduct } from '../utils/data/smartSuggestions'
 import { ShoppingItem, Category } from '../types'
 import { 
   createAsyncHandler,

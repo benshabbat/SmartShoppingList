@@ -1,4 +1,4 @@
-import { MainAppUI } from "./components/MainAppContent";
+import { MainAppUI } from "./components/layout/MainAppContent";
 
 
 export default function ShoppingListApp() {

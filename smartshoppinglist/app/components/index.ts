@@ -1,39 +1,22 @@
-// Component exports - following clean code principles
-export { AddItemForm } from './AddItemForm'
-export { AutoComplete } from './AutoComplete'
-export { CategorySection } from './CategorySection'
-export { PendingItemsSection, CartItemsSection, PurchasedItemsSection } from './SpecializedCategorySections'
-export { CategorySelector } from './CategorySelector'
-export { DataImportModal } from './DataImportModal'
-export { ExpiryDateModal } from './ExpiryDateModal'
-export { ExpiryNotification } from './ExpiryNotification'
-export { GuestModeNotification } from './GuestModeNotification'
-export { ItemActions } from './ItemActions'
-export { LoadingOverlay } from './LoadingOverlay'
-export { NotificationBanner } from './NotificationBanner'
-export { ReceiptScanner } from './ReceiptScanner'
-export { ShoppingItemComponent } from './ShoppingItemComponent'
-export { SuggestionItem } from './SuggestionItem'
-export { WelcomeMessage } from './WelcomeMessage'
-export { ShoppingCartSection } from './ShoppingCartSection'
-export { ActionButton } from './ActionButton'
-export { AutoCompleteWrapper } from './AutoCompleteWrapper'
-export { AutoChangeNotificationBanner, SuggestionNotificationBanner } from './NotificationBannerWrappers'
-export { Card, CardHeader, CardBody, CardFooter } from './Card'
+// Component exports - organized by category
 
-// Main modular components - NO PROPS DRILLING
-export { MainShoppingView } from './MainShoppingView'
-export { Header } from './Header'
-export { QuickStatsCards } from './QuickStatsCards'
-export { GuestWelcomeMessage } from './GuestWelcomeMessage'
-export { ShoppingListSections } from './ShoppingListSections'
+// UI Components
+export * from './ui'
 
-// Re-export existing components
-export { FadeIn, SlideUp } from './Animations'
-export { CategoryHeader } from './InteractiveEmoji'
-export { DataExport } from './DataExport'
-export { EnhancedStatistics } from './EnhancedStatistics'
-export { QuickAddButtons } from './QuickAddButtons'
-export { QuickListCreator } from './QuickListCreator'
-export { SmartSuggestions } from './SmartSuggestions'
-export { Tutorial } from './Tutorial'
+// Form Components
+export * from './forms'
+
+// Notification Components
+export * from './notifications'
+
+// Shopping Components
+export * from './shopping'
+
+// Statistics Components
+export * from './statistics'
+
+// Layout Components
+export * from './layout'
+
+// Keep remaining for backward compatibility
+export { GuestModeNotification } from './notifications/GuestModeNotification'

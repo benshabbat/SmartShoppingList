@@ -1,13 +1,19 @@
-// Enhanced utility exports following DRY and Clean Code principles
-export * from './classNames'
+// Utils exports - organized by category
+
+// Data processing utilities
+export * from './data'
+
+// UI utilities  
+export * from './ui'
+
+// Validation utilities
 export * from './validation'
-export * from './errorHandling'
-export * from './dateUtils'
-export * from './mathUtils'
+
+// Keep legacy exports
 export * from './helpers'
+export * from './errorHandling'
 
 // Re-export existing utilities (consolidated)
-export * from './categories'
 export { 
   CATEGORY_EMOJIS, 
   STORAGE_KEYS, 
@@ -20,10 +26,6 @@ export {
   COLOR_SCHEMES,
   MESSAGES
 } from '../constants'
-export * from './presetLists'
-export * from './smartSuggestions'
-export * from './soundManager'
-export * from './receiptProcessor'
 
 // Type exports - now imported from centralized types
 export type { 

@@ -6,7 +6,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
-import { searchWithPopularity } from '../utils/smartSuggestions'
+import { searchWithPopularity } from '../utils/data/smartSuggestions'
 import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation'
 import { useShoppingData, useFormOperations, useGlobalShopping } from '../contexts'
 

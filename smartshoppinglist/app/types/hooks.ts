@@ -45,6 +45,31 @@ export interface UseAuthReturn {
 
 // === FORM HOOK TYPES ===
 
+export interface LoginFormLogic {
+  // Form state
+  email: string
+  password: string
+  fullName: string
+  mode: 'login' | 'signup'
+  
+  // UI state
+  loading: boolean
+  error: string | null
+  message: string | null
+  
+  // Validation
+  isFormValid: boolean
+  
+  // Event handlers
+  handleEmailChange: (value: string) => void
+  handlePasswordChange: (value: string) => void
+  handleFullNameChange: (value: string) => void
+  handleSubmit: () => Promise<void>
+  handleGuestLogin: () => void
+  handleForgotPassword: () => void
+  toggleMode: () => void
+}
+
 export interface UseFormFieldOptions<T> {
   initialValue: T
   validator?: (value: T) => string | undefined

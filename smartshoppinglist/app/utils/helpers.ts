@@ -1,5 +1,5 @@
 import { ShoppingItem, ItemSuggestion, ExpiringItem } from '../types'
-import { getDaysUntilExpiry } from './dateUtils'
+import { getDaysUntilExpiry } from './data/dateUtils'
 
 /**
  * Enhanced logger for development and debugging

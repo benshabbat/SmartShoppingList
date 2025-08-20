@@ -1,6 +1,6 @@
 import { ShoppingItem } from '../../../types'
 import { COMMON_PRODUCTS } from '../../../constants'
-import { logger } from '../../helpers'
+import { logger } from '../../core/helpers'
 
 // פונקציה לזיהוי קטגוריה למוצר - alias לפונקציה קיימת
 export const categorizeItem = (productName: string): string => {

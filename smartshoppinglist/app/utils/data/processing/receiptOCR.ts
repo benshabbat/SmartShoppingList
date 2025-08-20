@@ -1,7 +1,7 @@
 import Tesseract from 'tesseract.js'
 import { ReceiptData, ReceiptItem } from '../../../types'
 import { categorizeItem } from '../suggestions/smartSuggestions'
-import { logger } from '../../helpers'
+import { logger } from '../../core/helpers'
 
 export class ReceiptOCR {
   private static readonly HEBREW_STORE_PATTERNS = {

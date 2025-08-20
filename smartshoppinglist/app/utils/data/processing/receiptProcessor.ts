@@ -1,7 +1,7 @@
 import Tesseract from 'tesseract.js'
 import { ReceiptData, ReceiptItem } from '../../../types'
 import { detectCategory } from '../categories/categories'
-import { logger } from '../../helpers'
+import { logger } from '../../core/helpers'
 
 export class ReceiptProcessor {
   private static readonly STORE_PATTERNS = {

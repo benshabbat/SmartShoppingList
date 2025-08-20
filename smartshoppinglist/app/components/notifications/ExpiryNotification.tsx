@@ -2,7 +2,7 @@
 
 import { AlertTriangle, Clock, X, ShoppingCart } from 'lucide-react'
 import { useGlobalShopping } from '../../contexts/GlobalShoppingContext'
-import { getExpiryColor, logger } from '../../utils/helpers'
+import { getExpiryColor, logger } from '../../utils/core/helpers'
 
 export function ExpiryNotification() {
   // Get everything from global context - NO PROPS DRILLING!

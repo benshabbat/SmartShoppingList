@@ -6,8 +6,8 @@
 'use client'
 
 import { useCallback } from 'react'
-import { useShoppingData, useItemActions, useNotifications } from '../../contexts'
-import { createAsyncHandler, MESSAGES } from '../../utils'
+import { useShoppingData, useItemActions, useNotifications } from '../../../contexts'
+import { createAsyncHandler, MESSAGES } from '../../../utils'
 
 export const useSmartSuggestionsLogic = () => {
   // Context data

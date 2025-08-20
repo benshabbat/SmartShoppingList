@@ -10,7 +10,7 @@ import { immer } from 'zustand/middleware/immer'
 import { ShoppingItem, ItemSuggestion, DbShoppingItem, ShoppingDataState } from '../../types'
 import { ShoppingItemService } from '../../../lib/services/data/shoppingItemService'
 import { STORAGE_KEYS } from '../../constants'
-import { generateSuggestions, checkExpiringItems } from '../../utils/helpers'
+import { generateSuggestions, checkExpiringItems } from '../../utils/core/helpers'
 
 // Helper functions
 const mapDbItemToShoppingItem = (dbItem: DbShoppingItem): ShoppingItem => ({

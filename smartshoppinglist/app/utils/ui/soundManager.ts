@@ -91,7 +91,7 @@ export const soundManager = new SoundManager()
 
 // React hook for sound controls
 import { useState, useEffect } from 'react'
-import { logger } from '../helpers'
+import { logger } from '../core/helpers'
 
 export const useSoundManager = () => {
   const [soundEnabled, setSoundEnabled] = useState(soundManager.isEnabled())

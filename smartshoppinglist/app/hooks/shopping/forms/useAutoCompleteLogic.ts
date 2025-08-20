@@ -6,9 +6,9 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
-import { searchWithPopularity } from '../../utils/data/suggestions/smartSuggestions'
-import { useKeyboardNavigation } from '../ui/useKeyboardNavigation'
-import { useShoppingData, useFormOperations, useGlobalShopping } from '../../contexts'
+import { searchWithPopularity } from '../../../utils/data/suggestions/smartSuggestions'
+import { useKeyboardNavigation } from '../../ui/useKeyboardNavigation'
+import { useShoppingData, useFormOperations, useGlobalShopping } from '../../../contexts'
 
 export const useAutoCompleteLogic = () => {
   // Context data

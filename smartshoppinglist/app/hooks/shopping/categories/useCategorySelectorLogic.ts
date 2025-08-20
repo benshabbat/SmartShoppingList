@@ -6,7 +6,7 @@
 'use client'
 
 import { useCallback } from 'react'
-import { useFormOperations, useGlobalShopping } from '../../contexts'
+import { useFormOperations, useGlobalShopping } from '../../../contexts'
 
 export const useCategorySelectorLogic = () => {
   // Context data

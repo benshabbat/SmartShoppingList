@@ -9,7 +9,7 @@ import { ReceiptOCR } from '../../utils/data/processing/receiptOCR'
 import { categorizeItem } from '../../utils/data/suggestions/smartSuggestions'
 import { useGlobalShopping } from '../../contexts/GlobalShoppingContext'
 import { formatDate } from '../../utils/data/helpers/dateUtils'
-import { logger } from '../../utils/helpers'
+import { logger } from '../../utils/core/helpers'
 
 export function ReceiptScanner() {
   // Get functions from global context - NO PROPS DRILLING!

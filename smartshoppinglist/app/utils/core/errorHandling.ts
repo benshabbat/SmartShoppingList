@@ -2,8 +2,8 @@
  * Error handling utilities following clean code principles
  */
 
-import { MESSAGES } from '../constants'
-import { ErrorType, AppError, ErrorHandlerOptions } from '../types'
+import { MESSAGES } from '../../constants'
+import { ErrorType, AppError, ErrorHandlerOptions } from '../../types'
 
 export class ValidationError extends Error {
   public readonly type: ErrorType = 'validation'

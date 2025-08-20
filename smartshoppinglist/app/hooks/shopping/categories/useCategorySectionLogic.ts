@@ -1,8 +1,8 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { groupItemsByCategory } from '../../utils/helpers'
-import type { ShoppingItem } from '../../types'
+import { groupItemsByCategory } from '../../../utils/core/helpers'
+import type { ShoppingItem } from '../../../types'
 
 export const useCategorySectionLogic = (
   items: ShoppingItem[],

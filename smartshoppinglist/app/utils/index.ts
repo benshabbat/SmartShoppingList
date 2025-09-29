@@ -6,8 +6,9 @@ export * from './core'
 // Data processing utilities
 export * from './data'
 
-// UI utilities  
-export * from './ui'
+// UI utilities (excluding getAllCategories to avoid conflict)
+export * from './ui/classNames'
+export * from './ui/soundManager'
 
 // Validation utilities
 export * from './validation'

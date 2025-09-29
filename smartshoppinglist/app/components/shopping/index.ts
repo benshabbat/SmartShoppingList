@@ -1,6 +1,7 @@
 // Shopping Components - organized by feature
 export { ShoppingItemComponent } from './ShoppingItemComponent'
 export { ExpiryDateModal } from './ExpiryDateModal'
+export { RecentPurchases, QuickAddFromRecent } from './RecentPurchases'
 
 // Category-related components
 export * from './categories';

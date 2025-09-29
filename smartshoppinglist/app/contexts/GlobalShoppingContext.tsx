@@ -33,11 +33,11 @@ export const useGlobalShopping = () => {
 // Optional: Specific hooks for different concerns (cleaner API)
 export const useShoppingData = () => {
   const { 
-    items, suggestions, expiringItems, purchaseHistory, pantryItems, loading, error,
+    items, suggestions, expiringItems, purchaseHistory, pantryItems, recentPurchases, loading, error,
     totalItems, completionRate, categoryStats, recentlyAdded 
   } = useGlobalShopping()
   return { 
-    items, suggestions, expiringItems, purchaseHistory, pantryItems, loading, error,
+    items, suggestions, expiringItems, purchaseHistory, pantryItems, recentPurchases, loading, error,
     totalItems, completionRate, categoryStats, recentlyAdded 
   }
 }

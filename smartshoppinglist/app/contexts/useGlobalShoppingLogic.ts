@@ -266,14 +266,14 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
         return
       }
 
-      await itemsStore.clearPurchased()
+      await itemsStore.clearPurchased(user?.id || 'guest')
       playDelete()
-      showInfo(`${purchasedCount} פריטים שנקנו נמחקו`)
+      showInfo(`${purchasedCount} פריטים שנקנו נשמרו להיסטוריה`)
     } catch (error) {
       console.error('Error clearing purchased items:', error)
       showError('שגיאה במחיקת הפריטים')
     }
-  }, [itemsStore, playDelete, showInfo, showError, computedValues.purchasedItems.length])
+  }, [itemsStore, playDelete, showInfo, showError, computedValues.purchasedItems.length, user?.id])
 
   // Clear cart items - move all items from cart back to pending
   const clearCartItems = useCallback(async () => {
@@ -427,6 +427,7 @@ export const useGlobalShoppingLogic = (): EnhancedGlobalShoppingContextValue => 
     expiringItems: itemsStore.expiringItems,
     purchaseHistory: itemsStore.purchaseHistory,
     pantryItems: itemsStore.pantryItems,
+    recentPurchases: itemsStore.recentPurchases,
     loading: itemsStore.isLoading,
     error: itemsStore.error,
     

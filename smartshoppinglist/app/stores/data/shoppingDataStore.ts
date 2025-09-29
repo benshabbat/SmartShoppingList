@@ -9,6 +9,7 @@ import { devtools, persist, createJSONStorage } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
 import { ShoppingItem, ItemSuggestion, DbShoppingItem, ShoppingDataState } from '../../types'
 import { ShoppingItemService } from '../../../lib/services/data/shoppingItemService'
+import { PurchaseHistoryService } from '../../../lib/services/data/purchaseHistoryService'
 import { STORAGE_KEYS } from '../../constants'
 import { generateSuggestions, checkExpiringItems } from '../../utils/core/helpers'
 
@@ -36,6 +37,7 @@ export const useShoppingDataStore = create<ShoppingDataState>()(
         expiringItems: [],
         purchaseHistory: [],
         pantryItems: [],
+        recentPurchases: [],
         selectedListId: null,
         filters: {
           category: null,
@@ -62,15 +64,36 @@ export const useShoppingDataStore = create<ShoppingDataState>()(
           try {
             // Only load data from Supabase if we have a valid userId
             let items: ShoppingItem[] = []
+            let recentPurchases: ShoppingItem[] = []
             
             if (userId && userId !== 'guest') {
               const dbItems = await ShoppingItemService.getShoppingItems(userId)
               items = dbItems.map(mapDbItemToShoppingItem)
+              
+              // Load recent purchases from purchase history
+              try {
+                const purchaseHistoryItems = await PurchaseHistoryService.getRecentPurchases(userId)
+                recentPurchases = purchaseHistoryItems.map(historyItem => ({
+                  id: historyItem.id,
+                  name: historyItem.name,
+                  category: historyItem.category,
+                  isInCart: false,
+                  isPurchased: true,
+                  addedAt: new Date(historyItem.created_at),
+                  purchasedAt: new Date(historyItem.purchased_at),
+                  purchaseLocation: historyItem.purchase_location,
+                  price: historyItem.price
+                }))
+              } catch (error) {
+                console.warn('Failed to load purchase history:', error)
+                // Continue without purchase history if it fails
+              }
             }
             // For guest users, start with empty items array
 
             set((draft) => {
               draft.items = items
+              draft.recentPurchases = recentPurchases
               draft.isInitialized = true
               draft.lastUpdated = new Date().toISOString()
             })
@@ -86,6 +109,7 @@ export const useShoppingDataStore = create<ShoppingDataState>()(
               draft.isInitialized = true
               // Start with empty items for guest mode
               draft.items = []
+              draft.recentPurchases = []
             })
           } finally {
             set((draft) => {
@@ -334,7 +358,7 @@ export const useShoppingDataStore = create<ShoppingDataState>()(
           })
         },
 
-        clearPurchased: async () => {
+        clearPurchased: async (userId?: string) => {
           const state = get()
           const purchasedItems = state.items.filter(item => item.isPurchased)
 
@@ -346,15 +370,56 @@ export const useShoppingDataStore = create<ShoppingDataState>()(
           })
 
           try {
-            // Delete all purchased items from database
-            for (const item of purchasedItems) {
-              await ShoppingItemService.deleteShoppingItem(item.id)
-            }
+            // Save purchased items to purchase history for authenticated users
+            if (userId && userId !== 'guest') {
+              const historyItems = purchasedItems.map(item => ({
+                user_id: userId,
+                name: item.name,
+                category: item.category,
+                quantity: 1,
+                price: item.price,
+                purchase_location: item.purchaseLocation,
+                original_item_id: item.id
+              }))
 
-            set((draft) => {
-              draft.items = draft.items.filter(item => !item.isPurchased)
-              draft.lastUpdated = new Date().toISOString()
-            })
+              // Add to purchase history
+              await PurchaseHistoryService.addMultipleToPurchaseHistory(historyItems)
+
+              // Delete from main shopping items table
+              for (const item of purchasedItems) {
+                if (!item.id.startsWith('guest-')) {
+                  await ShoppingItemService.deleteShoppingItem(item.id)
+                }
+              }
+
+              // Update recent purchases in store
+              const recentPurchases = await PurchaseHistoryService.getRecentPurchases(userId)
+              const mappedRecentPurchases = recentPurchases.map(historyItem => ({
+                id: historyItem.id,
+                name: historyItem.name,
+                category: historyItem.category,
+                isInCart: false,
+                isPurchased: true,
+                addedAt: new Date(historyItem.created_at),
+                purchasedAt: new Date(historyItem.purchased_at),
+                purchaseLocation: historyItem.purchase_location,
+                price: historyItem.price
+              }))
+
+              set((draft) => {
+                draft.items = draft.items.filter(item => !item.isPurchased)
+                draft.recentPurchases = mappedRecentPurchases
+                draft.lastUpdated = new Date().toISOString()
+              })
+            } else {
+              // For guest mode, move to recent purchases locally
+              set((draft) => {
+                const purchasedToMove = draft.items.filter(item => item.isPurchased)
+                draft.recentPurchases = [...purchasedToMove, ...draft.recentPurchases].slice(0, 20) // Keep last 20
+                draft.items = draft.items.filter(item => !item.isPurchased)
+                draft.lastUpdated = new Date().toISOString()
+              })
+            }
 
             get().updateSuggestions()
 

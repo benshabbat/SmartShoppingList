@@ -105,6 +105,7 @@ export interface GlobalShoppingContextValue {
   expiringItems: ExpiringItem[]
   purchaseHistory: ShoppingItem[]
   pantryItems: ShoppingItem[]
+  recentPurchases: ShoppingItem[] // New: Recent completed purchases
   loading: boolean
   error: string | null
   

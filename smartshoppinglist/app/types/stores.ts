@@ -56,6 +56,7 @@ export interface ShoppingDataState {
   expiringItems: ExpiringItem[]
   purchaseHistory: ShoppingItem[]
   pantryItems: ShoppingItem[]
+  recentPurchases: ShoppingItem[] // New: Recent completed purchases for quick access
   
   // === LIST MANAGEMENT ===
   selectedListId: string | null
@@ -92,7 +93,7 @@ export interface ShoppingDataState {
   // === PURCHASE ACTIONS ===
   markAsPurchased: (id: string, location?: string, price?: number) => Promise<void>
   markAsUnpurchased: (id: string) => Promise<void>
-  clearPurchased: () => Promise<void>
+  clearPurchased: (userId?: string) => Promise<void>
   
   // === LIST MANAGEMENT ===
   setSelectedList: (listId: string | null) => void

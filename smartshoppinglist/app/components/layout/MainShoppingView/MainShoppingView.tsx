@@ -9,6 +9,7 @@ import { QuickListCreator } from "../../shopping/actions/QuickListCreator";
 import { QuickAddButtons } from "../../shopping/actions/QuickAddButtons";
 import { ShoppingListSections } from "../../shopping/cart/ShoppingListSections";
 import { ShoppingCartSection } from "../../shopping/cart/ShoppingCartSection";
+import { RecentPurchases, QuickAddFromRecent } from "../../shopping/RecentPurchases";
 import { MAIN_VIEW_STYLES } from "../../../constants";
 import { DataExport } from "../../statistics/DataExport";
 import { SmartSuggestions } from "../../shopping/suggestions/SmartSuggestions";
@@ -50,8 +51,15 @@ export function MainShoppingView() {
       {/* Shopping List Sections */}
       <ShoppingListSections />
 
+      {/* Recent Purchases */}
+      <RecentPurchases />
+
       {/* Data Export (conditional) */}
       <DataExport />
+      
+      {/* Quick Add from Recent - Floating */}
+      <QuickAddFromRecent />
+      
       {/* Modals */}
       <ModalsContainer />
     </div>

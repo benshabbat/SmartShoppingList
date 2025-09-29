@@ -67,6 +67,7 @@ export interface LoginFormLogic {
   handleSubmit: () => Promise<void>
   handleGuestLogin: () => void
   handleForgotPassword: () => void
+  handleCloseForgotPasswordModal: () => void
   toggleMode: () => void
 }
 

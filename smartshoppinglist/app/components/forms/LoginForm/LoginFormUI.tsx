@@ -8,7 +8,8 @@ import {
   FormField,
   Alert,
   AccountBenefitsSection,
-  FormActions
+  FormActions,
+  ForgotPasswordModal
 } from './components'
 import { CSS_CLASSES, UI_TEXT, LAYOUT, FORM_VALIDATION } from "./constants"
 
@@ -29,6 +30,7 @@ export function LoginFormUI() {
     loading,
     error,
     message,
+    showForgotPasswordModal,
     
     // Validation
     isFormValid,
@@ -37,6 +39,7 @@ export function LoginFormUI() {
     handleGuestLogin,
     handleSubmit,
     handleForgotPassword: _handleForgotPassword,
+    handleCloseForgotPasswordModal,
     toggleMode: _toggleMode,
     clearMessages: _clearMessages,
     setEmail,
@@ -121,6 +124,12 @@ export function LoginFormUI() {
           <FormActions />
         </Card>
       </div>
+
+      {/* Forgot Password Modal */}
+      <ForgotPasswordModal 
+        isOpen={showForgotPasswordModal}
+        onClose={handleCloseForgotPasswordModal}
+      />
     </div>
   )
 }

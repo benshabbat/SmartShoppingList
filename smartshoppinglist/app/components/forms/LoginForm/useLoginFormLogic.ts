@@ -26,6 +26,7 @@ export const useLoginFormLogic = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [message, setMessage] = useState<string | null>(null)
+  const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false)
 
   // Event handlers
   const handleGuestLogin = () => {
@@ -83,26 +84,8 @@ export const useLoginFormLogic = () => {
     }
   }
 
-  const handleForgotPassword = async () => {
-    if (!email) {
-      setError('אנא הכנס כתובת מייל תחילה')
-      return
-    }
-
-    setLoading(true)
-    setError(null)
-
-    try {
-      // Use Supabase directly for password reset
-      const { supabase } = await import('../../../../lib/supabase')
-      await supabase.auth.resetPasswordForEmail(email)
-      setMessage('נשלח לינק לאיפוס סיסמה למייל שלך')
-    } catch (err: unknown) {
-      const errorMessage = AuthErrorHandler.translateError(err)
-      setError(errorMessage)
-    } finally {
-      setLoading(false)
-    }
+  const handleForgotPassword = () => {
+    setShowForgotPasswordModal(true)
   }
 
   const toggleMode = () => {
@@ -114,6 +97,10 @@ export const useLoginFormLogic = () => {
   const clearMessages = () => {
     setError(null)
     setMessage(null)
+  }
+
+  const handleCloseForgotPasswordModal = () => {
+    setShowForgotPasswordModal(false)
   }
 
   // Validation
@@ -133,6 +120,7 @@ export const useLoginFormLogic = () => {
     loading,
     error,
     message,
+    showForgotPasswordModal,
     
     // Validation
     isEmailValid,
@@ -144,6 +132,7 @@ export const useLoginFormLogic = () => {
     handleGuestLogin,
     handleSubmit,
     handleForgotPassword,
+    handleCloseForgotPasswordModal,
     toggleMode,
     clearMessages,
     

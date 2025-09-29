@@ -6,7 +6,7 @@
 export class AuthErrorHandler {
   private static readonly ERROR_MESSAGES: Record<string, string> = {
     'Invalid login credentials': 'פרטי התחברות שגויים. אנא בדוק את המייל והסיסמה',
-    'Email not confirmed': 'המייל לא אומת. אנא בדוק את תיבת המייל שלך ולחץ על הלינק לאימות',
+    'Email not confirmed': 'המייל לא אומת. אנא בדוק את תיבת המייל שלך ולחץ על הלינק לאימות, או המשך כאורח',
     'User already registered': 'המשתמש כבר רשום במערכת. נסה להתחבר במקום',
     'Password should be at least': 'הסיסמה חייבת להכיל לפחות 6 תווים',
     'Unable to validate email address': 'כתובת המייל לא תקינה',

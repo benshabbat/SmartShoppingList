@@ -29,21 +29,29 @@ export const useLoginFormLogic = () => {
 
   // Event handlers
   const handleGuestLogin = () => {
-    console.log('🎯 handleGuestLogin called')
-    signInAsGuest()
-    console.log('🎯 signInAsGuest executed')
-    // Guest login success is handled by auth state change
+    console.log('🎯 Guest login clicked')
+    try {
+      signInAsGuest()
+      console.log('✅ Guest login initiated')
+      // Guest login success is handled by auth state change
+    } catch (error) {
+      console.error('❌ Guest login error:', error)
+      setError('שגיאה במעבר למצב אורח')
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    console.log('📝 Form submitted:', { isLogin, email: email.substring(0, 3) + '***' })
     setLoading(true)
     setError(null)
     setMessage(null)
 
     try {
       if (isLogin) {
+        console.log('🔐 Attempting login...')
         const result = await loginMutation.mutateAsync({ email, password })
+        console.log('✅ Login result:', result?.user?.email)
         setMessage('התחברת בהצלחה!')
         
         // Show welcome message for successful login
@@ -53,6 +61,7 @@ export const useLoginFormLogic = () => {
         
         handleLoginSuccess()
       } else {
+        console.log('📝 Attempting signup...')
         await signUpMutation.mutateAsync({ 
           email, 
           password, 
@@ -62,9 +71,11 @@ export const useLoginFormLogic = () => {
             } 
           } 
         })
+        console.log('✅ Signup completed')
         setMessage('נרשמת בהצלחה! בדוק את המייל שלך לאימות החשבון.')
       }
     } catch (err: unknown) {
+      console.error('❌ Auth error:', err)
       const errorMessage = AuthErrorHandler.translateError(err)
       setError(errorMessage)
     } finally {

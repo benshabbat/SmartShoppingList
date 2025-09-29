@@ -19,6 +19,18 @@ import { useMainAppLogic } from './useMainAppLogic'
 import { LoadingOverlay } from '../../ui/LoadingOverlay'
 import { LoginFormUI } from '../../forms/LoginForm/LoginFormUI'
 
+// Import connection test for debugging
+import '../../../utils/testSupabase'
+import '../../../utils/testAuth'
+import '../../../utils/directSupabaseTest'
+
+// Add test tools in development
+if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+  const script = document.createElement('script')
+  script.src = '/test-tools.js'
+  document.head.appendChild(script)
+}
+
 export const MainAppUI = React.memo(() => {
   const { renderState, shouldShowGuestNotification } = useMainAppLogic()
 

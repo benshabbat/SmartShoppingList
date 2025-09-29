@@ -87,8 +87,17 @@ export const useMainAppLogic = () => {
 
   // Render state determination
   const renderState = useMemo((): 'loading' | 'login' | 'main' => {
-    if (loading) return 'loading'
-    if (!isAuthenticated && !isGuest) return 'login'
+    console.log('🎯 Determining render state:', { loading, isAuthenticated, isGuest })
+    
+    if (loading) {
+      console.log('🔄 State: LOADING')
+      return 'loading'
+    }
+    if (!isAuthenticated && !isGuest) {
+      console.log('🔐 State: LOGIN (not authenticated and not guest)')
+      return 'login'
+    }
+    console.log('🏠 State: MAIN')
     return 'main'
   }, [loading, isAuthenticated, isGuest])
 

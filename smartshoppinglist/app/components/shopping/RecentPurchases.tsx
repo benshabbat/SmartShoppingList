@@ -10,8 +10,7 @@ import { Calendar, MapPin, ShoppingCart, Plus, Clock } from 'lucide-react'
 import { useShoppingData, useShoppingActions } from '../../contexts/GlobalShoppingContext'
 import { Card, CardHeader, CardBody } from '../ui/Card'
 import { ActionButton } from '../ui/ActionButton'
-import { formatDate } from '../../utils/core/formatters'
-import { getCategoryEmoji } from '../../utils/ui/categoryHelpers'
+import { formatDate, getCategoryEmoji } from '../../utils'
 
 export const RecentPurchases: React.FC = () => {
   const { recentPurchases, loading } = useShoppingData()

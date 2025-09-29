@@ -91,6 +91,7 @@ export function useLogin() {
 
   return useMutation({
     mutationFn: async ({ email, password }: LoginCredentials) => {
+      console.log('🔐 Attempting login for:', email)
       setLoading(true)
       
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -99,9 +100,11 @@ export function useLogin() {
       })
 
       if (error) {
+        console.error('❌ Login error:', error.message)
         throw new Error(error.message)
       }
 
+      console.log('✅ Login successful:', data.user?.email)
       return data
     },
     onSuccess: (data) => {
@@ -143,6 +146,7 @@ export function useSignUp() {
 
   return useMutation({
     mutationFn: async ({ email, password, options }: SignUpCredentials) => {
+      console.log('🔐 Attempting signup for:', email)
       setLoading(true)
       
       const { data, error } = await supabase.auth.signUp({
@@ -152,9 +156,11 @@ export function useSignUp() {
       })
 
       if (error) {
+        console.error('❌ Signup error:', error.message)
         throw new Error(error.message)
       }
 
+      console.log('✅ Signup successful:', data.user?.email)
       return data
     },
     onSuccess: () => {
@@ -253,23 +259,29 @@ export function useAuth() {
 
   // Listen for auth state changes
   useEffect(() => {
+    console.log('🔐 Setting up auth listener')
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth state changed:', event, session)
+        console.log('🔐 Auth state changed:', event, session?.user?.email || 'no user')
         
         if (event === 'SIGNED_IN' && session?.user) {
+          console.log('✅ User signed in:', session.user.email)
           setUser({
             id: session.user.id,
             email: session.user.email || '',
             isGuest: false,
           })
         } else if (event === 'SIGNED_OUT') {
+          console.log('❌ User signed out')
           logout()
         }
       }
     )
 
-    return () => subscription.unsubscribe()
+    return () => {
+      console.log('🔐 Cleaning up auth listener')
+      subscription.unsubscribe()
+    }
   }, [setUser, logout])
 
   const signOut = async () => {
@@ -304,7 +316,7 @@ export function useAuth() {
     }
   }
 
-  return {
+  const authState = {
     user: user ? {
       id: user.id,
       email: user.email,
@@ -322,4 +334,6 @@ export function useAuth() {
     signInAsGuest,
     switchToAuth,
   }
+
+  return authState
 }

@@ -15,34 +15,39 @@ export const useAuthStore = create<AuthStore>()(
       immer((set, get) => ({
         // State
         user: null,
-        isLoading: true,
+        isLoading: false,
         isInitialized: false,
 
         // Actions
         setUser: (user) =>
           set((state) => {
+            console.log('🏪 AuthStore: Setting user:', user?.email || user?.id || 'null')
             state.user = user
             state.isLoading = false
           }),
 
         setLoading: (loading) =>
           set((state) => {
+            console.log('🏪 AuthStore: Setting loading:', loading)
             state.isLoading = loading
           }),
 
         setInitialized: (initialized) =>
           set((state) => {
+            console.log('🏪 AuthStore: Setting initialized:', initialized)
             state.isInitialized = initialized
           }),
 
         logout: () =>
           set((state) => {
+            console.log('🏪 AuthStore: Logging out user')
             state.user = null
             state.isLoading = false
           }),
 
         switchToGuestMode: () =>
           set((state) => {
+            console.log('🏪 AuthStore: Switching to guest mode')
             state.user = {
               id: 'guest',
               email: 'guest@local',

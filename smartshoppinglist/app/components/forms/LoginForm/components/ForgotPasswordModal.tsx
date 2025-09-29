@@ -8,6 +8,15 @@ interface ForgotPasswordModalProps {
   onClose: () => void
 }
 
+/**
+ * ForgotPasswordModal Component
+ * 
+ * A modal dialog for password reset functionality.
+ * Provides a clean interface with just an email field.
+ * 
+ * @param isOpen - Controls modal visibility
+ * @param onClose - Callback when modal should be closed
+ */
 export function ForgotPasswordModal({ isOpen, onClose }: ForgotPasswordModalProps) {
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
@@ -36,10 +45,7 @@ export function ForgotPasswordModal({ isOpen, onClose }: ForgotPasswordModalProp
       } else {
         setMessage('נשלח לינק לאיפוס סיסמה למייל שלך')
         setTimeout(() => {
-          onClose()
-          setEmail('')
-          setMessage(null)
-          setError(null)
+          handleClose()
         }, 3000)
       }
     } catch {
@@ -51,6 +57,7 @@ export function ForgotPasswordModal({ isOpen, onClose }: ForgotPasswordModalProp
 
   const handleClose = () => {
     onClose()
+    // Reset form state
     setEmail('')
     setMessage(null)
     setError(null)
@@ -61,21 +68,25 @@ export function ForgotPasswordModal({ isOpen, onClose }: ForgotPasswordModalProp
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md">
+        {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold text-gray-900">שכחת סיסמה?</h2>
           <button
             onClick={handleClose}
             className="text-gray-400 hover:text-gray-600 text-xl font-bold"
             disabled={loading}
+            aria-label="סגור"
           >
             ×
           </button>
         </div>
 
+        {/* Description */}
         <p className="text-gray-600 mb-6 text-sm">
           הזן את כתובת המייל שלך ונשלח לך קישור לאיפוס הסיסמה
         </p>
 
+        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="forgot-email" className="block text-sm font-medium text-gray-700 mb-2">
@@ -94,18 +105,21 @@ export function ForgotPasswordModal({ isOpen, onClose }: ForgotPasswordModalProp
             />
           </div>
 
+          {/* Error Message */}
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
               {error}
             </div>
           )}
 
+          {/* Success Message */}
           {message && (
             <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm">
               {message}
             </div>
           )}
 
+          {/* Action Buttons */}
           <div className="flex gap-3">
             <button
               type="submit"

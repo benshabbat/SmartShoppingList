@@ -30,13 +30,9 @@ export const useLoginFormLogic = () => {
 
   // Event handlers
   const handleGuestLogin = () => {
-    console.log('🎯 Guest login clicked')
     try {
       signInAsGuest()
-      console.log('✅ Guest login initiated')
-      // Guest login success is handled by auth state change
-    } catch (error) {
-      console.error('❌ Guest login error:', error)
+    } catch {
       setError('שגיאה במעבר למצב אורח')
     }
   }

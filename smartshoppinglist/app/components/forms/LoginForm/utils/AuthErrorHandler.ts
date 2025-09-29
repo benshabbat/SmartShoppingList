@@ -10,6 +10,8 @@ export class AuthErrorHandler {
     'User already registered': 'המשתמש כבר רשום במערכת. נסה להתחבר במקום',
     'Password should be at least': 'הסיסמה חייבת להכיל לפחות 6 תווים',
     'Unable to validate email address': 'כתובת המייל לא תקינה',
+    'For security purposes, you can only request this': 'יש להמתין לפני בקשה נוספת לאיפוס סיסמה',
+    'Email address not found': 'כתובת מייל לא נמצאה במערכת',
   }
 
   static translateError(error: unknown): string {

@@ -29,6 +29,11 @@ if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
   const script = document.createElement('script')
   script.src = '/test-tools.js'
   document.head.appendChild(script)
+  
+  // Add auth helper for password management
+  const authHelper = document.createElement('script')
+  authHelper.src = '/auth-helper.js'
+  document.head.appendChild(authHelper)
 }
 
 export const MainAppUI = React.memo(() => {

@@ -62,31 +62,38 @@ export const useShoppingDataStore = create<ShoppingDataState>()(
           })
 
           try {
-            // Only load data from Supabase if we have a valid userId
+            // Only load data from Supabase if we have a valid userId and internet connection
             let items: ShoppingItem[] = []
             let recentPurchases: ShoppingItem[] = []
             
             if (userId && userId !== 'guest') {
-              const dbItems = await ShoppingItemService.getShoppingItems(userId)
-              items = dbItems.map(mapDbItemToShoppingItem)
-              
-              // Load recent purchases from purchase history
               try {
-                const purchaseHistoryItems = await PurchaseHistoryService.getRecentPurchases(userId)
-                recentPurchases = purchaseHistoryItems.map(historyItem => ({
-                  id: historyItem.id,
-                  name: historyItem.name,
-                  category: historyItem.category,
-                  isInCart: false,
-                  isPurchased: true,
-                  addedAt: new Date(historyItem.created_at),
-                  purchasedAt: new Date(historyItem.purchased_at),
-                  purchaseLocation: historyItem.purchase_location,
-                  price: historyItem.price
-                }))
-              } catch (error) {
-                console.warn('Failed to load purchase history:', error)
-                // Continue without purchase history if it fails
+                const dbItems = await ShoppingItemService.getShoppingItems(userId)
+                items = dbItems.map(mapDbItemToShoppingItem)
+                
+                // Load recent purchases from purchase history
+                try {
+                  const purchaseHistoryItems = await PurchaseHistoryService.getRecentPurchases(userId)
+                  recentPurchases = purchaseHistoryItems.map(historyItem => ({
+                    id: historyItem.id,
+                    name: historyItem.name,
+                    category: historyItem.category,
+                    isInCart: false,
+                    isPurchased: true,
+                    addedAt: new Date(historyItem.created_at),
+                    purchasedAt: new Date(historyItem.purchased_at),
+                    purchaseLocation: historyItem.purchase_location,
+                    price: historyItem.price
+                  }))
+                } catch (historyError) {
+                  console.warn('Failed to load purchase history (offline?):', historyError)
+                  // Continue without purchase history if it fails
+                }
+              } catch (itemsError) {
+                console.warn('Failed to load items from Supabase (offline?):', itemsError)
+                // Fall back to guest mode if database is unavailable
+                console.log('Falling back to guest mode due to connection issues')
+                userId = 'guest'
               }
             }
             // For guest users, start with empty items array
@@ -104,10 +111,10 @@ export const useShoppingDataStore = create<ShoppingDataState>()(
           } catch (error) {
             console.error('Failed to initialize store:', error)
             set((draft) => {
-              draft.error = 'Failed to load shopping data'
+              draft.error = 'נראה שאין חיבור לאינטרנט. האפליקציה תפעל במצב אורח.'
               // Still mark as initialized to prevent infinite retries
               draft.isInitialized = true
-              // Start with empty items for guest mode
+              // Start with empty items for offline mode
               draft.items = []
               draft.recentPurchases = []
             })
@@ -165,17 +172,31 @@ export const useShoppingDataStore = create<ShoppingDataState>()(
             let newItem: ShoppingItem
 
             if (userId && userId !== 'guest') {
-              // For logged-in users, save to Supabase
-              const newDbItem = await ShoppingItemService.createShoppingItem({
-                user_id: userId,
-                name,
-                category,
-                expiry_date: expiryDate || undefined,
-                is_in_cart: false,
-                is_purchased: false,
-                added_at: new Date().toISOString()
-              })
-              newItem = mapDbItemToShoppingItem(newDbItem)
+              // For logged-in users, try to save to Supabase
+              try {
+                const newDbItem = await ShoppingItemService.createShoppingItem({
+                  user_id: userId,
+                  name,
+                  category,
+                  expiry_date: expiryDate || undefined,
+                  is_in_cart: false,
+                  is_purchased: false,
+                  added_at: new Date().toISOString()
+                })
+                newItem = mapDbItemToShoppingItem(newDbItem)
+              } catch (dbError) {
+                console.warn('Failed to save to database (offline?), saving locally:', dbError)
+                // If database fails, create locally with a temporary ID
+                newItem = {
+                  id: `offline-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                  name,
+                  category,
+                  isInCart: false,
+                  isPurchased: false,
+                  addedAt: new Date(),
+                  expiryDate: expiryDate ? new Date(expiryDate) : undefined
+                }
+              }
             } else {
               // For guest users, create item locally
               newItem = {

@@ -2,6 +2,7 @@ import './globals.css'
 import { QueryProvider } from './providers/QueryProvider'
 import { GlobalShoppingProvider } from './contexts/GlobalShoppingContext'
 import { ErrorBoundary } from './components/ui/ErrorBoundary'
+import { OfflineNotification } from './components/notifications/OfflineNotification'
 import type { Metadata, Viewport } from 'next'
 
 export const metadata: Metadata = {
@@ -51,6 +52,7 @@ export default function RootLayout({
         <ErrorBoundary>
           <QueryProvider>
             <GlobalShoppingProvider>
+              <OfflineNotification />
               {children}
             </GlobalShoppingProvider>
           </QueryProvider>

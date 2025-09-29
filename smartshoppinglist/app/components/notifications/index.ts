@@ -4,3 +4,4 @@ export { AutoChangeNotificationBanner, SuggestionNotificationBanner } from './No
 export { Toast } from './Toast'
 export { ExpiryNotification } from './ExpiryNotification'
 export { GuestModeNotification } from './GuestModeNotification'
+export { OfflineNotification } from './OfflineNotification'

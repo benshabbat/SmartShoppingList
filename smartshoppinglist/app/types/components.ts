@@ -140,6 +140,9 @@ export interface ActionButtonProps {
   icon?: LucideIcon
   className?: string
   iconSize?: number
+  ariaLabel?: string
+  ariaDescribedBy?: string
+  type?: 'button' | 'submit' | 'reset'
 }
 
 

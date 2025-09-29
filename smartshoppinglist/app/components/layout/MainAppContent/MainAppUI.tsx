@@ -1,10 +1,12 @@
 /**
  * Main App UI Component
  * Zero Props Drilling - gets everything from context directly
+ * Optimized with React.memo for better performance
  */
 
 'use client'
 
+import React from 'react'
 import { Header } from '../Header'
 import { MainShoppingView } from '../MainShoppingView'
 import { ModalsContainer } from '../MainShoppingView/components/ModalsContainer'
@@ -17,7 +19,7 @@ import { useMainAppLogic } from './useMainAppLogic'
 import { LoadingOverlay } from '../../ui/LoadingOverlay'
 import { LoginFormUI } from '../../forms/LoginForm/LoginFormUI'
 
-export const MainAppUI = () => {
+export const MainAppUI = React.memo(() => {
   const { renderState, shouldShowGuestNotification } = useMainAppLogic()
 
   // Loading state
@@ -59,4 +61,6 @@ export const MainAppUI = () => {
       <ToastContainer />
     </div>
   )
-}
+})
+
+MainAppUI.displayName = 'MainAppUI'

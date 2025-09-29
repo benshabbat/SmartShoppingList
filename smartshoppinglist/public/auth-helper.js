@@ -1,11 +1,6 @@
 // Test users and password reset helper
 window.authHelper = {
   // Test users that were created
-  testUsers: [
-    { email: 'testuser961@gmail.com', password: 'TestPassword123!' },
-    { email: 'testuser930@gmail.com', password: 'TestPassword123!' },
-    { email: 'testuser235@gmail.com', password: 'TestPassword123!' }
-  ],
 
   async resetPassword(email) {
     console.log('🔄 Resetting password for:', email);
@@ -66,27 +61,6 @@ window.authHelper = {
     }
   },
 
-  showHelp() {
-    const help = `
-🔧 עזרה לאימות:
-
-📊 משתמשי טסט קיימים:
-${this.testUsers.map(u => `• ${u.email} | סיסמה: ${u.password}`).join('\n')}
-
-🔄 פקודות זמינות:
-• authHelper.resetPassword('email@example.com') - איפוס סיסמה
-• authHelper.createNewUser() - יצירת משתמש חדש
-• authHelper.testGuestMode() - מעבר למצב אורח
-
-💡 טיפים:
-1. אם שכחת סיסמה - השתמש ב-resetPassword
-2. אם אין לך חשבון - השתמש ב-createNewUser
-3. לבדיקה מהירה - השתמש במצב אורח
-    `;
-    
-    console.log(help);
-    alert(help);
-  },
 
   testGuestMode() {
     localStorage.setItem('guest_mode', 'true');
@@ -94,8 +68,3 @@ ${this.testUsers.map(u => `• ${u.email} | סיסמה: ${u.password}`).join('\n
   }
 };
 
-// Auto-show help
-authHelper.showHelp();
-
-console.log('🔧 Auth Helper loaded!');
-console.log('Type authHelper.showHelp() for commands');
